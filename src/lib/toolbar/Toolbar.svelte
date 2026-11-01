@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { i18n, LANGUAGES, type Language } from '../i18n/i18n.svelte'
   import { exportBasename, exportPage, exportWorkFile, type ExportKind } from '../export'
+  import { createDefaultPage } from '../model/defaults'
   import { parseWorkFile } from '../model/workfile'
   import { editor } from '../state/editor.svelte'
   import Menu from '../ui/Menu.svelte'
@@ -8,7 +10,9 @@
 
   // Sticky top bar. Unless pinned, it slides away when not hovered (a small tab
   // hints at it) and comes back when the pointer enters the strip it occupies. Showing and hiding is pure CSS (see the styles).
-  let { pinned = $bindable(false) }: { pinned?: boolean } = $props()
+  // `height` reports the bar's height, which grows if it wraps onto a second
+  // row in a narrow window (or with longer labels in another language).
+  let { pinned = $bindable(false), height = $bindable(56) }: { pinned?: boolean; height?: number } = $props()
 
   let status = $state('')
   let statusTimer: ReturnType<typeof setTimeout> | undefined
@@ -26,14 +30,14 @@
   async function runExport(kind: ExportKind | 'json') {
     if (busy) return
     busy = true
-    say('Exporting…')
+    say(i18n.t.status.exporting)
     try {
       if (kind === 'json') exportWorkFile(editor.toWorkFile(), basename())
       else await exportPage(kind, basename())
-      say('Exported.')
+      say(i18n.t.status.exported)
     } catch (error) {
       console.error(error)
-      say('Export failed. See the browser console for details.')
+      say(i18n.t.status.exportFailed)
     } finally {
       busy = false
     }
@@ -43,32 +47,32 @@
     if (!file) return
     try {
       const parsed = parseWorkFile(JSON.parse(await file.text()))
-      if (!parsed) return say(`${file.name} isn't a newspaper preset.`)
+      if (!parsed) return say(i18n.t.status.notPreset(file.name))
       editor.importFile(parsed)
-      say(`Imported ${file.name}. Undo (Ctrl+Z) brings back the previous page.`)
+      say(i18n.t.status.imported(file.name))
     } catch {
-      say(`Couldn't read ${file.name}.`)
+      say(i18n.t.status.unreadable(file.name))
     }
   }
 </script>
 
-<div class="hot-zone" aria-hidden="true"><span class="hint-tab">▾</span></div>
+<div class="hot-zone" aria-hidden="true" style:height="{height}px"><span class="hint-tab">▾</span></div>
 
-<div class="toolbar" class:pinned role="toolbar" aria-label="Newspaper tools">
+<div class="toolbar" class:pinned role="toolbar" aria-label={i18n.t.toolbar.tools} bind:offsetHeight={height}>
   <div class="group">
     <button
       type="button"
       class="tb-button icon"
-      title="Undo (Ctrl+Z)"
-      aria-label="Undo"
+      title={i18n.t.toolbar.undoTitle}
+      aria-label={i18n.t.toolbar.undo}
       disabled={!editor.canUndo}
       onclick={() => editor.undo()}>↶</button
     >
     <button
       type="button"
       class="tb-button icon"
-      title="Redo (Ctrl+Y)"
-      aria-label="Redo"
+      title={i18n.t.toolbar.redoTitle}
+      aria-label={i18n.t.toolbar.redo}
       disabled={!editor.canRedo}
       onclick={() => editor.redo()}>↷</button
     >
@@ -79,7 +83,7 @@
   </div>
 
   <div class="group">
-    <button type="button" class="tb-button" onclick={() => importInput?.click()}>Import</button>
+    <button type="button" class="tb-button" onclick={() => importInput?.click()}>{i18n.t.toolbar.import}</button>
     <input
       bind:this={importInput}
       type="file"
@@ -92,36 +96,48 @@
     />
     <div class="export">
       <Menu
-        label="Export"
-        icon={busy ? 'Exporting…' : 'Export'}
+        label={i18n.t.toolbar.export}
+        icon={busy ? i18n.t.toolbar.exporting : i18n.t.toolbar.export}
         caret={!busy}
         items={[
-          { label: 'Image (PNG)', action: () => runExport('png') },
-          { label: 'Image (JPG)', action: () => runExport('jpeg') },
-          { label: 'PDF', action: () => runExport('pdf') },
+          { label: i18n.t.toolbar.exportPng, action: () => runExport('png') },
+          { label: i18n.t.toolbar.exportJpg, action: () => runExport('jpeg') },
+          { label: i18n.t.toolbar.exportPdf, action: () => runExport('pdf') },
           'separator',
-          { label: 'Importable preset', action: () => runExport('json') },
+          { label: i18n.t.toolbar.exportPreset, action: () => runExport('json') },
         ]}
       />
     </div>
     <NewPaperDialog
       onexport={() => runExport('json')}
       onconfirm={() => {
-        editor.reset()
-        say('Started a new paper. Undo (Ctrl+Z) brings back the previous one.')
+        editor.reset(createDefaultPage(new Date(), i18n.t.page.footerDefault))
+        say(i18n.t.status.newPaper)
       }}
     />
   </div>
 
   <span class="status" role="status">{status}</span>
 
+  <div class="language" role="group" aria-label={i18n.t.toolbar.language}>
+    {#each Object.entries(LANGUAGES) as [code, strings] (code)}
+      <button
+        type="button"
+        class="tb-button"
+        title={strings.languageName}
+        aria-pressed={i18n.language === code}
+        onclick={() => i18n.set(code as Language)}>{code.toUpperCase()}</button
+      >
+    {/each}
+  </div>
+
   <button
     type="button"
     class="tb-button icon pin"
     class:active={pinned}
     aria-pressed={pinned}
-    title={pinned ? 'Unpin: hide the toolbar when not in use' : 'Pin: keep the toolbar visible'}
-    aria-label="Pin toolbar"
+    title={pinned ? i18n.t.toolbar.unpinTitle : i18n.t.toolbar.pinTitle}
+    aria-label={i18n.t.toolbar.pin}
     onclick={() => (pinned = !pinned)}>📌</button
   >
 </div>
@@ -133,7 +149,6 @@
     left: 0;
     right: 0;
     z-index: 99;
-    height: 56px;
     display: flex;
     align-items: flex-start;
     justify-content: center;
@@ -155,10 +170,11 @@
     right: 0;
     z-index: 100;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
-    height: 56px;
-    padding: 0 12px;
+    min-height: 56px;
+    padding: 10px 12px;
     box-sizing: border-box;
     background: #2b2924;
     color: #eee;
@@ -253,7 +269,7 @@
   @media (max-width: 960px) {
     .toolbar {
       gap: 6px;
-      padding: 0 8px;
+      padding: 10px 8px;
       font-size: 12px;
     }
 
@@ -271,8 +287,33 @@
     }
   }
 
-  .toolbar .pin {
+  /* EN | CS: two halves of one control. */
+  .language {
+    display: flex;
     margin-left: auto;
+  }
+
+  .language .tb-button {
+    min-width: 34px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .language .tb-button:first-child {
+    border-radius: 5px 0 0 5px;
+  }
+
+  .language .tb-button:last-child {
+    border-left: none;
+    border-radius: 0 5px 5px 0;
+  }
+
+  .language .tb-button[aria-pressed='true'] {
+    background: rgb(255 255 255 / 0.25);
+    border-color: rgb(255 255 255 / 0.4);
+  }
+
+  .toolbar .pin {
     font-size: 13px;
     opacity: 0.6;
   }

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../i18n/i18n.svelte'
   import { editor } from '../state/editor.svelte'
   import EditableText from '../ui/EditableText.svelte'
   import { fitText } from '../ui/fitText'
@@ -50,7 +51,7 @@
     <div class="slot side" {@attach fitText({ max: sidePx, watch: style.fonts.headerFooter })}>
       <span class="measure" aria-hidden="true" bind:offsetWidth={dateWidth}>{liveDate || '<Date>'}</span>
       <div oninput={(e) => (liveDate = liveText(e))}>
-        <EditableText value={header.date} onchange={set('date')} placeholder="Date" />
+        <EditableText value={header.date} onchange={set('date')} placeholder={i18n.t.page.date} />
       </div>
     </div>
 
@@ -69,7 +70,7 @@
         {:else if symbols}
           <span class="ornament" aria-hidden="true" style:--scale={symbolScale}>{symbols[0]}</span>
         {/if}
-        <EditableText value={header.name} onchange={set('name')} placeholder="Newspaper Name" wrap />
+        <EditableText value={header.name} onchange={set('name')} placeholder={i18n.t.page.name} wrap />
         {#if decoration.ornament === 'rules'}
           <span class="rule" aria-hidden="true"></span>
         {:else if symbols}
@@ -84,7 +85,7 @@
     >
       <span class="measure" aria-hidden="true" bind:offsetWidth={locationWidth}>{liveLocation || '<Location>'}</span>
       <div oninput={(e) => (liveLocation = liveText(e))}>
-        <EditableText value={header.location} onchange={set('location')} placeholder="Location" wrap />
+        <EditableText value={header.location} onchange={set('location')} placeholder={i18n.t.page.location} wrap />
       </div>
     </div>
   </div>

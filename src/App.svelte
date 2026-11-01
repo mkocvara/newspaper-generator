@@ -1,6 +1,9 @@
 <script lang="ts">
   import { onMount, untrack } from 'svelte'
   import { loadFont } from './lib/fonts'
+  import { i18n } from './lib/i18n/i18n.svelte'
+  import { createDefaultPage } from './lib/model/defaults'
+  import { toWorkFile } from './lib/model/workfile'
   import Page from './lib/page/Page.svelte'
   import { loadAutosave, saveAutosave } from './lib/state/autosave'
   import { editor } from './lib/state/editor.svelte'
@@ -14,7 +17,7 @@
 
   const PIN_KEY = 'newspaper:toolbar-pinned'
   // The pinned toolbar's height; the page's viewport starts below it.
-  const TOOLBAR_HEIGHT = 56
+  let toolbarHeight = $state(56)
 
   let ready = $state(false)
 
@@ -50,8 +53,14 @@
 
   onMount(async () => {
     const saved = await loadAutosave()
-    if (saved) editor.load(saved)
+    // A first visit starts on a default page in the UI language.
+    editor.load(saved ?? toWorkFile(createDefaultPage(new Date(), i18n.t.page.footerDefault), {}))
     ready = true
+  })
+
+  // Lets the browser use the right hyphenation and spelling rules.
+  $effect(() => {
+    document.documentElement.lang = i18n.language
   })
 
   // Cache the work in progress shortly after every change.
@@ -74,9 +83,9 @@
 <svelte:window onkeydown={(event) => handleHistoryShortcut(event, editor)} onpagehide={saveNow} />
 <svelte:document onvisibilitychange={() => document.visibilityState === 'hidden' && saveNow()} />
 
-<Toolbar bind:pinned />
+<Toolbar bind:pinned bind:height={toolbarHeight} />
 
-<Viewport top={pinned ? TOOLBAR_HEIGHT : 0}>
+<Viewport top={pinned ? toolbarHeight : 0}>
   {#if ready}
     <Page />
   {/if}

@@ -10,7 +10,8 @@ export function formatDate(date: Date): string {
   return `${date.getDate()}. ${date.getMonth() + 1}. ${date.getFullYear()}`
 }
 
-export function createDefaultPage(today = new Date()): Page {
+// `pageLabel` is the footer's prefilled text, in the UI language.
+export function createDefaultPage(today = new Date(), pageLabel = 'Page 1'): Page {
   const size = 3
   const cells: GridCell[] = []
   for (let row = 0; row < size; row++) {
@@ -19,7 +20,7 @@ export function createDefaultPage(today = new Date()): Page {
 
   return {
     header: { heightMm: 30, date: formatDate(today), name: '', location: '' },
-    footer: { heightMm: 10, left: '', center: '', right: 'Page 1' },
+    footer: { heightMm: 10, left: '', center: '', right: pageLabel },
     grid: { cols: Array(size).fill(1), rows: Array(size).fill(1), cells },
     style: {
       fonts: {

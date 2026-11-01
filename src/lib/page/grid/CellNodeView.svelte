@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../../i18n/i18n.svelte'
   import {
     canMergeLeafToward,
     canMergeLine,
@@ -9,7 +10,7 @@
     splitLeaf,
     type Direction,
   } from '../../model/grid'
-  import { createElement, ELEMENT_NAMES, type ElementType } from '../../model/elements'
+  import { createElement, type ElementType } from '../../model/elements'
   import type { CellNode, GridCell } from '../../model/types'
   import ElementView from '../elements/ElementView.svelte'
   import { editor } from '../../state/editor.svelte'
@@ -40,38 +41,33 @@
   }
 
   // --- Leaf: layout actions menu.
-  const MERGES: [Direction, string][] = [
-    ['right', 'Merge with cell to the right'],
-    ['left', 'Merge with cell to the left'],
-    ['up', 'Merge with cell above'],
-    ['down', 'Merge with cell below'],
-  ]
+  const MERGES: Direction[] = ['right', 'left', 'up', 'down']
 
   const menu = $derived.by((): MenuEntry[] => {
+    const t = i18n.t.grid
     const grid = editor.page.grid
     const current = node.kind === 'leaf' ? node.element?.type : undefined
     const insert = (type: ElementType) => () => editor.updateGrid((g) => setElement(g, node.id, createElement(type)))
     const elements: MenuEntry[] = (['eyecatcher', 'text', 'image'] as const)
       .filter((type) => type !== current)
-      .map((type) => ({ label: `${current ? 'Change to' : 'Insert'} ${ELEMENT_NAMES[type]}`, action: insert(type) }))
-    if (current) elements.push({ label: 'Clear cell', action: () => editor.updateGrid((g) => setElement(g, node.id, null)) })
+      .map((type) => ({ label: (current ? t.changeTo : t.insert)[type], action: insert(type) }))
+    if (current) elements.push({ label: t.clearCell, action: () => editor.updateGrid((g) => setElement(g, node.id, null)) })
 
     const items: MenuEntry[] = [
       ...elements,
       'separator',
-      { label: 'Split side by side', action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'row')) },
-      { label: 'Split top and bottom', action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'column')) },
+      { label: t.splitSideBySide, action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'row')) },
+      { label: t.splitTopBottom, action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'column')) },
     ]
     // Within a split cell, a direction first means the neighbouring part.
-    const merges: MenuEntry[] = MERGES.filter(([dir]) => canMergeLeafToward(grid, cell.id, node.id, dir)).map(
-      ([dir, label]) => ({
-        label,
-        action: () => editor.updateGrid((g) => mergeLeafToward(g, cell.id, node.id, dir)),
-      }),
-    )
+    const merges: MenuEntry[] = MERGES.filter((dir) => canMergeLeafToward(grid, cell.id, node.id, dir)).map((dir) => ({
+      label: t.merge[dir],
+      action: () => editor.updateGrid((g) => mergeLeafToward(g, cell.id, node.id, dir)),
+    }))
     for (const axis of ['column', 'row'] as const) {
       if (canMergeLine(grid, cell.id, axis)) {
-        merges.push({ label: `Merge entire ${axis}`, action: () => editor.updateGrid((g) => mergeLine(g, cell.id, axis)) })
+        const label = axis === 'column' ? t.mergeColumn : t.mergeRow
+        merges.push({ label, action: () => editor.updateGrid((g) => mergeLine(g, cell.id, axis)) })
       }
     }
     return merges.length ? [...items, 'separator', ...merges] : items
@@ -108,7 +104,7 @@
       <ElementView element={node.element} leafId={node.id} />
     {/if}
     <div class="controls">
-      <Menu label="Cell layout" items={menu} />
+      <Menu label={i18n.t.grid.cellLayout} items={menu} />
     </div>
   </div>
 {/if}

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../../i18n/i18n.svelte'
   import type { EyecatcherElement } from '../../model/types'
   import { editor } from '../../state/editor.svelte'
   import EditableText from '../../ui/EditableText.svelte'
@@ -18,18 +19,18 @@
 <div class="eyecatcher" bind:clientHeight={heightPx}>
   <div class="fit" {@attach fitText({ max: Math.max(8, heightPx), watch: editor.page.style.fonts.eyecatcher })}>
     <div class="main">
-      <EditableText value={element.main} onchange={set('main')} placeholder="Eyecatcher" wrap />
+      <EditableText value={element.main} onchange={set('main')} placeholder={i18n.t.elements.eyecatcher} wrap />
     </div>
     {#if element.sub !== ''}
       <div class="sub">
-        <EditableText value={element.sub} onchange={set('sub')} placeholder="Secondary text" wrap />
+        <EditableText value={element.sub} onchange={set('sub')} placeholder={i18n.t.elements.secondary} wrap />
       </div>
     {/if}
   </div>
 
   {#if element.sub === ''}
     <div class="sub sub-hint ui-only">
-      <EditableText value="" onchange={set('sub')} placeholder="Secondary text" wrap />
+      <EditableText value="" onchange={set('sub')} placeholder={i18n.t.elements.secondary} wrap />
     </div>
   {/if}
 </div>

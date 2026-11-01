@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../i18n/i18n.svelte'
   // The "New Paper" toolbar button. It asks first, since starting over loses
   // the current page, and offers to export it as a preset before that.
   let { onexport, onconfirm }: { onexport: () => void; onconfirm: () => void } = $props()
@@ -12,21 +13,21 @@
   }
 </script>
 
-<button type="button" class="tb-button" onclick={open}>New Paper</button>
+<button type="button" class="tb-button" onclick={open}>{i18n.t.newPaper.button}</button>
 
 <dialog bind:this={dialog} aria-labelledby="new-paper-title">
-  <h2 id="new-paper-title">Start a new paper?</h2>
-  <p>This resets the page to the default layout and styles, and your current changes will be lost.</p>
-  <p>To keep your work, export it as a preset first; you can import it again later.</p>
-  {#if exported}<p class="done" role="status">Preset exported.</p>{/if}
+  <h2 id="new-paper-title">{i18n.t.newPaper.title}</h2>
+  <p>{i18n.t.newPaper.warning}</p>
+  <p>{i18n.t.newPaper.keepWork}</p>
+  {#if exported}<p class="done" role="status">{i18n.t.newPaper.exported}</p>{/if}
   <div class="actions">
-    <button type="button" onclick={() => dialog?.close()}>Cancel</button>
+    <button type="button" onclick={() => dialog?.close()}>{i18n.t.newPaper.cancel}</button>
     <button
       type="button"
       onclick={() => {
         onexport()
         exported = true
-      }}>Export preset first</button
+      }}>{i18n.t.newPaper.exportFirst}</button
     >
     <button
       type="button"
@@ -34,7 +35,7 @@
       onclick={() => {
         dialog?.close()
         onconfirm()
-      }}>Start new paper</button
+      }}>{i18n.t.newPaper.confirm}</button
     >
   </div>
 </dialog>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
+  import { i18n } from '../i18n/i18n.svelte'
 
   // The area the page sits in, with its own zoom and pan, so zooming never
   // affects the toolbar. The page is scaled with a transform: its layout (and
@@ -202,7 +203,7 @@
     <div
       class="track vertical"
       role="scrollbar"
-      aria-label="Pan up and down"
+      aria-label={i18n.t.view.panVertical}
       aria-orientation="vertical"
       aria-controls="newspaper-page"
       aria-valuenow={Math.round(vertical.offset * 100)}
@@ -215,7 +216,7 @@
     <div
       class="track horizontal"
       role="scrollbar"
-      aria-label="Pan left and right"
+      aria-label={i18n.t.view.panHorizontal}
       aria-orientation="horizontal"
       aria-controls="newspaper-page"
       aria-valuenow={Math.round(horizontal.offset * 100)}
@@ -225,12 +226,12 @@
     >
       <div class="thumb" style:left="{horizontal.offset * 100}%" style:width="{horizontal.size * 100}%"></div>
     </div>
-    <button type="button" class="zoom-level" title="Zoom level. Click to reset to 100%." onclick={resetZoom}>
+    <button type="button" class="zoom-level" title={i18n.t.view.zoomTitle} onclick={resetZoom}>
       <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
         <circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8" />
         <line x1="10" y1="10" x2="14.5" y2="14.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
       </svg>
-      {Math.round(zoom * 100)}%
+      {i18n.t.percent(Math.round(zoom * 100))}
     </button>
   </div>
 </div>

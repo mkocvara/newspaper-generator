@@ -4,6 +4,7 @@
   import type { Fonts, FrameStyle, Style } from '../model/types'
   import { EFFECTS, ORNAMENTS, SYMBOL_CHOICES } from '../page/nameDecoration'
   import { PAPERS } from '../page/papers'
+  import { i18n } from '../i18n/i18n.svelte'
   import { editor } from '../state/editor.svelte'
   import { FALLBACK_FONT, fontLibrary } from '../state/fontLibrary.svelte'
   import FontSelect from '../ui/FontSelect.svelte'
@@ -14,14 +15,7 @@
   const set = (change: (style: Style) => void) => editor.update((page) => change(page.style))
 
   // --- Fonts
-  const FONT_ROLES: [keyof Fonts, string][] = [
-    ['body', 'Body text'],
-    ['heading', 'Headings'],
-    ['caption', 'Image descriptions'],
-    ['eyecatcher', 'Eyecatchers'],
-    ['headerFooter', 'Header & footer'],
-    ['name', 'Newspaper name'],
-  ]
+  const FONT_ROLES: (keyof Fonts)[] = ['body', 'heading', 'caption', 'eyecatcher', 'headerFooter', 'name']
 
   // The font list, plus any font in use that was removed from it (e.g. after
   // undoing a removal) so the menus can still show it.
@@ -44,13 +38,13 @@
   function removeFont(family: string) {
     fontLibrary.remove(family)
     set((s) => {
-      for (const [role] of FONT_ROLES) if (s.fonts[role] === family) s.fonts[role] = FALLBACK_FONT
+      for (const role of FONT_ROLES) if (s.fonts[role] === family) s.fonts[role] = FALLBACK_FONT
       s.customFonts = fontLibrary.sourcesFor(s.fonts)
     })
   }
 
   const usedBy = (family: string) =>
-    FONT_ROLES.filter(([role]) => style.fonts[role] === family).map(([, label]) => label)
+    FONT_ROLES.filter((role) => style.fonts[role] === family).map((role) => i18n.t.fonts.roles[role])
 
   // The Fonts panel shows either the font menus or the font list; it opens on
   // the menus.
@@ -76,10 +70,10 @@
   async function addFont() {
     const fonts = parseFontInput(fontInput)
     if (fonts.length === 0) {
-      fontMessage = 'Enter a font name or a Google Fonts link.'
+      fontMessage = i18n.t.fonts.needInput
       return
     }
-    fontMessage = 'Loading…'
+    fontMessage = i18n.t.fonts.loading
     const results = await Promise.all(fonts.map((f) => loadFont(f.family, fonts)))
     const added = fonts.filter((_, i) => results[i])
     if (added.length) {
@@ -88,8 +82,8 @@
     }
     const failed = fonts.filter((_, i) => !results[i]).map((f) => f.family)
     fontMessage = failed.length
-      ? `Couldn't load ${failed.join(', ')}. Check the name on fonts.google.com.`
-      : `Added ${added.map((f) => f.family).join(', ')}.`
+      ? i18n.t.fonts.couldNotLoad(failed)
+      : i18n.t.fonts.added(added.map((f) => f.family))
   }
 
   // --- Numbers: committed on change (blur, Enter or a spinner click).
@@ -116,13 +110,8 @@
   }
 
   // --- Ink: live preview while picking, one undo step for the whole pick.
-  const INK_PRESETS: [string, string][] = [
-    ['#1b1a17', 'Black'],
-    ['#5b3a1e', 'Sepia brown'],
-    ['#1f2f55', 'Navy'],
-    ['#6e1a1a', 'Dark red'],
-    ['#1f4a2c', 'Dark green'],
-  ]
+  // Names in the UI text (i18n `ink.presetNames`), in this order.
+  const INK_PRESETS = ['#1b1a17', '#5b3a1e', '#1f2f55', '#6e1a1a', '#1f4a2c']
   let picking = false
   function previewInk(event: Event & { currentTarget: HTMLInputElement }) {
     if (!picking) {
@@ -155,91 +144,91 @@
     input.setSelectionRange(start + symbol.length, start + symbol.length)
   }
 
-  const FRAME_STYLES: [FrameStyle, string][] = [
-    ['single', 'Single line'],
-    ['double', 'Double line'],
-    ['thick-outer', 'Thick & thin (thick outside)'],
-    ['thin-outer', 'Thick & thin (thin outside)'],
-    ['dashed', 'Dashed'],
-    ['dotted', 'Dotted'],
-    ['dash-dot', 'Dash and dot'],
-    ['zigzag', 'Zigzag'],
-    ['wave', 'Wave'],
+  const FRAME_STYLES: FrameStyle[] = [
+    'single',
+    'double',
+    'thick-outer',
+    'thin-outer',
+    'dashed',
+    'dotted',
+    'dash-dot',
+    'zigzag',
+    'wave',
   ]
 </script>
 
-<Panel label="Fonts">
+<Panel label={i18n.t.fonts.panel}>
   <div class="form fonts" {@attach loadFontOptions} {@attach resetViewOnClose}>
     {#if !managing}
-      {#each FONT_ROLES as [role, label] (role)}
+      {#each FONT_ROLES as role (role)}
         <div class="row">
-          <span>{label}</span>
+          <span>{i18n.t.fonts.roles[role]}</span>
           <FontSelect
             value={style.fonts[role]}
             options={fontOptions}
-            {label}
+            label={i18n.t.fonts.roles[role]}
             onchange={(family) => setFont(role, family)}
           />
         </div>
       {/each}
-      <button type="button" class="panel-button manage" onclick={() => (managing = true)}>Manage fonts…</button>
+      <button type="button" class="panel-button manage" onclick={() => (managing = true)}>{i18n.t.fonts.manage}</button>
     {:else}
       <div class="manage-head">
-        <button type="button" class="panel-button" onclick={() => (managing = false)}>‹ Back</button>
-        <span>Your fonts</span>
+        <button type="button" class="panel-button" onclick={() => (managing = false)}>{i18n.t.fonts.back}</button>
+        <span>{i18n.t.fonts.yourFonts}</span>
       </div>
 
-      <ul class="font-list" aria-label="Your fonts">
+      <ul class="font-list" aria-label={i18n.t.fonts.yourFonts}>
         {#each libraryFamilies as family (family)}
           {@const uses = usedBy(family)}
           <li>
             <span class="font-name" style:font-family={fontStack(family)}>{family}</span>
-            {#if uses.length}<span class="in-use" title="Used for {uses.join(', ')}">in use</span>{/if}
+            {#if uses.length}<span class="in-use" title={i18n.t.fonts.usedFor(uses)}>{i18n.t.fonts.inUse}</span>{/if}
             <button
               type="button"
               class="remove"
-              aria-label="Remove {family}"
-              title={uses.length
-                ? `Remove ${family}. ${uses.join(', ')} will switch to ${FALLBACK_FONT}.`
-                : `Remove ${family}`}
+              aria-label={i18n.t.fonts.remove(family)}
+              title={uses.length ? i18n.t.fonts.removeInUse(family, uses, FALLBACK_FONT) : i18n.t.fonts.remove(family)}
               onclick={() => removeFont(family)}>×</button
             >
           </li>
         {:else}
-          <li class="empty">No fonts. Add one below or restore the default fonts.</li>
+          <li class="empty">{i18n.t.fonts.none}</li>
         {/each}
       </ul>
 
       <div class="add-font">
         <span class="hint"
-          >Add a <a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer">Google Font</a> by name or link</span
+          >{i18n.t.fonts.addBefore}<a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer"
+            >{i18n.t.fonts.addLink}</a
+          >{i18n.t.fonts.addAfter}</span
         >
         <div class="inline">
           <input
             type="text"
-            placeholder="e.g. Crimson Text"
+            placeholder={i18n.t.fonts.addPlaceholder}
             bind:value={fontInput}
             onkeydown={(e) => e.key === 'Enter' && addFont()}
           />
-          <button type="button" class="panel-button" onclick={addFont}>Add</button>
+          <button type="button" class="panel-button" onclick={addFont}>{i18n.t.fonts.add}</button>
         </div>
         {#if fontMessage}<span class="hint" role="status" {@attach clearMessageOnClose}>{fontMessage}</span>{/if}
       </div>
 
       {#if fontLibrary.missingDefaults.length}
         <button type="button" class="panel-button restore" onclick={() => fontLibrary.restoreDefaults()}>
-          Restore default fonts ({fontLibrary.missingDefaults.length} removed)
+          {i18n.t.fonts.restore(fontLibrary.missingDefaults.length)}
         </button>
       {/if}
-      <span class="hint">This list is kept in this browser and shared by all your pages.</span>
+      <span class="hint">{i18n.t.fonts.listNote}</span>
     {/if}
   </div>
 </Panel>
 
-<Panel label="Text sizes">
+<Panel label={i18n.t.sizes.panel}>
   <div class="form">
     <label class="row">
-      <span>Body text</span>
+      <span>{i18n.t.sizes.body}</span>
       <input
         type="number"
         min="5"
@@ -251,7 +240,7 @@
       />
     </label>
     <label class="row">
-      <span>Headings</span>
+      <span>{i18n.t.sizes.heading}</span>
       <input
         type="number"
         min="6"
@@ -263,7 +252,7 @@
       />
     </label>
     <label class="row">
-      <span>Image descriptions</span>
+      <span>{i18n.t.sizes.caption}</span>
       <input
         type="number"
         min="4"
@@ -274,18 +263,15 @@
         {@attach wheelStep}
       />
     </label>
-    <span class="hint"
-      >Sizes are in points. When article text doesn't fit its cell, its body text shrinks first, then its heading.
-      Header, footer and eyecatcher text sizes follow their cells.</span
-    >
+    <span class="hint">{i18n.t.sizes.hint}</span>
   </div>
 </Panel>
 
-<Panel label="Frame & borders">
+<Panel label={i18n.t.frame.panel}>
   <div class="form">
     <fieldset>
-      <legend>Header & footer frame</legend>
-      {#each FRAME_STYLES as [value, label] (value)}
+      <legend>{i18n.t.frame.legend}</legend>
+      {#each FRAME_STYLES as value (value)}
         <label class="choice">
           <input
             type="radio"
@@ -294,12 +280,12 @@
             checked={style.frameStyle === value}
             onchange={() => set((s) => (s.frameStyle = value))}
           />
-          {label}
+          {i18n.t.frame.styles[value]}
         </label>
       {/each}
     </fieldset>
     <label class="row">
-      <span>Cell border thickness (pt)</span>
+      <span>{i18n.t.frame.borderWidth}</span>
       <input
         type="number"
         min="0"
@@ -313,32 +299,32 @@
   </div>
 </Panel>
 
-<Panel label="Paper">
-  <div class="papers" role="radiogroup" aria-label="Paper">
-    {#each PAPERS as paper (paper.value)}
+<Panel label={i18n.t.paper.panel}>
+  <div class="papers" role="radiogroup" aria-label={i18n.t.paper.panel}>
+    {#each PAPERS as paper (paper)}
       <button
         type="button"
         role="radio"
         class="paper-choice"
-        aria-checked={style.paper === paper.value}
-        onclick={() => set((s) => (s.paper = paper.value))}
+        aria-checked={style.paper === paper}
+        onclick={() => set((s) => (s.paper = paper))}
       >
-        <span class="paper-sample" aria-hidden="true"><span class="sheet paper-{paper.value}"></span></span>
-        <span>{paper.label}</span>
+        <span class="paper-sample" aria-hidden="true"><span class="sheet paper-{paper}"></span></span>
+        <span>{i18n.t.paper.styles[paper]}</span>
       </button>
     {/each}
   </div>
 </Panel>
 
-<Panel label="Ink">
+<Panel label={i18n.t.ink.panel}>
   <div class="form">
-    <div class="swatches" role="group" aria-label="Ink presets">
-      {#each INK_PRESETS as [color, name] (color)}
+    <div class="swatches" role="group" aria-label={i18n.t.ink.presets}>
+      {#each INK_PRESETS as color, i (color)}
         <button
           type="button"
           class="swatch"
-          aria-label={name}
-          title={name}
+          aria-label={i18n.t.ink.presetNames[i]}
+          title={i18n.t.ink.presetNames[i]}
           aria-pressed={style.ink.toLowerCase() === color}
           style:--swatch={color}
           onclick={() => set((s) => (s.ink = color))}
@@ -346,17 +332,17 @@
       {/each}
     </div>
     <label class="row">
-      <span>Custom ink colour</span>
+      <span>{i18n.t.ink.custom}</span>
       <input type="color" value={style.ink} oninput={previewInk} onchange={commitInk} />
     </label>
-    <span class="hint">Used for all text, frames, borders and the name's decoration, and for images with Ink on.</span>
+    <span class="hint">{i18n.t.ink.hint}</span>
   </div>
 </Panel>
 
-<Panel label="Newspaper name">
+<Panel label={i18n.t.name.panel}>
   <div class="form">
     <label class="row">
-      <span>Ornaments</span>
+      <span>{i18n.t.name.ornaments}</span>
       <select
         value={style.nameDecoration.ornament}
         onchange={(e) => {
@@ -365,13 +351,14 @@
         }}
       >
         {#each ORNAMENTS as o (o.value)}
-          <option value={o.value}>{o.symbols ? `${o.label}  ${o.symbols[0]} … ${o.symbols[1]}` : o.label}</option>
+          {@const label = i18n.t.name.ornamentStyles[o.value]}
+          <option value={o.value}>{o.symbols ? `${label}  ${o.symbols[0]} … ${o.symbols[1]}` : label}</option>
         {/each}
       </select>
     </label>
     {#if style.nameDecoration.ornament !== 'none' && style.nameDecoration.ornament !== 'rules'}
       <label class="row">
-        <span>Ornament size</span>
+        <span>{i18n.t.name.ornamentSize}</span>
         <input
           type="number"
           min="30"
@@ -382,15 +369,15 @@
           {@attach wheelStep}
         />
       </label>
-      <span class="hint">Ornament size is in % of the standard size.</span>
+      <span class="hint">{i18n.t.name.ornamentSizeHint}</span>
     {/if}
     {#if style.nameDecoration.ornament === 'custom'}
       <label class="row">
-        <span>Before the name</span>
+        <span>{i18n.t.name.before}</span>
         <input
           type="text"
           class="symbol"
-          placeholder="e.g. ✦"
+          placeholder={i18n.t.name.beforePlaceholder}
           class:target={symbolField === 'customBefore'}
           bind:this={symbolInputs.customBefore}
           onfocus={() => (symbolField = 'customBefore')}
@@ -402,11 +389,11 @@
         />
       </label>
       <label class="row">
-        <span>After the name</span>
+        <span>{i18n.t.name.after}</span>
         <input
           type="text"
           class="symbol"
-          placeholder="same as before"
+          placeholder={i18n.t.name.afterPlaceholder}
           class:target={symbolField === 'customAfter'}
           bind:this={symbolInputs.customAfter}
           onfocus={() => (symbolField = 'customAfter')}
@@ -417,23 +404,21 @@
           }}
         />
       </label>
-      <div class="symbols" role="group" aria-label="Symbols">
+      <div class="symbols" role="group" aria-label={i18n.t.name.symbols}>
         {#each SYMBOL_CHOICES as symbol (symbol)}
           <button
             type="button"
-            aria-label="Insert {symbol} {symbolField === 'customBefore' ? 'before' : 'after'} the name"
+            aria-label={symbolField === 'customBefore' ? i18n.t.name.insertBefore(symbol) : i18n.t.name.insertAfter(symbol)}
             style:font-family={fontStack(style.fonts.name)}
             onpointerdown={(e) => e.preventDefault()}
             onclick={() => insertSymbol(symbol)}>{symbol}</button
           >
         {/each}
       </div>
-      <span class="hint"
-        >Click a symbol to add it to the highlighted field, or type any Unicode symbols. Fields can hold several.</span
-      >
+      <span class="hint">{i18n.t.name.symbolsHint}</span>
     {/if}
     <label class="row">
-      <span>Effect</span>
+      <span>{i18n.t.name.effect}</span>
       <select
         value={style.nameDecoration.effect}
         onchange={(e) => {
@@ -441,8 +426,8 @@
           set((s) => (s.nameDecoration.effect = effect))
         }}
       >
-        {#each EFFECTS as effect (effect.value)}
-          <option value={effect.value}>{effect.label}</option>
+        {#each EFFECTS as effect (effect)}
+          <option value={effect}>{i18n.t.name.effects[effect]}</option>
         {/each}
       </select>
     </label>
