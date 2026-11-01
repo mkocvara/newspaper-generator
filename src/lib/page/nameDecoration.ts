@@ -1,12 +1,14 @@
 import type { NameDecoration, NameEffect, Ornament } from '../model/types'
 
+// Presets for ornaments that need a mirrored pair at a tuned size; any other
+// symbols are picked as custom symbols.
 export const ORNAMENTS: { value: Ornament; label: string; symbols?: [string, string] }[] = [
   { value: 'none', label: 'None' },
-  { value: 'bars', label: 'Vertical bars', symbols: ['┃', '┃'] },
-  { value: 'double-bars', label: 'Double bars', symbols: ['‖', '‖'] },
-  { value: 'stars', label: 'Stars', symbols: ['★', '★'] },
-  { value: 'diamonds', label: 'Diamonds', symbols: ['◆', '◆'] },
   { value: 'fleurons', label: 'Fleurons', symbols: ['❧', '☙'] },
+  { value: 'guillemets-in', label: 'Guillemets, pointing in', symbols: ['»', '«'] },
+  { value: 'guillemets-out', label: 'Guillemets, pointing out', symbols: ['«', '»'] },
+  { value: 'hands', label: 'Pointing hands', symbols: ['☛', '☚'] },
+  { value: 'curls', label: 'Curls', symbols: ['⊰', '⊱'] },
   { value: 'rules', label: 'Extending rules' },
   { value: 'custom', label: 'Custom symbols' },
 ]
@@ -29,3 +31,15 @@ export function ornamentSymbols(decoration: NameDecoration): [string, string] | 
   }
   return ORNAMENTS.find((o) => o.value === decoration.ornament)?.symbols ?? null
 }
+
+// Suggestions for custom ornaments, offered as a grid of buttons. All are
+// text symbols (no emoji-style ones, which wouldn't take the ink colour),
+// grouped loosely: stars, flowers and leaves, shapes, crosses and marks,
+// brackets and lines.
+export const SYMBOL_CHOICES = [
+  ...'✦✧★☆✪✯✶✷✸✹✺✻✼❋❊⁂⋆',
+  ...'❦❧☙❥✿❀❁✾❃❖⚜☘',
+  ...'◆◇◈●○◉◎■□▪▲△▼▽◀▶',
+  ...'✠✚✜☩✙†‡§¶※☼☾♠♣♦♛♔',
+  ...'«»‹›⟨⟩〈〉【】⊰⊱☛☚┃|‖¦—~⁓≈',
+]

@@ -2,7 +2,7 @@
   import type { Attachment } from 'svelte/attachments'
   import { fontStack, loadFont, parseFontInput } from '../fonts'
   import type { Fonts, FrameStyle, Style } from '../model/types'
-  import { EFFECTS, ORNAMENTS } from '../page/nameDecoration'
+  import { EFFECTS, ORNAMENTS, SYMBOL_CHOICES } from '../page/nameDecoration'
   import { editor } from '../state/editor.svelte'
   import { FALLBACK_FONT, fontLibrary } from '../state/fontLibrary.svelte'
   import FontSelect from '../ui/FontSelect.svelte'
@@ -133,6 +133,25 @@
   function commitInk() {
     editor.endGesture()
     picking = false
+  }
+
+  // --- Custom ornament symbols. The grid inserts into whichever field was
+  // focused last (Before until one is), at its cursor, as one undoable step.
+  type SymbolField = 'customBefore' | 'customAfter'
+  let symbolField = $state<SymbolField>('customBefore')
+  const symbolInputs = $state<Partial<Record<SymbolField, HTMLInputElement>>>({})
+
+  function insertSymbol(symbol: string) {
+    const input = symbolInputs[symbolField]
+    if (!input) return
+    const start = input.selectionStart ?? input.value.length
+    const end = input.selectionEnd ?? start
+    const value = input.value.slice(0, start) + symbol + input.value.slice(end)
+    input.value = value
+    const field = symbolField
+    set((s) => (s.nameDecoration[field] = value))
+    input.focus()
+    input.setSelectionRange(start + symbol.length, start + symbol.length)
   }
 
   const FRAME_STYLES: [FrameStyle, string][] = [
@@ -332,6 +351,21 @@
         {/each}
       </select>
     </label>
+    {#if style.nameDecoration.ornament !== 'none' && style.nameDecoration.ornament !== 'rules'}
+      <label class="row">
+        <span>Ornament size</span>
+        <input
+          type="number"
+          min="30"
+          max="250"
+          step="10"
+          value={style.nameDecoration.ornamentScale}
+          onchange={numberSetter(30, 250, (s, v) => (s.nameDecoration.ornamentScale = v))}
+          {@attach wheelStep}
+        />
+      </label>
+      <span class="hint">Ornament size is in % of the standard size.</span>
+    {/if}
     {#if style.nameDecoration.ornament === 'custom'}
       <label class="row">
         <span>Before the name</span>
@@ -339,6 +373,9 @@
           type="text"
           class="symbol"
           placeholder="e.g. ✦"
+          class:target={symbolField === 'customBefore'}
+          bind:this={symbolInputs.customBefore}
+          onfocus={() => (symbolField = 'customBefore')}
           value={style.nameDecoration.customBefore}
           onchange={(e) => {
             const value = e.currentTarget.value
@@ -352,6 +389,9 @@
           type="text"
           class="symbol"
           placeholder="same as before"
+          class:target={symbolField === 'customAfter'}
+          bind:this={symbolInputs.customAfter}
+          onfocus={() => (symbolField = 'customAfter')}
           value={style.nameDecoration.customAfter}
           onchange={(e) => {
             const value = e.currentTarget.value
@@ -359,7 +399,20 @@
           }}
         />
       </label>
-      <span class="hint">Any Unicode symbols, e.g. ✦ ✠ ☼ ✶ » «</span>
+      <div class="symbols" role="group" aria-label="Symbols">
+        {#each SYMBOL_CHOICES as symbol (symbol)}
+          <button
+            type="button"
+            aria-label="Insert {symbol} {symbolField === 'customBefore' ? 'before' : 'after'} the name"
+            style:font-family={fontStack(style.fonts.name)}
+            onpointerdown={(e) => e.preventDefault()}
+            onclick={() => insertSymbol(symbol)}>{symbol}</button
+          >
+        {/each}
+      </div>
+      <span class="hint"
+        >Click a symbol to add it to the highlighted field, or type any Unicode symbols. Fields can hold several.</span
+      >
     {/if}
     <label class="row">
       <span>Effect</span>
@@ -417,6 +470,36 @@
 
   input.symbol {
     width: 110px;
+  }
+
+  input.symbol.target {
+    border-color: #2f5ea8;
+    box-shadow: 0 0 0 1px #2f5ea8;
+  }
+
+  .symbols {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .symbols button {
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid rgb(0 0 0 / 0.15);
+    border-radius: 4px;
+    background: #fff;
+    color: #222;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .symbols button:hover {
+    border-color: #2f5ea8;
+    background: rgb(70 120 200 / 0.1);
   }
 
   input[type='color'] {

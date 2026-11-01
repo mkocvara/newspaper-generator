@@ -1,5 +1,5 @@
 import { createDefaultPage } from './defaults'
-import type { Assets, CellNode, Page, Style, WorkFile } from './types'
+import type { Assets, CellNode, NameDecoration, Page, Style, WorkFile } from './types'
 
 export function collectAssetIds(page: Page): Set<string> {
   const ids = new Set<string>()
@@ -36,6 +36,20 @@ export function parseWorkFile(data: unknown): WorkFile | null {
   return { ...file, page: { ...file.page, style: withStyleDefaults(file.page.style) } }
 }
 
+// Symbol ornament presets older pages may use; they load as custom symbols.
+const LEGACY_ORNAMENTS: Record<string, [string, string]> = {
+  bars: ['┃', '┃'],
+  'double-bars': ['‖', '‖'],
+  stars: ['★', '★'],
+  diamonds: ['◆', '◆'],
+}
+
+function withDecorationDefaults(decoration: Partial<NameDecoration> = {}): NameDecoration {
+  const merged = { ...createDefaultPage().style.nameDecoration, ...decoration }
+  const legacy = LEGACY_ORNAMENTS[merged.ornament]
+  return legacy ? { ...merged, ornament: 'custom', customBefore: legacy[0], customAfter: legacy[1] } : merged
+}
+
 // Fill in style options added after a file was saved, so older work files and
 // autosaves keep loading.
 function withStyleDefaults(style: Partial<Style>): Style {
@@ -48,6 +62,6 @@ function withStyleDefaults(style: Partial<Style>): Style {
     fonts: { ...defaults.fonts, ...style.fonts },
     sizes: { ...defaults.sizes, ...style.sizes },
     border: { ...defaults.border, ...style.border },
-    nameDecoration: { ...defaults.nameDecoration, ...style.nameDecoration },
+    nameDecoration: withDecorationDefaults(style.nameDecoration),
   }
 }

@@ -117,7 +117,15 @@ export interface Style {
   nameDecoration: NameDecoration
 }
 
-export type Ornament = 'none' | 'bars' | 'double-bars' | 'stars' | 'diamonds' | 'fleurons' | 'rules' | 'custom'
+export type Ornament =
+  | 'none'
+  | 'fleurons'
+  | 'guillemets-in'
+  | 'guillemets-out'
+  | 'hands'
+  | 'curls'
+  | 'rules'
+  | 'custom'
 export type NameEffect = 'none' | 'shadow' | 'extrude' | 'engraved' | 'outline' | 'hatched'
 
 export interface NameDecoration {
@@ -125,6 +133,8 @@ export interface NameDecoration {
   // Used when ornament is 'custom'; an empty `customAfter` repeats `customBefore`.
   customBefore: string
   customAfter: string
+  // Size of symbol ornaments, in % of their standard size.
+  ornamentScale: number
   effect: NameEffect
 }
 
