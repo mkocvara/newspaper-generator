@@ -173,7 +173,7 @@
     </label>
     <span class="hint"
       >Sizes are in points. Body text shrinks when it wouldn't fit its cell at the set size; headings keep their
-      size unless the article has no body text. Header, footer and eyecatcher text sizes follow their cells.</span
+      size unless they don't fit the cell by themselves. Header, footer and eyecatcher text sizes follow their cells.</span
     >
   </div>
 </Panel>
