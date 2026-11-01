@@ -1,22 +1,23 @@
 :root {
   font-family: 'Caladea', Cambria, Georgia, serif;
 
-  /* Menus, panels and dialogs: a light grey that keeps the dark text above
-     WCAG AAA contrast (8:1), with every colour on it checked to pass AA too
-     (text 4.5:1, borders and selection marks 3:1). Highlights go lighter. */
-  --menu-bg: #b8b8b8;
-  --menu-text: #222222;
-  --menu-hint: #494949;
-  --menu-field: #d4d4d4;
-  --menu-field-hover: #e0e0e0;
-  --menu-field-border: #636363;
-  --menu-hover: #c9c9c9;
-  --menu-rule: rgb(0 0 0 / 0.3);
-  --menu-link: #244881;
+  /* Menus, panels and dialogs: a yellowish, paper-like off-white (about as
+     light as a mid-light grey) with a warm near-black text above WCAG AAA
+     contrast (8.5:1). Every colour on it is checked to pass AA (text 4.5:1,
+     borders and selection marks 3:1). Highlights go lighter. */
+  --menu-bg: #c6bb9a;
+  --menu-text: #241f16;
+  --menu-hint: #534b3a;
+  --menu-field: #ddd4bb;
+  --menu-field-hover: #e8e1cc;
+  --menu-field-border: #6f6547;
+  --menu-hover: #d3c9ab;
+  --menu-rule: rgb(70 55 25 / 0.35);
+  --menu-link: #254b86;
   --menu-accent: #2f5ea8;
-  --menu-done: #1c5428;
+  --menu-done: #1d5629;
   --menu-danger: #b42828;
-  --menu-placeholder: #5a5a5a;
+  --menu-placeholder: #645b46;
 }
 
 body {
