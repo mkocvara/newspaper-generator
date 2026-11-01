@@ -7,6 +7,7 @@ export const FONT_CHOICES = [
   'Abril Fatface',
   'Anton',
   'Bebas Neue',
+  'Cinzel',
   'EB Garamond',
   'Libre Baskerville',
   'Lora',
@@ -17,6 +18,7 @@ export const FONT_CHOICES = [
   'PT Serif',
   'Roboto Slab',
   'Source Serif 4',
+  'Spectral',
   'Special Elite',
   'UnifrakturMaguntia',
 ]
