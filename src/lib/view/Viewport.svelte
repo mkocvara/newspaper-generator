@@ -226,6 +226,10 @@
       <div class="thumb" style:left="{horizontal.offset * 100}%" style:width="{horizontal.size * 100}%"></div>
     </div>
     <button type="button" class="zoom-level" title="Zoom level. Click to reset to 100%." onclick={resetZoom}>
+      <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true">
+        <circle cx="6.5" cy="6.5" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+        <line x1="10" y1="10" x2="14.5" y2="14.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
       {Math.round(zoom * 100)}%
     </button>
   </div>
@@ -254,7 +258,7 @@
     /* Space at each end of a bar: by the zoom box and at the far end. */
     --gap: 18px;
     --end: 48px;
-    --box-w: 56px;
+    --box-w: 68px;
     --box-h: 26px;
     --bar: 10px;
     font: 12px/1 system-ui, sans-serif;
@@ -310,6 +314,10 @@
     z-index: 50;
     left: var(--inset);
     bottom: var(--inset);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
     width: var(--box-w);
     height: var(--box-h);
     padding: 0;
