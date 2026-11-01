@@ -157,7 +157,7 @@
     font: 13px/1.3 system-ui, sans-serif;
     border: 1px solid var(--menu-rule);
     border-radius: 6px;
-    background: var(--menu-bg);
+    background: var(--menu-popup-bg);
     box-shadow: 0 4px 16px rgb(0 0 0 / 0.2);
   }
 
@@ -176,7 +176,7 @@
   }
 
   .popover button:hover {
-    background: var(--menu-hover);
+    background: var(--menu-popup-hover);
   }
 
   /* Fingers need bigger items. */

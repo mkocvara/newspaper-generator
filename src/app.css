@@ -18,6 +18,10 @@
   --menu-done: #1d5629;
   --menu-danger: #b42828;
   --menu-placeholder: #645b46;
+  /* Pop-up menus (cell, tabs, Export) are a little lighter, as they open over
+     the page and looked dark against it. */
+  --menu-popup-bg: #cec3a7;
+  --menu-popup-hover: #ddd4bb;
 }
 
 body {
