@@ -5,10 +5,13 @@
     findNode,
     mergeLeafToward,
     mergeLine,
+    setElement,
     splitLeaf,
     type Direction,
   } from '../../model/grid'
+  import { createElement, ELEMENT_NAMES, type ElementType } from '../../model/elements'
   import type { CellNode, GridCell } from '../../model/types'
+  import ElementView from '../elements/ElementView.svelte'
   import { editor } from '../../state/editor.svelte'
   import Menu, { type MenuEntry } from '../../ui/Menu.svelte'
   import ResizeHandle from '../../ui/ResizeHandle.svelte'
@@ -46,7 +49,16 @@
 
   const menu = $derived.by((): MenuEntry[] => {
     const grid = editor.page.grid
+    const current = node.kind === 'leaf' ? node.element?.type : undefined
+    const insert = (type: ElementType) => () => editor.updateGrid((g) => setElement(g, node.id, createElement(type)))
+    const elements: MenuEntry[] = (['eyecatcher', 'text', 'image'] as const)
+      .filter((type) => type !== current)
+      .map((type) => ({ label: `${current ? 'Change to' : 'Insert'} ${ELEMENT_NAMES[type]}`, action: insert(type) }))
+    if (current) elements.push({ label: 'Clear cell', action: () => editor.updateGrid((g) => setElement(g, node.id, null)) })
+
     const items: MenuEntry[] = [
+      ...elements,
+      'separator',
       { label: 'Split side by side', action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'row')) },
       { label: 'Split top and bottom', action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'column')) },
     ]
@@ -91,7 +103,10 @@
   </div>
 {:else}
   <div class="leaf">
-    <!-- Elements are rendered here from stage 4; empty cells show nothing. -->
+    <!-- Empty cells show nothing. -->
+    {#if node.element}
+      <ElementView element={node.element} leafId={node.id} />
+    {/if}
     <div class="controls">
       <Menu label="Cell layout" items={menu} />
     </div>

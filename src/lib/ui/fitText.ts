@@ -13,6 +13,13 @@ export interface FitOptions {
 }
 
 const ITERATIONS = 10
+const REFIT_EVENT = 'newspaper:refit'
+
+// Re-fit all text now, e.g. after switching the page into export mode (which
+// hides placeholders and so frees up space).
+export function refitAll() {
+  window.dispatchEvent(new Event(REFIT_EVENT))
+}
 
 function overflows(el: HTMLElement): boolean {
   return el.scrollWidth > el.clientWidth + 0.5 || el.scrollHeight > el.clientHeight + 0.5
@@ -63,11 +70,13 @@ export function fitText(options: FitOptions): Attachment<HTMLElement> {
     const mutation = new MutationObserver(run)
     mutation.observe(el, { subtree: true, childList: true, characterData: true })
     document.fonts.addEventListener('loadingdone', run)
+    window.addEventListener(REFIT_EVENT, run)
 
     return () => {
       resize.disconnect()
       mutation.disconnect()
       document.fonts.removeEventListener('loadingdone', run)
+      window.removeEventListener(REFIT_EVENT, run)
     }
   }
 }

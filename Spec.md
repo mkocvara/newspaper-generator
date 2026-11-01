@@ -119,3 +119,8 @@ Below, you can add notes and additional clarifications regarding the content of 
   - *Double-clicking* a column/row border or a split divider makes the two sides 50/50.
   - *Adding/removing columns and rows:* via spreadsheet-style tabs on the grid edges (insert before / after, delete), so the target column/row is unambiguous with merged cells.
   - *Split cells:* the divider inside a split cell can be dragged to resize the two parts; in a split cell, "Merge with cell to the left/right/above/below" first merges with the neighbouring part inside the cell (undoing that split; an empty part gives its space to the other), and otherwise merges the whole cell with the neighbouring grid cell.
+- **Elements (stage 4):**
+  - *Inserting:* the cell menu offers "Insert eyecatcher / text / image" for an empty part, and "Change to …" / "Clear cell" for a filled one (undo restores the previous content).
+  - *Eyecatcher:* text is as large as fits the cell and wraps between words. When the secondary line is empty it takes no space; a `<Secondary text>` hint appears over the bottom of the cell on hover so it can still be filled in.
+  - *Text:* heading and body use the page-wide sizes; if they don't fit, both shrink together for that cell only. Enter starts a new line in the body. Justified body text is hyphenated.
+  - *Image:* "scale and fill" (default) is interpreted as showing the whole image scaled to fit the cell; "crop" fills the cell and crops the overflow. To confirm. Image tools (Replace, B/W, Crop) appear on hover; images can also be dropped onto the cell. Images larger than 2400 px on their longest side are scaled down on import to keep work files small.
