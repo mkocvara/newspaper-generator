@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { findNode } from '../../model/grid'
   import type { ImageElement } from '../../model/types'
   import { editor } from '../../state/editor.svelte'
   import EditableText from '../../ui/EditableText.svelte'
@@ -17,7 +18,50 @@
   async function load(file: File | undefined) {
     if (!file?.type.startsWith('image/')) return
     const assetId = editor.addAsset(await readImage(file))
-    patchElement<ImageElement>(leafId, { assetId })
+    patchElement<ImageElement>(leafId, { assetId, position: undefined })
+  }
+
+  const position = $derived(element.position ?? { x: 50, y: 50 })
+
+  // Dragging a cropped image pans it inside the frame. With object-fit: cover
+  // the image overflows the frame on at most one axis; object-position x%
+  // offsets it by -overflow * x / 100, so a pointer move of d px changes the
+  // percentage by -d / overflow * 100.
+  function startPan(event: PointerEvent) {
+    if (event.button !== 0) return
+    const img = event.currentTarget as HTMLImageElement
+    const frame = img.getBoundingClientRect()
+    const scale = Math.max(frame.width / img.naturalWidth, frame.height / img.naturalHeight)
+    const overflowX = img.naturalWidth * scale - frame.width
+    const overflowY = img.naturalHeight * scale - frame.height
+    if (overflowX < 1 && overflowY < 1) return
+
+    event.preventDefault()
+    img.setPointerCapture(event.pointerId)
+    const startX = event.clientX
+    const startY = event.clientY
+    const start = position
+    const clamp = (v: number) => Math.min(100, Math.max(0, v))
+    editor.beginGesture()
+
+    const onMove = (move: PointerEvent) => {
+      // Mutate through the editor's page, not the element prop.
+      const leaf = findNode(editor.page.grid, leafId)
+      if (leaf?.kind !== 'leaf' || leaf.element?.type !== 'image') return
+      leaf.element.position = {
+        x: overflowX < 1 ? start.x : clamp(start.x - ((move.clientX - startX) / overflowX) * 100),
+        y: overflowY < 1 ? start.y : clamp(start.y - ((move.clientY - startY) / overflowY) * 100),
+      }
+    }
+    const onEnd = () => {
+      img.removeEventListener('pointermove', onMove)
+      img.removeEventListener('pointerup', onEnd)
+      img.removeEventListener('pointercancel', onEnd)
+      editor.endGesture()
+    }
+    img.addEventListener('pointermove', onMove)
+    img.addEventListener('pointerup', onEnd)
+    img.addEventListener('pointercancel', onEnd)
   }
 
   function ondrop(event: DragEvent) {
@@ -50,7 +94,21 @@
 
   <div class="frame">
     {#if src}
-      <img {src} alt={element.caption} class:greyscale={element.greyscale} class:crop={element.fit === 'crop'} />
+      {#if element.fit === 'crop'}
+        <img
+          {src}
+          alt={element.caption}
+          class="crop"
+          class:greyscale={element.greyscale}
+          style:object-position="{position.x}% {position.y}%"
+          draggable="false"
+          title="Drag to choose which part shows. Double-click to centre."
+          onpointerdown={startPan}
+          ondblclick={() => patchElement<ImageElement>(leafId, { position: undefined })}
+        />
+      {:else}
+        <img {src} alt={element.caption} class:greyscale={element.greyscale} />
+      {/if}
     {:else}
       <button class="choose ui-only" type="button" onclick={() => input?.click()}>
         Choose an image<br /><small>or drop one here</small>
@@ -119,6 +177,12 @@
 
   img.crop {
     object-fit: cover;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  img.crop:active {
+    cursor: grabbing;
   }
 
   img.greyscale {

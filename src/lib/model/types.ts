@@ -79,6 +79,9 @@ export interface ImageElement {
   caption: string
   greyscale: boolean
   fit: 'scale' | 'crop'
+  // Which part of a cropped image shows, as CSS object-position percentages.
+  // Missing means centred.
+  position?: { x: number; y: number }
 }
 
 // Thick-and-thin bars come in two mirrored variants: the outer line (the one
