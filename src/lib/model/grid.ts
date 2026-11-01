@@ -2,7 +2,7 @@
 // plain grid and return a new one (or the same grid when the operation isn't
 // possible), and every result keeps the grid fully tiled by rectangles.
 import { newId } from './ids'
-import type { CellNode, Grid, GridCell, LeafNode, SplitNode } from './types'
+import type { CellNode, Element, Grid, GridCell, LeafNode, SplitNode } from './types'
 
 export type Direction = 'left' | 'right' | 'up' | 'down'
 export type Axis = 'column' | 'row'
@@ -264,6 +264,13 @@ export function moveCell(grid: Grid, fromId: string, toId: string): Grid {
 }
 
 export const canMove = (grid: Grid, fromId: string, toId: string) => moveCell(grid, fromId, toId) !== grid
+
+// --- Elements -----------------------------------------------------------
+
+// Put an element into a cell part (or clear it with null).
+export function setElement(grid: Grid, leafId: string, element: Element | null): Grid {
+  return mapNodes(grid, (node) => (node.kind === 'leaf' && node.id === leafId ? { ...node, element } : null))
+}
 
 // --- Splitting (inside a single cell) -----------------------------------
 

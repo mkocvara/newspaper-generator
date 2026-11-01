@@ -15,8 +15,10 @@ import {
   removeColumn,
   removeRow,
   resizeTracks,
+  setElement,
   splitLeaf,
 } from './grid'
+import { createElement } from './elements'
 import type { CellNode, Grid, GridCell, LeafNode } from './types'
 
 const grid3 = (): Grid => createDefaultPage().grid
@@ -220,6 +222,21 @@ describe('moving', () => {
     expect(canMove(g, at(g, 0, 0).id, at(g, 2, 0).id)).toBe(false)
     expect(canMove(g, at(g, 0, 0).id, at(g, 0, 2).id)).toBe(true)
     expect(moveCell(g, at(g, 0, 0).id, at(g, 1, 0).id)).toBe(g)
+  })
+})
+
+describe('setElement', () => {
+  it('inserts and clears an element inside a split part', () => {
+    let g = grid3()
+    g = splitLeaf(g, at(g, 0, 0).node.id, 'row')
+    const root = at(g, 0, 0).node
+    if (root.kind !== 'split') throw new Error()
+    const part = root.children[1].id
+    g = setElement(g, part, createElement('eyecatcher'))
+    const filled = at(g, 0, 0).node
+    if (filled.kind !== 'split') throw new Error()
+    expect(filled.children[1]).toMatchObject({ id: part, element: { type: 'eyecatcher', main: '', sub: '' } })
+    expect(setElement(g, 'missing', null)).toBe(g)
   })
 })
 
