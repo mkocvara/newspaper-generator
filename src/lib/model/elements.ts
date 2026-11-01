@@ -11,5 +11,5 @@ export const ELEMENT_NAMES: Record<ElementType, string> = {
 export function createElement(type: ElementType): Element {
   if (type === 'eyecatcher') return { type, main: '', sub: '' }
   if (type === 'text') return { type, heading: '', body: '' }
-  return { type, assetId: null, caption: '', greyscale: false, fit: 'scale' }
+  return { type, assetId: null, caption: '', ink: false, fit: 'scale' }
 }

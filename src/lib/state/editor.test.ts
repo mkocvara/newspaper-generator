@@ -58,7 +58,7 @@ describe('Editor history', () => {
       p.grid.cells[0].node = {
         kind: 'leaf',
         id: 'x',
-        element: { type: 'image', assetId: used, caption: '', greyscale: false, fit: 'scale' },
+        element: { type: 'image', assetId: used, caption: '', ink: false, fit: 'scale' },
       }
     })
 

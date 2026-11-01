@@ -148,7 +148,6 @@
   }
 
   .name-line {
-    --ink: #1b1a17;
     display: flex;
     align-items: center;
     gap: 0.25em;
@@ -178,26 +177,28 @@
     transform: translateY(-0.06em);
   }
 
-  /* Name effects. They decorate the ornaments too. */
+  /* Name effects. They decorate the ornaments too. Their tones are the ink
+     thinned with paper or transparency, so they follow the ink colour. */
   .effect-shadow {
-    text-shadow: 0.06em 0.06em 0 rgb(27 26 23 / 0.3);
+    text-shadow: 0.06em 0.06em 0 color-mix(in srgb, var(--ink) 30%, transparent);
   }
 
   .effect-extrude {
+    --side: color-mix(in srgb, var(--ink) 70%, var(--paper));
     text-shadow:
-      0.012em 0.012em 0 #5d574c,
-      0.024em 0.024em 0 #5d574c,
-      0.036em 0.036em 0 #5d574c,
-      0.048em 0.048em 0 #5d574c,
-      0.06em 0.06em 0 #5d574c,
-      0.09em 0.09em 0.03em rgb(0 0 0 / 0.25);
+      0.012em 0.012em 0 var(--side),
+      0.024em 0.024em 0 var(--side),
+      0.036em 0.036em 0 var(--side),
+      0.048em 0.048em 0 var(--side),
+      0.06em 0.06em 0 var(--side),
+      0.09em 0.09em 0.03em color-mix(in srgb, var(--ink) 25%, transparent);
   }
 
   .effect-engraved {
-    color: #2a2823;
+    color: color-mix(in srgb, var(--ink) 93%, var(--paper));
     text-shadow:
       0 0.03em 0 rgb(255 255 255 / 0.85),
-      0 -0.012em 0 rgb(0 0 0 / 0.35);
+      0 -0.012em 0 color-mix(in srgb, var(--ink) 35%, transparent);
   }
 
   .effect-outline {

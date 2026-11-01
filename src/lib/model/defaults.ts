@@ -33,7 +33,8 @@ export function createDefaultPage(today = new Date()): Page {
       customFonts: [],
       sizes: { bodyPt: 9, headingPt: 14, captionPt: 8 },
       frameStyle: 'double',
-      border: { widthPt: 0.75, color: '#222222' },
+      ink: '#1b1a17',
+      border: { widthPt: 0.75 },
       nameDecoration: { ornament: 'none', customBefore: '', customAfter: '', effect: 'none' },
     },
   }
