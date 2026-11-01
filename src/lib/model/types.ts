@@ -117,7 +117,7 @@ export interface Style {
   nameDecoration: NameDecoration
 }
 
-export type Ornament = 'none' | 'bars' | 'double-bars' | 'stars' | 'diamonds' | 'fleurons' | 'rules' | 'custom'
+export type Ornament = 'none' | 'rules' | 'custom'
 export type NameEffect = 'none' | 'shadow' | 'extrude' | 'engraved' | 'outline' | 'hatched'
 
 export interface NameDecoration {

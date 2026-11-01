@@ -41,6 +41,16 @@ describe('parseWorkFile', () => {
     expect(parsed.page.style.frameStyle).toBe('thick-outer')
   })
 
+  it('turns old symbol ornament presets into custom symbols', () => {
+    const old = JSON.parse(JSON.stringify(toWorkFile(createDefaultPage(), {})))
+    old.page.style.nameDecoration.ornament = 'fleurons'
+    expect(parseWorkFile(old)!.page.style.nameDecoration).toMatchObject({
+      ornament: 'custom',
+      customBefore: '❧',
+      customAfter: '☙',
+    })
+  })
+
   it('rejects other JSON', () => {
     expect(parseWorkFile({ hello: 'world' })).toBeNull()
     expect(parseWorkFile(null)).toBeNull()

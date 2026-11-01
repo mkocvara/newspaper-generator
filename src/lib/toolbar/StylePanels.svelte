@@ -347,7 +347,7 @@
         }}
       >
         {#each ORNAMENTS as o (o.value)}
-          <option value={o.value}>{o.symbols ? `${o.label}  ${o.symbols[0]} … ${o.symbols[1]}` : o.label}</option>
+          <option value={o.value}>{o.label}</option>
         {/each}
       </select>
     </label>
