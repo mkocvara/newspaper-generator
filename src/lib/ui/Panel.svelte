@@ -41,7 +41,8 @@
   }
 
   .caret {
-    font-size: 10px;
+    font-size: 20px;
+    line-height: 0;
     opacity: 0.6;
   }
 

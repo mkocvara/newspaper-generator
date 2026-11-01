@@ -4,7 +4,12 @@
 
 <script lang="ts">
   // A small button that opens a list of actions. Editing UI only.
-  let { items, label, icon = '⋯' }: { items: MenuEntry[]; label: string; icon?: string } = $props()
+  let {
+    items,
+    label,
+    icon = '⋯',
+    caret = false,
+  }: { items: MenuEntry[]; label: string; icon?: string; caret?: boolean } = $props()
 
   let open = $state(false)
   let flipUp = $state(false)
@@ -40,7 +45,7 @@
 
 <div class="menu ui-only" class:open bind:this={root}>
   <button class="trigger" type="button" title={label} aria-label={label} aria-expanded={open} onclick={toggle}>
-    {icon}
+    {icon}{#if caret}<span class="caret">▾</span>{/if}
   </button>
   {#if open}
     <div class="popover" class:up={flipUp} role="menu" bind:this={popover}>

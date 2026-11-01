@@ -14,13 +14,13 @@
 
   let ready = $state(false)
 
-  // Whether the toolbar is pinned is remembered per browser.
+  // Whether the toolbar is pinned is remembered per browser; pinned by default.
   let pinned = $state(readPinned())
   function readPinned() {
     try {
-      return localStorage.getItem(PIN_KEY) === 'true'
+      return localStorage.getItem(PIN_KEY) !== 'false'
     } catch {
-      return false
+      return true
     }
   }
   $effect(() => {
@@ -80,6 +80,6 @@
 
   /* Keep the pinned toolbar from covering the top of the page. */
   main.pinned {
-    padding-top: 80px;
+    padding-top: 88px;
   }
 </style>

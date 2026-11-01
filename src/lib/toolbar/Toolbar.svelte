@@ -5,8 +5,8 @@
   import Menu from '../ui/Menu.svelte'
   import StylePanels from './StylePanels.svelte'
 
-  // Sticky top bar. It slides away when not hovered (a small tab hints at it)
-  // unless pinned. Showing and hiding is pure CSS (see the styles).
+  // Sticky top bar. Unless pinned, it slides away when not hovered (a small tab
+  // hints at it) and comes back when the pointer enters the strip it occupies. Showing and hiding is pure CSS (see the styles).
   let { pinned = $bindable(false) }: { pinned?: boolean } = $props()
 
   let status = $state('')
@@ -92,7 +92,8 @@
     <div class="export">
       <Menu
         label="Export"
-        icon={busy ? 'Exporting…' : 'Export ▾'}
+        icon={busy ? 'Exporting…' : 'Export'}
+        caret={!busy}
         items={[
           { label: 'Image (PNG)', action: () => runExport('png') },
           { label: 'Image (JPG)', action: () => runExport('jpeg') },
@@ -124,18 +125,19 @@
     left: 0;
     right: 0;
     z-index: 99;
-    height: 14px;
+    height: 56px;
     display: flex;
+    align-items: flex-start;
     justify-content: center;
   }
 
   .hint-tab {
-    height: 12px;
+    height: 16px;
     padding: 0 14px;
     border-radius: 0 0 8px 8px;
     background: rgb(255 255 255 / 0.25);
     color: rgb(255 255 255 / 0.8);
-    font: 10px/12px system-ui, sans-serif;
+    font: 20px/16px system-ui, sans-serif;
   }
 
   .toolbar {
@@ -147,7 +149,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    height: 48px;
+    height: 56px;
     padding: 0 16px;
     box-sizing: border-box;
     background: #2b2924;
@@ -180,8 +182,12 @@
 
   .toolbar :global(.tb-button),
   .export :global(.trigger) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     width: auto;
-    height: 30px;
+    height: 36px;
     padding: 0 10px;
     border: 1px solid rgb(255 255 255 / 0.2);
     border-radius: 5px;
@@ -202,9 +208,16 @@
     cursor: default;
   }
 
-  .icon {
+  .export :global(.caret) {
+    font-size: 20px;
+    line-height: 0;
+    opacity: 0.6;
+  }
+
+  /* .toolbar raises specificity above the shared button rule's font: inherit. */
+  .toolbar .icon {
     min-width: 34px;
-    font-size: 16px;
+    font-size: 20px;
   }
 
   .status {
@@ -215,8 +228,8 @@
     text-overflow: ellipsis;
   }
 
-  .pin {
-    font-size: 14px;
+  .toolbar .pin {
+    font-size: 13px;
     opacity: 0.6;
   }
 
