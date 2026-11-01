@@ -153,7 +153,7 @@
       <button type="button" class="panel-button manage" onclick={() => (managing = true)}>Manage fonts…</button>
     {:else}
       <div class="manage-head">
-        <button type="button" class="link-button" onclick={() => (managing = false)}>‹ Back</button>
+        <button type="button" class="panel-button" onclick={() => (managing = false)}>‹ Back</button>
         <span>Your fonts</span>
       </div>
 
@@ -195,7 +195,7 @@
       </div>
 
       {#if fontLibrary.missingDefaults.length}
-        <button type="button" class="link-button" onclick={() => fontLibrary.restoreDefaults()}>
+        <button type="button" class="panel-button start" onclick={() => fontLibrary.restoreDefaults()}>
           Restore default fonts ({fontLibrary.missingDefaults.length} removed)
         </button>
       {/if}
@@ -419,27 +419,17 @@
   }
 
   .manage {
-    justify-self: start;
     margin-top: 2px;
   }
 
-  .link-button {
+  .manage,
+  .start {
     justify-self: start;
-    padding: 0;
-    border: none;
-    background: none;
-    color: #2f5ea8;
-    font: inherit;
-    cursor: pointer;
-  }
-
-  .link-button:hover {
-    text-decoration: underline;
   }
 
   .manage-head {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 12px;
   }
 
