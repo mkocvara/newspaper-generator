@@ -107,11 +107,11 @@
   }
 
   .border-right {
-    border-right: var(--border-width) solid var(--border-color);
+    border-right: var(--border-width) solid var(--ink);
   }
 
   .border-bottom {
-    border-bottom: var(--border-width) solid var(--border-color);
+    border-bottom: var(--border-width) solid var(--ink);
   }
 
   .grip {

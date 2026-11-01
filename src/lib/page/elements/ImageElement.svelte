@@ -5,12 +5,30 @@
   import EditableText from '../../ui/EditableText.svelte'
   import { readImage } from '../../ui/readImage'
   import { patchElement, PT_PX } from './edit'
+  import { inkImage } from './inkImage'
 
   // An image from the user's device with a centred italic description below.
   let { element, leafId }: { element: ImageElement; leafId: string } = $props()
 
   const src = $derived(element.assetId ? editor.assets[element.assetId] : undefined)
   const captionPx = $derived(editor.page.style.sizes.captionPt * PT_PX)
+
+  // With the Ink toggle on, show the image rendered in the ink colour. Until
+  // that's ready, the original shows in greyscale.
+  let inked = $state<{ id: string; url: string }>()
+  const inkId = $derived(element.ink && src ? `${element.assetId}|${editor.page.style.ink}` : undefined)
+  $effect(() => {
+    const id = inkId
+    if (!id || !src || !element.assetId) return
+    inkImage(element.assetId, src, editor.page.style.ink).then(
+      (url) => {
+        if (inkId === id) inked = { id, url }
+      },
+      (error) => console.error(error),
+    )
+  })
+  const shown = $derived(inkId && inked?.id === inkId ? inked.url : src)
+  const inkPending = $derived(!!inkId && inked?.id !== inkId)
 
   let input = $state<HTMLInputElement>()
   let dragOver = $state(false)
@@ -96,10 +114,10 @@
     {#if src}
       {#if element.fit === 'crop'}
         <img
-          {src}
+          src={shown}
           alt={element.caption}
           class="crop"
-          class:greyscale={element.greyscale}
+          class:ink-pending={inkPending}
           style:object-position="{position.x}% {position.y}%"
           draggable="false"
           title="Drag to choose which part shows. Double-click to centre."
@@ -107,7 +125,7 @@
           ondblclick={() => patchElement<ImageElement>(leafId, { position: undefined })}
         />
       {:else}
-        <img {src} alt={element.caption} class:greyscale={element.greyscale} />
+        <img src={shown} alt={element.caption} class:ink-pending={inkPending} />
       {/if}
     {:else}
       <button class="choose ui-only" type="button" onclick={() => input?.click()}>
@@ -121,9 +139,9 @@
       {/if}
       <button
         type="button"
-        title="Show the image in black and white"
-        aria-pressed={element.greyscale}
-        onclick={() => patchElement<ImageElement>(leafId, { greyscale: !element.greyscale })}>B/W</button
+        title="Print the image in the ink colour"
+        aria-pressed={element.ink}
+        onclick={() => patchElement<ImageElement>(leafId, { ink: !element.ink })}>Ink</button
       >
       <button
         type="button"
@@ -185,8 +203,9 @@
     cursor: grabbing;
   }
 
-  img.greyscale {
+  img.ink-pending {
     filter: grayscale(1);
+    opacity: 0.6;
   }
 
   .choose {

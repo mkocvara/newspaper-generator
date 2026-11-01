@@ -114,16 +114,23 @@
     return () => input.removeEventListener('wheel', onWheel)
   }
 
-  // --- Colour: live preview while picking, one undo step for the whole pick.
+  // --- Ink: live preview while picking, one undo step for the whole pick.
+  const INK_PRESETS: [string, string][] = [
+    ['#1b1a17', 'Black'],
+    ['#5b3a1e', 'Sepia brown'],
+    ['#1f2f55', 'Navy'],
+    ['#6e1a1a', 'Dark red'],
+    ['#1f4a2c', 'Dark green'],
+  ]
   let picking = false
-  function previewColor(event: Event & { currentTarget: HTMLInputElement }) {
+  function previewInk(event: Event & { currentTarget: HTMLInputElement }) {
     if (!picking) {
       editor.beginGesture()
       picking = true
     }
-    editor.page.style.border.color = event.currentTarget.value
+    editor.page.style.ink = event.currentTarget.value
   }
-  function commitColor() {
+  function commitInk() {
     editor.endGesture()
     picking = false
   }
@@ -277,10 +284,29 @@
         onchange={numberSetter(0, 6, (s, v) => (s.border.widthPt = v))}
       />
     </label>
+  </div>
+</Panel>
+
+<Panel label="Ink">
+  <div class="form">
+    <div class="swatches" role="group" aria-label="Ink presets">
+      {#each INK_PRESETS as [color, name] (color)}
+        <button
+          type="button"
+          class="swatch"
+          aria-label={name}
+          title={name}
+          aria-pressed={style.ink.toLowerCase() === color}
+          style:--swatch={color}
+          onclick={() => set((s) => (s.ink = color))}
+        ></button>
+      {/each}
+    </div>
     <label class="row">
-      <span>Cell border colour</span>
-      <input type="color" value={style.border.color} oninput={previewColor} onchange={commitColor} />
+      <span>Custom ink colour</span>
+      <input type="color" value={style.ink} oninput={previewInk} onchange={commitInk} />
     </label>
+    <span class="hint">Used for all text, frames, borders and the name's decoration, and for images with Ink on.</span>
   </div>
 </Panel>
 
@@ -393,6 +419,26 @@
     padding: 0;
     border: 1px solid rgb(0 0 0 / 0.25);
     border-radius: 4px;
+  }
+
+  .swatches {
+    display: flex;
+    gap: 8px;
+  }
+
+  .swatch {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: var(--swatch);
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.25);
+    cursor: pointer;
+  }
+
+  .swatch[aria-pressed='true'] {
+    box-shadow: 0 0 0 2px #2f5ea8;
   }
 
   fieldset {

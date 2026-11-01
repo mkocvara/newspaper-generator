@@ -12,7 +12,7 @@
 <article
   class="page"
   style:--border-width="{style.border.widthPt}pt"
-  style:--border-color={style.border.color}
+  style:--ink={style.ink}
   style:--font-body={fontStack(style.fonts.body)}
   style:--font-heading={fontStack(style.fonts.heading)}
   style:--font-caption={fontStack(style.fonts.caption)}
@@ -38,14 +38,16 @@
     display: flex;
     flex-direction: column;
     gap: 3mm;
-    color: #1b1a17;
+    /* Everything printed on the page is in the ink colour (set inline). */
+    --paper: #f2ede1;
+    color: var(--ink);
     box-shadow: 0 2px 12px rgb(0 0 0 / 0.35);
 
     /* Generated newsprint: warm off-white, faint grain, a soft vignette, and a
        vertical and horizontal fold crease through the middle. Kept subtle so
        text contrast isn't affected. The grain is a small PNG tile rather than
        an SVG noise filter, because image export renders SVG filters black. */
-    background-color: #f2ede1;
+    background-color: var(--paper);
     background-image:
       linear-gradient(
         to right,

@@ -127,11 +127,11 @@
   }
 
   .divider.row {
-    border-right: var(--border-width) solid var(--border-color);
+    border-right: var(--border-width) solid var(--ink);
   }
 
   .divider.column {
-    border-bottom: var(--border-width) solid var(--border-color);
+    border-bottom: var(--border-width) solid var(--ink);
   }
 
   .leaf {

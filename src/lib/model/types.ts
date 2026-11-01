@@ -77,7 +77,8 @@ export interface ImageElement {
   // snapshots stay small.
   assetId: string | null
   caption: string
-  greyscale: boolean
+  // Render the image in the ink colour, as if printed on the paper.
+  ink: boolean
   fit: 'scale' | 'crop'
   // Which part of a cropped image shows, as CSS object-position percentages.
   // Missing means centred.
@@ -99,9 +100,10 @@ export interface Style {
     captionPt: number
   }
   frameStyle: FrameStyle
+  // The colour everything printed on the page uses.
+  ink: string
   border: {
     widthPt: number
-    color: string
   }
   nameDecoration: NameDecoration
 }
