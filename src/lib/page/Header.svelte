@@ -194,11 +194,14 @@
       0.09em 0.09em 0.03em color-mix(in srgb, var(--ink) 25%, transparent);
   }
 
+  /* Pressed into the paper: lighter letters with a dark lip along their top
+     edge and a bright one below, like a dent catching the light. */
   .effect-engraved {
-    color: color-mix(in srgb, var(--ink) 93%, var(--paper));
+    color: color-mix(in srgb, var(--ink) 60%, var(--paper));
     text-shadow:
-      0 0.03em 0 rgb(255 255 255 / 0.85),
-      0 -0.012em 0 color-mix(in srgb, var(--ink) 35%, transparent);
+      0 -0.035em 0 color-mix(in srgb, var(--ink) 90%, transparent),
+      0 0.04em 0 rgb(255 255 255 / 0.95),
+      0 0.06em 0.03em rgb(255 255 255 / 0.6);
   }
 
   .effect-outline {
