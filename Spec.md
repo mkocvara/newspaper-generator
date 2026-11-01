@@ -90,6 +90,13 @@ It offers a colour picker and a few classic ink presets (e.g. black, sepia brown
 
 For images, the greyscale toggle becomes an ink toggle (the button can say "Ink" for short). It renders the image in the ink colour as if printed on the paper: dark parts in ink, light parts letting the paper show through.
 
+## Zoom and Pan
+The newspaper page should be zoomable independently of the wider page, so zooming never affects the toolbar.
+
+The scroll wheel zooms in and out (towards the pointer), and dragging with the middle mouse button pans, anywhere over the page or around it. The view starts zoomed to fit the whole page in the window, and the zoom ranges from 25% to 400%. The zoom level and position aren't remembered between visits.
+
+Floating bars on the left and at the bottom show the zoom level and the visible part of the page; dragging the inner bar pans. Where the two bars meet, a box shows the zoom percentage; clicking it resets the zoom to 100%.
+
 # Example Newspaper
 In the project folder, there is an image called "example-newspaper.png". This is not a source of truth and it is not a goal to emulate, but it is an example of the inspiration behind the app and shows the kind of styling we wan
 
@@ -150,3 +157,7 @@ Below, you can add notes and additional clarifications regarding the content of 
   - Editing aids (placeholders, handles, menus) are never printed, so they keep their own colours.
   - The image *Ink* toggle replaces B/W: each pixel becomes ink with an opacity set by how dark it was, so light areas show the paper. It's rendered in a canvas (not a CSS/SVG filter) so exports match the screen, and the rendered copy isn't stored in the work file.
   - The cell border colour option is gone; no older work files used it, so there's no migration.
+- **Zoom and pan:**
+  - The page is scaled with a CSS transform inside its own viewport (below the pinned toolbar), so its layout, text fitting and exports are unaffected; the window itself no longer scrolls.
+  - Ctrl+wheel is left to the browser's own zoom. Middle-click doesn't paste or start autoscroll over the page.
+  - Panning stops a little past the page's edges; on an axis where the page fits, it stays centred. Pressing a bar's track jumps there; with a bar focused, the arrow keys pan. Resetting to 100% keeps the middle of the view in place.

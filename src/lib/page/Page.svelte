@@ -10,6 +10,7 @@
 
 <!-- A4 sheet. -->
 <article
+  id="newspaper-page"
   class="page"
   style:--border-width="{style.border.widthPt}pt"
   style:--ink={style.ink}
