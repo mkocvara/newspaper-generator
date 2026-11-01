@@ -7,13 +7,19 @@ const DB_NAME = 'newspaper-generator'
 const STORE = 'autosave'
 const KEY = 'current'
 
+// The connection stays open so a save issued as the tab closes starts
+// immediately instead of waiting to reconnect.
+let connection: Promise<IDBDatabase> | null = null
+
 function openDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
+  connection ??= new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, 1)
     request.onupgradeneeded = () => request.result.createObjectStore(STORE)
     request.onsuccess = () => resolve(request.result)
     request.onerror = () => reject(request.error)
   })
+  connection.catch(() => (connection = null))
+  return connection
 }
 
 // Resolves to null (start fresh) if nothing is saved or IndexedDB is unusable.
@@ -27,7 +33,6 @@ export async function loadAutosave(): Promise<WorkFile | null> {
       request.onsuccess = () => resolve(request.result)
       request.onerror = () => reject(request.error)
     })
-    db.close()
     return parseWorkFile(data)
   } catch (error) {
     console.warn('Could not load autosave', error)
@@ -44,7 +49,6 @@ export async function saveAutosave(file: WorkFile): Promise<void> {
       tx.oncomplete = () => resolve()
       tx.onerror = () => reject(tx.error)
     })
-    db.close()
   } catch (error) {
     console.warn('Could not autosave', error)
   }

@@ -90,7 +90,10 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Moving:** moving a cell pushes the others along (no swapping). Moves that would break other parts of the layout must not be possible.
 - **Text overflow:** text that doesn't fit its cell shrinks to fit.
 - **Fonts:** Caladea is used instead of Cambria (Cambria is not a Google Font; Caladea is metrically compatible).
-- **Header/footer frame styles:** initial options are single line, double line, and thick-and-thin.
+- **Header/footer frame styles:** single line, double line, and two thick-and-thin variants: thick line outside or thin line outside. "Outside" is the side facing away from the header/footer text, so the header's top and bottom bars mirror each other.
+- **Placeholders:** empty text boxes show a faint hint in angle brackets (e.g. `<Newspaper Name>`); hints are never exported.
+- **Header text sizing:** date and location grow with the header height up to a cap, so extra height goes to the newspaper name. The name and location may wrap between words, but only when that allows a clearly larger font (≥30%); otherwise they stay on one line and shrink to fit.
+- **Unsaved typing:** when the tab is hidden or closed, the text box being edited is committed and the page is saved immediately.
 - **Images:** stored (embedded) in the JSON work file so work can be fully restored.
 - **Background:** generated (CSS/SVG) for now; may be revisited.
 - **Header date default:** today's date in the format `d. m. YYYY`, no zero-padding (e.g. `5. 3. 2026`).

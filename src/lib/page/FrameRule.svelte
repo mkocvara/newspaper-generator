@@ -1,15 +1,19 @@
 <script lang="ts">
   import type { FrameStyle } from '../model/types'
 
-  // One horizontal frame bar. For the asymmetric thick-and-thin style, the
-  // thick line goes on the side given by `thick` (header and footer bars put
-  // it away from their text, framing the body consistently).
-  let { kind, thick = 'top' }: { kind: FrameStyle; thick?: 'top' | 'bottom' } = $props()
+  // One horizontal frame bar. `outer` is the side facing away from the
+  // header/footer text, so mirrored bars match: the header's top and bottom
+  // bars (and the footer's bar) all have the same line on the outside.
+  let { kind, outer }: { kind: FrameStyle; outer: 'top' | 'bottom' } = $props()
+
+  const THICK = '2.5pt'
+  const THIN = '0.75pt'
 
   const lines = $derived.by((): string[] => {
     if (kind === 'single') return ['1.25pt']
-    if (kind === 'double') return ['0.75pt', '0.75pt']
-    return thick === 'top' ? ['2.5pt', '0.75pt'] : ['0.75pt', '2.5pt']
+    if (kind === 'double') return [THIN, THIN]
+    const [outerLine, innerLine] = kind === 'thick-outer' ? [THICK, THIN] : [THIN, THICK]
+    return outer === 'top' ? [outerLine, innerLine] : [innerLine, outerLine]
   })
 </script>
 

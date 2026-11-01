@@ -8,12 +8,16 @@
 
   const MIN_HEIGHT_MM = 12
   const MAX_HEIGHT_MM = 80
-  // Date and location text size relative to the header height.
+  // Wrap the name or location onto more lines only for a clearly bigger font.
+  const WRAP_GAIN = 1.3
+  // Date and location text grows with the header height up to a cap, so
+  // extra height goes to the newspaper name.
   const SIDE_TEXT_RATIO = 0.16
+  const SIDE_TEXT_MAX_PX = 20
 
   const header = $derived(editor.page.header)
   const style = $derived(editor.page.style)
-  const sidePx = $derived(header.heightMm * MM_PX * SIDE_TEXT_RATIO)
+  const sidePx = $derived(Math.min(SIDE_TEXT_MAX_PX, header.heightMm * MM_PX * SIDE_TEXT_RATIO))
 
   // The name stays centred on the page, so both side columns are as wide as
   // the wider side text. That width is measured on hidden copies at full
@@ -36,29 +40,35 @@
 </script>
 
 <header style:height="{header.heightMm}mm">
-  <FrameRule kind={style.frameStyle} thick="top" />
+  <FrameRule kind={style.frameStyle} outer="top" />
 
-  <div class="masthead" style:--side="{Math.max(dateWidth, locationWidth)}px" style:--side-size="{sidePx}px">
+  <div class="masthead" style:--side="{Math.max(dateWidth, locationWidth) + 1}px" style:--side-size="{sidePx}px">
     <div class="slot side" {@attach fitText({ max: sidePx, watch: style.fonts.headerFooter })}>
-      <span class="measure" aria-hidden="true" bind:offsetWidth={dateWidth}>{liveDate || 'Date'}</span>
+      <span class="measure" aria-hidden="true" bind:offsetWidth={dateWidth}>{liveDate || '<Date>'}</span>
       <div oninput={(e) => (liveDate = liveText(e))}>
         <EditableText value={header.date} onchange={set('date')} placeholder="Date" />
       </div>
     </div>
 
-    <div class="slot name" {@attach fitText({ max: header.heightMm * MM_PX, watch: style.fonts.name })}>
-      <EditableText value={header.name} onchange={set('name')} placeholder="Newspaper Name" />
+    <div
+      class="slot name"
+      {@attach fitText({ max: header.heightMm * MM_PX, wrapGain: WRAP_GAIN, watch: style.fonts.name })}
+    >
+      <EditableText value={header.name} onchange={set('name')} placeholder="Newspaper Name" wrap />
     </div>
 
-    <div class="slot side right" {@attach fitText({ max: sidePx, watch: style.fonts.headerFooter })}>
-      <span class="measure" aria-hidden="true" bind:offsetWidth={locationWidth}>{liveLocation || 'Location'}</span>
+    <div
+      class="slot side right"
+      {@attach fitText({ max: sidePx, wrapGain: WRAP_GAIN, watch: style.fonts.headerFooter })}
+    >
+      <span class="measure" aria-hidden="true" bind:offsetWidth={locationWidth}>{liveLocation || '<Location>'}</span>
       <div oninput={(e) => (liveLocation = liveText(e))}>
-        <EditableText value={header.location} onchange={set('location')} placeholder="Location" />
+        <EditableText value={header.location} onchange={set('location')} placeholder="Location" wrap />
       </div>
     </div>
   </div>
 
-  <FrameRule kind={style.frameStyle} thick="bottom" />
+  <FrameRule kind={style.frameStyle} outer="bottom" />
 
   <ResizeHandle
     edge="bottom"
@@ -87,7 +97,7 @@
     min-height: 0;
     display: grid;
     grid-template-columns: min(var(--side), 28%) minmax(0, 1fr) min(var(--side), 28%);
-    column-gap: 4mm;
+    column-gap: 7mm;
     padding-block: 0.5mm;
   }
 
@@ -96,7 +106,8 @@
     min-width: 0;
     overflow: hidden;
     display: flex;
-    align-items: center;
+    /* 'safe' keeps overflow on the end side, where fitText can detect it. */
+    align-items: safe center;
     line-height: 1.1;
   }
 
@@ -105,11 +116,13 @@
   }
 
   .side.right {
-    justify-content: flex-end;
+    justify-content: safe flex-end;
+    text-align: right;
   }
 
   .name {
-    justify-content: center;
+    justify-content: safe center;
+    text-align: center;
     font-family: var(--font-name);
     font-weight: 700;
   }

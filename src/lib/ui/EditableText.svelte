@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onFlushEdits } from '../state/flush'
+
   // A plain-text editable box that cooperates with undo/redo:
   // - while focused, its DOM is never rewritten, so the browser's native
   //   Ctrl+Z / Ctrl+Y keep working inside it;
@@ -8,14 +10,28 @@
     onchange,
     placeholder = '',
     multiline = false,
+    wrap = false,
   }: {
     value: string
     onchange: (value: string) => void
     placeholder?: string
+    // Allow the Enter key to insert line breaks.
     multiline?: boolean
+    // Take line wrapping from the container (which may switch it on and off,
+    // see fitText's wrapGain) instead of always staying on one line.
+    wrap?: boolean
   } = $props()
 
   let el = $state<HTMLElement>()
+
+  // Commit (without blurring) when the app needs the latest text.
+  $effect(() =>
+    onFlushEdits(() => {
+      if (!el || document.activeElement !== el) return
+      const text = readText(el)
+      if (text !== value) onchange(text)
+    }),
+  )
 
   // Sync from the model only when the user isn't editing (e.g. after undo).
   $effect(() => {
@@ -48,6 +64,7 @@
   bind:this={el}
   class="editable"
   class:multiline
+  class:wrap
   contenteditable="plaintext-only"
   role="textbox"
   tabindex="0"
@@ -70,12 +87,17 @@
     white-space: pre-wrap;
   }
 
+  .editable.wrap {
+    white-space: inherit;
+  }
+
   .editable:focus {
     background: rgb(70 120 200 / 0.08);
   }
 
+  /* Bracketed to make clear it's a hint, not content. */
   .editable:empty::before {
-    content: attr(data-placeholder);
+    content: '<' attr(data-placeholder) '>';
     opacity: 0.3;
   }
 

@@ -16,9 +16,10 @@
   const textPx = $derived(footer.heightMm * MM_PX * TEXT_RATIO)
 
   const slots = [
+    // 'safe' keeps overflow on the end side, where fitText can detect it.
     { field: 'left', align: 'flex-start', placeholder: 'Left text' },
-    { field: 'center', align: 'center', placeholder: 'Centre text' },
-    { field: 'right', align: 'flex-end', placeholder: 'Right text' },
+    { field: 'center', align: 'safe center', placeholder: 'Centre text' },
+    { field: 'right', align: 'safe flex-end', placeholder: 'Right text' },
   ] as const
 
   let startHeight = 0
@@ -38,7 +39,7 @@
     onend={() => editor.endGesture()}
   />
 
-  <FrameRule kind={style.frameStyle} thick="top" />
+  <FrameRule kind={style.frameStyle} outer="top" />
 
   <div class="footline">
     {#each slots as slot (slot.field)}
@@ -77,7 +78,7 @@
     min-width: 0;
     overflow: hidden;
     display: flex;
-    align-items: center;
+    align-items: safe center;
     line-height: 1.1;
     font-family: var(--font-header-footer);
   }

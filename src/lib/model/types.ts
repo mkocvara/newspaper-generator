@@ -81,7 +81,9 @@ export interface ImageElement {
   fit: 'scale' | 'crop'
 }
 
-export type FrameStyle = 'single' | 'double' | 'thick-thin'
+// Thick-and-thin bars come in two mirrored variants: the outer line (the one
+// facing away from the header/footer text) is either the thick or the thin one.
+export type FrameStyle = 'single' | 'double' | 'thick-outer' | 'thin-outer'
 
 export interface Style {
   fonts: Fonts
