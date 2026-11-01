@@ -11,8 +11,11 @@
 
   const MIN_ZOOM = 0.25
   const MAX_ZOOM = 4
-  // Space kept around the page at the edges of the pannable area, in px.
+  // Space around the page when fitting it to the window, in px.
   const MARGIN = 32
+  // Panning stops once only this share of the window (or the whole page, if
+  // smaller) still shows the page, so its edge never leaves the view.
+  const KEEP_VISIBLE = 0.25
 
   let viewport = $state<HTMLElement>()
   let stage = $state<HTMLElement>()
@@ -25,12 +28,16 @@
 
   const clampZoom = (z: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z))
 
-  // Keep the page reachable: centred on an axis where it fits, otherwise
-  // pannable until its edge (plus the margin) meets the viewport's.
-  function clampAxis(pos: number, pageSize: number, viewSize: number) {
+  // The range the page's position can take on one axis.
+  function limits(pageSize: number, viewSize: number) {
     const scaled = pageSize * zoom
-    if (scaled + 2 * MARGIN <= viewSize) return (viewSize - scaled) / 2
-    return Math.min(MARGIN, Math.max(viewSize - scaled - MARGIN, pos))
+    const keep = Math.min(scaled, viewSize * KEEP_VISIBLE)
+    return { min: keep - scaled, max: viewSize - keep }
+  }
+
+  function clampAxis(pos: number, pageSize: number, viewSize: number) {
+    const { min, max } = limits(pageSize, viewSize)
+    return Math.min(max, Math.max(min, pos))
   }
 
   function clamp() {
@@ -116,12 +123,13 @@
     target.addEventListener('pointercancel', onUp)
   }
 
-  // --- Floating bars. Each axis's thumb spans the visible share of the page
-  // (plus margins) and sits where the view is.
+  // --- Floating bars. The track stands for every view the panning allows;
+  // the thumb is the current view within it.
   function axis(pos: number, pageSize: number, viewSize: number) {
-    const content = pageSize * zoom + 2 * MARGIN
-    if (content <= viewSize || !content) return { size: 1, offset: 0, content }
-    return { size: viewSize / content, offset: (MARGIN - pos) / content, content }
+    const { min, max } = limits(pageSize, viewSize)
+    const content = max - min + viewSize
+    if (!pageSize || !content) return { size: 1, offset: 0, content: viewSize, max }
+    return { size: viewSize / content, offset: (max - pos) / content, content, max }
   }
   const horizontal = $derived(axis(x, page.width, view.width))
   const vertical = $derived(axis(y, page.height, view.height))
@@ -151,8 +159,8 @@
     if (!(event.target as HTMLElement).classList.contains('thumb')) {
       // Centre the thumb on the pressed point.
       const offset = point(event) / length - info.size / 2
-      if (along === 'x') x = MARGIN - offset * info.content
-      else y = MARGIN - offset * info.content
+      if (along === 'x') x = info.max - offset * info.content
+      else y = info.max - offset * info.content
       clamp()
     }
 

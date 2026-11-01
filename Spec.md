@@ -160,4 +160,4 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Zoom and pan:**
   - The page is scaled with a CSS transform inside its own viewport (below the pinned toolbar), so its layout, text fitting and exports are unaffected; the window itself no longer scrolls.
   - Ctrl+wheel is left to the browser's own zoom. Middle-click doesn't paste or start autoscroll over the page.
-  - Panning stops a little past the page's edges; on an axis where the page fits, it stays centred. Pressing a bar's track jumps there; with a bar focused, the arrow keys pan. Resetting to 100% keeps the middle of the view in place.
+  - Panning works at any zoom (also when the whole page is in view) and stops once only a quarter of the window's width or height (or the whole page, if smaller) still shows the page, so its edge never leaves the view. Pressing a bar's track jumps there; with a bar focused, the arrow keys pan. Resetting to 100% keeps the middle of the view in place.
