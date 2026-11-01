@@ -1,0 +1,137 @@
+<script lang="ts">
+  import {
+    canMergeLine,
+    canMergeToward,
+    canMergeWithSibling,
+    findNode,
+    mergeLine,
+    mergeToward,
+    mergeWithSibling,
+    splitLeaf,
+    type Direction,
+  } from '../../model/grid'
+  import type { CellNode, GridCell } from '../../model/types'
+  import { editor } from '../../state/editor.svelte'
+  import Menu, { type MenuEntry } from '../../ui/Menu.svelte'
+  import ResizeHandle from '../../ui/ResizeHandle.svelte'
+  import { MM_PX } from '../units'
+  import CellNodeView from './CellNodeView.svelte'
+
+  // The two halves of a split can't be dragged smaller than this.
+  const MIN_PART_MM = 8
+
+  let { node, cell }: { node: CellNode; cell: GridCell } = $props()
+
+  // --- Split: drag the divider between the two halves.
+  let widthPx = $state(0)
+  let heightPx = $state(0)
+  let startSizes: [number, number] = [1, 1]
+
+  function resizeSplit(deltaMm: number) {
+    if (node.kind !== 'split') return
+    const lengthMm = (node.direction === 'row' ? widthPx : heightPx) / MM_PX
+    const total = startSizes[0] + startSizes[1]
+    const min = (MIN_PART_MM / lengthMm) * total
+    const first = Math.max(min, Math.min(total - min, startSizes[0] + (deltaMm / lengthMm) * total))
+    // Write to the live page (not the `node` prop) during the drag gesture.
+    const live = findNode(editor.page.grid, node.id)
+    if (live?.kind === 'split') live.sizes = [first, total - first]
+  }
+
+  // --- Leaf: layout actions menu.
+  const MERGES: [Direction, string][] = [
+    ['right', 'Merge with cell to the right'],
+    ['left', 'Merge with cell to the left'],
+    ['up', 'Merge with cell above'],
+    ['down', 'Merge with cell below'],
+  ]
+
+  const menu = $derived.by((): MenuEntry[] => {
+    const grid = editor.page.grid
+    const items: MenuEntry[] = [
+      { label: 'Split side by side', action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'row')) },
+      { label: 'Split top and bottom', action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'column')) },
+    ]
+    if (canMergeWithSibling(grid, node.id)) {
+      items.push({ label: 'Merge with other half', action: () => editor.updateGrid((g) => mergeWithSibling(g, node.id)) })
+    }
+    const merges: MenuEntry[] = MERGES.filter(([dir]) => canMergeToward(grid, cell.id, dir)).map(([dir, label]) => ({
+      label,
+      action: () => editor.updateGrid((g) => mergeToward(g, cell.id, dir)),
+    }))
+    for (const axis of ['column', 'row'] as const) {
+      if (canMergeLine(grid, cell.id, axis)) {
+        merges.push({ label: `Merge entire ${axis}`, action: () => editor.updateGrid((g) => mergeLine(g, cell.id, axis)) })
+      }
+    }
+    return merges.length ? [...items, 'separator', ...merges] : items
+  })
+</script>
+
+{#if node.kind === 'split'}
+  <div class="split" style:flex-direction={node.direction} bind:clientWidth={widthPx} bind:clientHeight={heightPx}>
+    <div class="part divider {node.direction}" style:flex-grow={node.sizes[0]}>
+      <CellNodeView node={node.children[0]} {cell} />
+      <ResizeHandle
+        edge={node.direction === 'row' ? 'right' : 'bottom'}
+        onstart={() => {
+          if (node.kind === 'split') startSizes = [...node.sizes]
+          editor.beginGesture()
+        }}
+        onmove={resizeSplit}
+        onend={() => editor.endGesture()}
+      />
+    </div>
+    <div class="part" style:flex-grow={node.sizes[1]}>
+      <CellNodeView node={node.children[1]} {cell} />
+    </div>
+  </div>
+{:else}
+  <div class="leaf">
+    <!-- Elements are rendered here from stage 4; empty cells show nothing. -->
+    <div class="controls">
+      <Menu label="Cell layout" items={menu} />
+    </div>
+  </div>
+{/if}
+
+<style>
+  .split {
+    display: flex;
+    height: 100%;
+  }
+
+  .part {
+    position: relative;
+    flex-basis: 0;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  .divider.row {
+    border-right: var(--border-width) solid var(--border-color);
+  }
+
+  .divider.column {
+    border-bottom: var(--border-width) solid var(--border-color);
+  }
+
+  .leaf {
+    position: relative;
+    height: 100%;
+  }
+
+  .controls {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    z-index: 3;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+
+  .leaf:hover > .controls,
+  .controls:has(:global(.open)) {
+    opacity: 1;
+  }
+</style>

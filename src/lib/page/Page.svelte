@@ -1,7 +1,7 @@
 <script lang="ts">
   import { editor } from '../state/editor.svelte'
   import Footer from './Footer.svelte'
-  import GridBody from './GridBody.svelte'
+  import GridBody from './grid/GridBody.svelte'
   import Header from './Header.svelte'
 
   const style = $derived(editor.page.style)
@@ -23,7 +23,7 @@
   <Header />
 
   <section class="body">
-    <GridBody grid={editor.page.grid} />
+    <GridBody />
   </section>
 
   <Footer />

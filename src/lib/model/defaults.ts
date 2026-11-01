@@ -1,25 +1,13 @@
+import { emptyCell } from './grid'
 import type { GridCell, Page } from './types'
 
-export const DEFAULT_FONT = 'Caladea'
+export { newId } from './ids'
 
-export function newId(): string {
-  return Math.random().toString(36).slice(2, 10)
-}
+export const DEFAULT_FONT = 'Caladea'
 
 // Header date hint, e.g. "5. 3. 2026".
 export function formatDate(date: Date): string {
   return `${date.getDate()}. ${date.getMonth() + 1}. ${date.getFullYear()}`
-}
-
-function emptyCell(col: number, row: number): GridCell {
-  return {
-    id: newId(),
-    col,
-    row,
-    colSpan: 1,
-    rowSpan: 1,
-    node: { kind: 'leaf', id: newId(), element: null },
-  }
 }
 
 export function createDefaultPage(today = new Date()): Page {

@@ -1,5 +1,5 @@
 import { createDefaultPage, newId } from '../model/defaults'
-import type { Assets, Page, WorkFile } from '../model/types'
+import type { Assets, Grid, Page, WorkFile } from '../model/types'
 import { toWorkFile } from '../model/workfile'
 
 const HISTORY_LIMIT = 200
@@ -27,6 +27,13 @@ export class Editor {
     const before = this.#snapshot()
     change(this.page)
     this.#record(before)
+  }
+
+  // Apply one of the pure grid operations (see model/grid.ts).
+  updateGrid(operation: (grid: Grid) => Grid) {
+    this.update((page) => {
+      page.grid = operation($state.snapshot(page.grid))
+    })
   }
 
   // For continuous interactions (dragging a border): mutate `page` freely

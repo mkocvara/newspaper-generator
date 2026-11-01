@@ -113,3 +113,8 @@ Below, you can add notes and additional clarifications regarding the content of 
   - *Text effect*: none, drop shadow, 3D extrude, engraved, outline, hatched.
   - Ornaments and effects scale with the name and take part of its space. Everything uses the ink colour (no separate colour for now).
   - To confirm: custom symbols use two fields (before / after), with "after" defaulting to the same as "before".
+- **Grid editing (stage 3):**
+  - *Merging* content: the merged cell keeps the content of the cell the merge started from, or if that is empty, the first non-empty cell's (reading order). Merging a whole column/row is available from the cell menu. A merge always grows to the smallest rectangle that doesn't cut through other cells.
+  - *Moving:* a cell moves along an unbroken run of cells in its column that all share its column span (or along its row, sharing its row span). Sizes along the direction of movement may differ; each cell keeps its own size.
+  - *Adding/removing columns and rows:* via spreadsheet-style tabs on the grid edges (insert before / after, delete), so the target column/row is unambiguous with merged cells.
+  - *Split cells:* the divider inside a split cell can be dragged to resize the two parts; splits can be undone with "Merge with other half" (an empty half gives its space to the other).
