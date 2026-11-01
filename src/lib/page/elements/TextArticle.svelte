@@ -39,11 +39,12 @@
     flex-direction: column;
   }
 
-  /* Without body text the heading takes the free space, so it can be fitted;
-     with it, the heading is as tall as its text and the body takes the rest.
-     has-body is set by fitArticle. */
+  /* Without body text the heading is as tall as its text, shrinking (and so
+     overflowing, for fitArticle to see) only if the cell can't hold it; the
+     empty body sits right below it. With body text, the heading is as tall as
+     its text and the body takes the rest. has-body is set by fitArticle. */
   .heading {
-    flex: 1;
+    flex: 0 1 auto;
     min-height: 0;
     overflow: hidden;
     margin-bottom: 0.35em;
