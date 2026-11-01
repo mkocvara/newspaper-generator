@@ -41,14 +41,14 @@ Cells should automatically have borders drawn between them.
 Big, blocky text usually meant for top of a page (but can be anywhere). Large bold capital text. Optional smaller, non-bold (but still capitals) secondary text placed right below the big eyecatcher text. If the smaller text box is empty, the big text should seamlessly fill the cell.
 
 #### Text Editing
-Much like the Eyecatcher, this element is made up of two text boxes - the heading (larger, bold text, not capitals) and a longer text field for the content. This content is the baseline text of the newspaper and should have consistent sizing. Heading is justified left, body text is justified into a block.
+Much like the Eyecatcher, this element is made up of two text boxes - the heading (larger, bold text, not capitals) and a longer text field for the content. This content is the baseline text of the newspaper and should have consistent sizing (the size set in the toolbar). If an article doesn't fit its cell, its body text shrinks first, then its heading; if even that isn't enough, the body text is cut off with an ellipsis. Heading is justified left, body text is justified into a block.
 
 #### Image
-This element is for displaying images linked from the local device. Underneath the image there should be a text box with smaller, italicised text, meant for describing the content of the image; justified to the centre.
+This element is for displaying images chosen from the local device (stored in the work file). Underneath the image there should be a text box with smaller, italicised text, meant for describing the content of the image; justified to the centre.
 
-There should be a toggle to make the inserted image greyscale.
+There should be a toggle to render the image in the ink colour (see Ink Colour).
 
-Another toggle should be between how the image fits the cell. By default, scale and fill, but a toggle can be hit to crop instead.
+Another toggle should be between how the image fits the cell. By default, the whole image is scaled to fit the cell; a toggle switches to cropping it to fill the cell, and the cropped image can be dragged to choose which part shows.
 
 ### Footer
 A footer is divided from the body of the page with a bar similar or same as the bottom one of the header (consistent styling is key). It should have three editable text boxes, one justified to the left, one to the right, and one centred. All same text styling, small text, regular font. Only the right one should have a default prefilled text saying "Page 1".
@@ -58,11 +58,11 @@ It should also be resizable by dragging the upper border (similar to the header)
 ## Toolbar
 At the top of the page, above the Newspaper Page, there should be a top bar with several tools, listed under their own subheadings below.
 
-The toolbar should be sticky, but also hide itself when it isn't being hovered (and reveal when user hovers top of the page). While hidden, there should be a subtle arrow indicator hinting its presence and existence to the user There should be a pin button making it sticky and preventing it from hiding.
+The toolbar should be sticky, but also hide itself when it isn't being hovered (and reveal when user hovers top of the page). While hidden, there should be a subtle arrow indicator hinting its presence and existence to the user There should be a pin button making it sticky and preventing it from hiding. It starts pinned; unpinned, it reveals when the user hovers the strip it occupies.
 
 ### Styling
 The user should have an ability to change general styles of the newspaper page.
-a. Fonts (individually, for body text, heading text, image descriptions, eyecatcher text, header/footer text, and newspaper name). Pick a few Google Fonts that make sense, but allow the ability to go and add more by link or name. By default, make them all the same: Caladea.
+a. Fonts (individually, for body text, heading text, image descriptions, eyecatcher text, header/footer text, and newspaper name). Pick a few Google Fonts that make sense, but allow the ability to go and add more by link or name. By default, make them all the same: Caladea. The font list can be managed (fonts added or removed, defaults restored); it is kept per browser, not in the work file.
 b. Body text size and heading size. Image description font size.
     *Note: no sizing for header, footer, or eyecatcher fonts, as they resize with their cells.*
 c. Header and footer frame style.
@@ -74,7 +74,7 @@ An Export button should give three options: export as image (jpg, png), as pdf, 
 The work json file can be saved locally and uploaded later with the Import button in order to restore work later. This file will need to keep all relevant info to restore the layout and the content that the newspaper page had at export time.
 
 ### Undo/Redo
-Mapped also to Ctrl+Z and Ctrl+Y, the app should have undo and redo functionality for layout changes.
+Mapped also to Ctrl+Z and Ctrl+Y, the app should have undo and redo functionality for layout, style and content changes.
 
 ### Newspaper Name Decoration
 Options to decorate the newspaper name in the header.
@@ -109,7 +109,7 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Header text sizing:** date and location grow with the header height up to a cap, so extra height goes to the newspaper name. The name and location may wrap between words, but only when that allows a clearly larger font (≥30%); otherwise they stay on one line and shrink to fit.
 - **Unsaved typing:** when the tab is hidden or closed, the text box being edited is committed and the page is saved immediately.
 - **Images:** stored (embedded) in the JSON work file so work can be fully restored.
-- **Background:** generated (CSS/SVG) for now; may be revisited.
+- **Background:** generated (CSS gradients for the folds and vignette, plus a small PNG grain tile); may be revisited.
 - **Header date default:** today's date in the format `d. m. YYYY`, no zero-padding (e.g. `5. 3. 2026`).
 - **Empty cells:** a cell with no element inserted shows nothing.
 - **Eyecatcher:** text is centred.
@@ -119,7 +119,7 @@ Below, you can add notes and additional clarifications regarding the content of 
   - *Ornaments* before and after the name: none, vertical bars, double bars, stars, diamonds, fleurons (❧ … ☙), extending rules, or custom Unicode symbols entered by the user.
   - *Text effect*: none, drop shadow, 3D extrude, engraved, outline, hatched.
   - Ornaments and effects scale with the name and take part of its space. Everything uses the ink colour (no separate colour for now).
-  - To confirm: custom symbols use two fields (before / after), with "after" defaulting to the same as "before".
+  - Custom symbols use two fields (before / after), with "after" defaulting to the same as "before".
 - **Grid editing (stage 3):**
   - *Merging* content: the merged cell keeps the content of the cell the merge started from, or if that is empty, the first non-empty cell's (reading order). Merging a whole column/row is available from the cell menu. A merge always grows to the smallest rectangle that doesn't cut through other cells.
   - *Moving:* a cell moves along an unbroken run of cells in its column that all share its column span (or along its row, sharing its row span). Sizes along the direction of movement may differ; each cell keeps its own size. A move across rows and columns shifts the cells between the two places by one slot in reading order (left to right, top to bottom); all of those cells must be the same size as the moved one.
@@ -129,12 +129,17 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Elements (stage 4):**
   - *Inserting:* the cell menu offers "Insert eyecatcher / text / image" for an empty part, and "Change to …" / "Clear cell" for a filled one (undo restores the previous content).
   - *Eyecatcher:* text is as large as fits the cell and wraps between words. When the secondary line is empty it takes no space; a `<Secondary text>` hint appears over the bottom of the cell on hover so it can still be filled in.
-  - *Text:* heading and body use the page-wide sizes; if they don't fit, both shrink together for that cell only. Enter starts a new line in the body. Justified body text is hyphenated.
-  - *Image:* "scale and fill" (default) is interpreted as showing the whole image scaled to fit the cell; "crop" fills the cell and crops the overflow. To confirm. Image tools (Replace, Ink, Crop) appear on hover; images can also be dropped onto the cell. Images larger than 2400 px on their longest side are scaled down on import to keep work files small.
+  - *Text:* heading and body use the page-wide sizes. If they don't fit, the body shrinks first (down to 5 pt), then the heading just enough to make room for it (down to 6 pt); if even that doesn't fit, the body is cut off with an ellipsis (shown in full while being edited). Without body text, a heading that doesn't fit shrinks on its own. Enter starts a new line in the body. Justified body text is hyphenated.
+  - *Image:* the default fit shows the whole image scaled to fit the cell; "crop" fills the cell and crops the overflow, and dragging the cropped image chooses which part shows (double-click re-centres). Image tools (Replace, Ink, Crop) appear on hover; images can also be dropped onto the cell. Images larger than 2400 px on their longest side are scaled down on import to keep work files small.
 - **Toolbar (stage 5):**
-  - Hidden by default; hovering the top edge of the window (a small ▾ tab hints at it) slides it down, and it stays while hovered or while one of its panels is open. Pinning keeps it visible and moves the page down so the bar doesn't cover it. The pin setting is remembered per browser.
+  - Pinned by default: it stays visible and the page sits below it. Unpinned, it hides; hovering the strip it occupies (a small ▾ tab hints at it) slides it down, and it stays while hovered or while one of its panels is open. The pin setting is remembered per browser, not in the work file.
   - *Undo/Redo* buttons sit at the left.
-  - *Styling* is split into four panels: Fonts (a role-by-role picker with 16 suggested Google Fonts; more can be added by name or by pasting a Google Fonts link), Text sizes (pt), Frame & borders, and Newspaper name (ornaments, custom symbols, effect).
+  - *Styling* is split into five panels:
+    - *Fonts:* a role-by-role picker whose menus show each font in its own font. *Manage fonts…* lists the fonts on offer (18 suggested Google Fonts to start): any can be removed (text using it switches to Caladea, undoably), the defaults restored, and more added by name or Google Fonts link. The list is kept per browser; fonts a page uses join it automatically, e.g. on import.
+    - *Text sizes:* in points; a focused field also steps with the mouse wheel.
+    - *Frame & borders:* frame style and cell border thickness.
+    - *Newspaper name:* ornaments, custom symbols, effect.
+    - *Ink:* see Ink colour below.
   - *Import* replaces the page with a work file as one undoable step. Older work files gain any newer style options at their defaults.
   - *Export:* PNG, JPG and PDF are rendered at A4 300 dpi (2481 × 3508 px) without placeholders, handles or other editing aids; the PDF holds that image on an A4 page. File names come from the newspaper name (e.g. `the-daily-chronicle.pdf`).
   - *Background:* the paper grain is a small PNG tile (the earlier SVG noise filter rendered black in exports).
