@@ -302,8 +302,44 @@ function mapNodes(grid: Grid, replace: (node: CellNode) => CellNode | null): Gri
   return changed ? { ...grid, cells } : grid
 }
 
-// Split a leaf in two: its content stays in the first half. 'row' places the
-// halves side by side, 'column' stacks them.
+// Split a cell (or a part of a split cell) in two, its content staying in the
+// first half; 'row' places the halves side by side, 'column' stacks them. A
+// whole, unsplit cell that spans several columns (side by side) or rows
+// (stacked) splits along its grid line closest to the middle, back into two
+// normal grid cells that move and resize with the grid. Otherwise there is no
+// grid line to use, and the part gets its own divider (splitLeaf).
+export function splitPart(grid: Grid, cellId: string, leafId: string, direction: SplitNode['direction']): Grid {
+  const cell = findCell(grid, cellId)
+  if (cell?.node.kind === 'leaf' && cell.node.id === leafId) {
+    const result = direction === 'row' ? unmergeColumns(grid, cellId) : viaTranspose(grid, (g) => unmergeColumns(g, cellId))
+    if (result !== grid) return result
+  }
+  return splitLeaf(grid, leafId, direction)
+}
+
+// Cut a cell spanning several columns at the column line nearest its middle
+// (by width; the first such line on a tie). Unchanged if it spans one column.
+function unmergeColumns(grid: Grid, cellId: string): Grid {
+  const cell = findCell(grid, cellId)
+  if (!cell || cell.colSpan < 2) return grid
+  const widths = grid.cols.slice(cell.col, cell.col + cell.colSpan)
+  const half = widths.reduce((a, b) => a + b, 0) / 2
+  let best = 1
+  let bestGap = Infinity
+  let sum = 0
+  for (let k = 1; k < cell.colSpan; k++) {
+    sum += widths[k - 1]
+    const gap = Math.abs(sum - half)
+    if (gap < bestGap - 1e-9) [best, bestGap] = [k, gap]
+  }
+  const first: GridCell = { ...cell, colSpan: best }
+  const second: GridCell = { ...emptyCell(cell.col + best, cell.row), colSpan: cell.colSpan - best, rowSpan: cell.rowSpan }
+  const cells = grid.cells.flatMap((c) => (c.id === cellId ? [first, second] : [c]))
+  return { ...grid, cells }
+}
+
+// Give a part its own divider: its content stays in the first half. 'row'
+// places the halves side by side, 'column' stacks them.
 export function splitLeaf(grid: Grid, leafId: string, direction: SplitNode['direction']): Grid {
   return mapNodes(grid, (node) =>
     node.kind === 'leaf' && node.id === leafId

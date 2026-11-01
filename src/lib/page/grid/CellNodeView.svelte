@@ -7,7 +7,7 @@
     mergeLeafToward,
     mergeLine,
     setElement,
-    splitLeaf,
+    splitPart,
     type Direction,
   } from '../../model/grid'
   import { createElement, type ElementType } from '../../model/elements'
@@ -56,8 +56,8 @@
     const items: MenuEntry[] = [
       ...elements,
       'separator',
-      { label: t.splitSideBySide, action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'row')) },
-      { label: t.splitTopBottom, action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'column')) },
+      { label: t.splitSideBySide, action: () => editor.updateGrid((g) => splitPart(g, cell.id, node.id, 'row')) },
+      { label: t.splitTopBottom, action: () => editor.updateGrid((g) => splitPart(g, cell.id, node.id, 'column')) },
     ]
     // Within a split cell, a direction first means the neighbouring part.
     const merges: MenuEntry[] = MERGES.filter((dir) => canMergeLeafToward(grid, cell.id, node.id, dir)).map((dir) => ({

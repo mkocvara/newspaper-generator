@@ -118,7 +118,7 @@ Below, you can add notes and additional clarifications regarding the content of 
 ## Clarifications agreed with the user (2026-11-01)
 - **Tech stack:** Svelte 5 + Vite + TypeScript, static site, deployed to GitHub Pages.
 - **Merging:** merged cells are always rectangles. Merging more than two at once (e.g. a whole column) is allowed if it can be done elegantly.
-- **Splitting:** splitting a cell only affects that cell; it never alters the rest of the layout (no new page-wide grid lines).
+- **Splitting:** splitting a cell only affects that cell; it never alters the rest of the layout (no new page-wide grid lines). A whole cell merged across several columns (split side by side) or rows (split top and bottom) splits along its existing grid line closest to the middle (the first on a tie), back into two normal grid cells that move, resize and merge like any other; its content stays in the first. Otherwise (a single cell, the other direction, or a part of an already split cell) the cell gets its own divider inside it, as before.
 - **Moving:** moving a cell pushes the others along (no swapping). Moves that would break other parts of the layout must not be possible.
 - **Text overflow:** text that doesn't fit its cell shrinks to fit; articles shrink their body first, then their heading, and finally cut the body off with an ellipsis (see Elements).
 - **Fonts:** Caladea is used instead of Cambria (Cambria is not a Google Font; Caladea is metrically compatible).
