@@ -6,4 +6,6 @@ body {
   margin: 0;
   min-height: 100vh;
   background: #5b5750;
+  /* The page pans and zooms inside its own viewport instead. */
+  overflow: hidden;
 }

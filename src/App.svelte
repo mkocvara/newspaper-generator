@@ -8,10 +8,13 @@
   import { flushEdits } from './lib/state/flush'
   import { handleHistoryShortcut } from './lib/state/shortcuts'
   import Toolbar from './lib/toolbar/Toolbar.svelte'
+  import Viewport from './lib/view/Viewport.svelte'
 
   const AUTOSAVE_DELAY_MS = 500
 
   const PIN_KEY = 'newspaper:toolbar-pinned'
+  // The pinned toolbar's height; the page's viewport starts below it.
+  const TOOLBAR_HEIGHT = 56
 
   let ready = $state(false)
 
@@ -73,21 +76,8 @@
 
 <Toolbar bind:pinned />
 
-<main class:pinned>
+<Viewport top={pinned ? TOOLBAR_HEIGHT : 0}>
   {#if ready}
     <Page />
   {/if}
-</main>
-
-<style>
-  main {
-    display: flex;
-    justify-content: center;
-    padding: 48px 16px;
-  }
-
-  /* Keep the pinned toolbar from covering the top of the page. */
-  main.pinned {
-    padding-top: 88px;
-  }
-</style>
+</Viewport>
