@@ -80,9 +80,10 @@ export class Editor {
     this.update((page) => Object.assign(page, file.page))
   }
 
-  // Start over with a fresh default page, as one undoable step.
-  reset() {
-    this.update((page) => Object.assign(page, createDefaultPage()))
+  // Start over with a fresh page (by default, the default page), as one
+  // undoable step.
+  reset(fresh: Page = createDefaultPage()) {
+    this.update((page) => Object.assign(page, fresh))
   }
 
   load(file: WorkFile) {

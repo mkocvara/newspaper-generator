@@ -2,25 +2,19 @@ import type { NameDecoration, NameEffect, Ornament } from '../model/types'
 
 // Presets for ornaments that need a mirrored pair at a tuned size; any other
 // symbols are picked as custom symbols.
-export const ORNAMENTS: { value: Ornament; label: string; symbols?: [string, string] }[] = [
-  { value: 'none', label: 'None' },
-  { value: 'fleurons', label: 'Fleurons', symbols: ['❧', '☙'] },
-  { value: 'guillemets-in', label: 'Guillemets, pointing in', symbols: ['»', '«'] },
-  { value: 'guillemets-out', label: 'Guillemets, pointing out', symbols: ['«', '»'] },
-  { value: 'hands', label: 'Pointing hands', symbols: ['☛', '☚'] },
-  { value: 'curls', label: 'Curls', symbols: ['⊰', '⊱'] },
-  { value: 'rules', label: 'Extending rules' },
-  { value: 'custom', label: 'Custom symbols' },
+// Their names are in the UI text (i18n `name.ornamentStyles`).
+export const ORNAMENTS: { value: Ornament; symbols?: [string, string] }[] = [
+  { value: 'none' },
+  { value: 'fleurons', symbols: ['❧', '☙'] },
+  { value: 'guillemets-in', symbols: ['»', '«'] },
+  { value: 'guillemets-out', symbols: ['«', '»'] },
+  { value: 'hands', symbols: ['☛', '☚'] },
+  { value: 'curls', symbols: ['⊰', '⊱'] },
+  { value: 'rules' },
+  { value: 'custom' },
 ]
 
-export const EFFECTS: { value: NameEffect; label: string }[] = [
-  { value: 'none', label: 'None' },
-  { value: 'shadow', label: 'Drop shadow' },
-  { value: 'extrude', label: '3D extrude' },
-  { value: 'engraved', label: 'Engraved' },
-  { value: 'outline', label: 'Outline' },
-  { value: 'hatched', label: 'Hatched' },
-]
+export const EFFECTS: NameEffect[] = ['none', 'shadow', 'extrude', 'engraved', 'outline', 'hatched']
 
 // The symbols to show before and after the name, if any.
 export function ornamentSymbols(decoration: NameDecoration): [string, string] | null {

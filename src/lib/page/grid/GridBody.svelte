@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../../i18n/i18n.svelte'
   import { insertColumn, insertRow, removeColumn, removeRow } from '../../model/grid'
   import { editor } from '../../state/editor.svelte'
   import Menu, { type MenuEntry } from '../../ui/Menu.svelte'
@@ -26,12 +27,16 @@
   const trackMenu = (axis: 'column' | 'row', index: number): MenuEntry[] => {
     const [insert, remove, count] =
       axis === 'column' ? [insertColumn, removeColumn, grid.cols.length] : [insertRow, removeRow, grid.rows.length]
-    const [before, after] = axis === 'column' ? ['left', 'right'] : ['above', 'below']
+    const t = i18n.t.grid
+    const [before, after, del] =
+      axis === 'column'
+        ? [t.insertColumnLeft, t.insertColumnRight, t.deleteColumn]
+        : [t.insertRowAbove, t.insertRowBelow, t.deleteRow]
     const items: MenuEntry[] = [
-      { label: `Insert ${axis} ${before}`, action: () => editor.updateGrid((g) => insert(g, index)) },
-      { label: `Insert ${axis} ${after}`, action: () => editor.updateGrid((g) => insert(g, index + 1)) },
+      { label: before, action: () => editor.updateGrid((g) => insert(g, index)) },
+      { label: after, action: () => editor.updateGrid((g) => insert(g, index + 1)) },
     ]
-    if (count > 1) items.push('separator', { label: `Delete ${axis}`, action: () => editor.updateGrid((g) => remove(g, index)) })
+    if (count > 1) items.push('separator', { label: del, action: () => editor.updateGrid((g) => remove(g, index)) })
     return items
   }
 </script>
@@ -52,12 +57,12 @@
   <!-- Spreadsheet-style tabs for adding and removing columns and rows. -->
   {#each spans(grid.cols) as span, i (i)}
     <div class="tab col-tab ui-only" style:left="{span.start}%" style:width="{span.size}%">
-      <Menu label="Column {i + 1}" icon="▾" items={trackMenu('column', i)} />
+      <Menu label={i18n.t.grid.column(i + 1)} icon="▾" items={trackMenu('column', i)} />
     </div>
   {/each}
   {#each spans(grid.rows) as span, i (i)}
     <div class="tab row-tab ui-only" style:top="{span.start}%" style:height="{span.size}%">
-      <Menu label="Row {i + 1}" icon="▸" items={trackMenu('row', i)} />
+      <Menu label={i18n.t.grid.row(i + 1)} icon="▸" items={trackMenu('row', i)} />
     </div>
   {/each}
 </div>

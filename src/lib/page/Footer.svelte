@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../i18n/i18n.svelte'
   import { editor } from '../state/editor.svelte'
   import EditableText from '../ui/EditableText.svelte'
   import { fitText } from '../ui/fitText'
@@ -15,12 +16,12 @@
   const style = $derived(editor.page.style)
   const textPx = $derived(footer.heightMm * MM_PX * TEXT_RATIO)
 
-  const slots = [
+  const slots = $derived([
     // 'safe' keeps overflow on the end side, where fitText can detect it.
-    { field: 'left', align: 'flex-start', placeholder: 'Left text' },
-    { field: 'center', align: 'safe center', placeholder: 'Centre text' },
-    { field: 'right', align: 'safe flex-end', placeholder: 'Right text' },
-  ] as const
+    { field: 'left', align: 'flex-start', placeholder: i18n.t.page.footerLeft },
+    { field: 'center', align: 'safe center', placeholder: i18n.t.page.footerCenter },
+    { field: 'right', align: 'safe flex-end', placeholder: i18n.t.page.footerRight },
+  ] as const)
 
   let startHeight = 0
 </script>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../../i18n/i18n.svelte'
   import { findNode } from '../../model/grid'
   import type { ImageElement } from '../../model/types'
   import { editor } from '../../state/editor.svelte'
@@ -120,7 +121,7 @@
           class:ink-pending={inkPending}
           style:object-position="{position.x}% {position.y}%"
           draggable="false"
-          title="Drag to choose which part shows. Double-click to centre."
+          title={i18n.t.elements.panTitle}
           onpointerdown={startPan}
           ondblclick={() => patchElement<ImageElement>(leafId, { position: undefined })}
         />
@@ -129,28 +130,26 @@
       {/if}
     {:else}
       <button class="choose ui-only" type="button" onclick={() => input?.click()}>
-        Choose an image<br /><small>or drop one here</small>
+        {i18n.t.elements.chooseImage}<br /><small>{i18n.t.elements.orDropImage}</small>
       </button>
     {/if}
 
     <div class="tools ui-only">
       {#if src}
-        <button type="button" title="Replace image" onclick={() => input?.click()}>Replace</button>
+        <button type="button" title={i18n.t.elements.replaceTitle} onclick={() => input?.click()}>{i18n.t.elements.replace}</button>
       {/if}
       <button
         type="button"
-        title="Print the image in the ink colour"
+        title={i18n.t.elements.inkTitle}
         aria-pressed={element.ink}
-        onclick={() => patchElement<ImageElement>(leafId, { ink: !element.ink })}>Ink</button
+        onclick={() => patchElement<ImageElement>(leafId, { ink: !element.ink })}>{i18n.t.elements.ink}</button
       >
       <button
         type="button"
-        title={element.fit === 'crop'
-          ? 'Cropped to fill the cell. Click to show the whole image.'
-          : 'Whole image shown. Click to crop it to fill the cell.'}
+        title={element.fit === 'crop' ? i18n.t.elements.cropOnTitle : i18n.t.elements.cropOffTitle}
         aria-pressed={element.fit === 'crop'}
         onclick={() => patchElement<ImageElement>(leafId, { fit: element.fit === 'crop' ? 'scale' : 'crop' })}
-        >Crop</button
+        >{i18n.t.elements.crop}</button
       >
     </div>
   </div>
@@ -159,7 +158,7 @@
     <EditableText
       value={element.caption}
       onchange={(caption) => patchElement<ImageElement>(leafId, { caption })}
-      placeholder="Image description"
+      placeholder={i18n.t.elements.imageDescription}
       wrap
     />
   </figcaption>

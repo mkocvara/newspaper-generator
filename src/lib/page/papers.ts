@@ -1,10 +1,5 @@
 import type { PaperStyle } from '../model/types'
 
-// The papers on offer; their look is in papers.css (class `paper-<value>`).
-export const PAPERS: { value: PaperStyle; label: string }[] = [
-  { value: 'newsprint', label: 'Newsprint' },
-  { value: 'aged-clean', label: 'Old paper' },
-  { value: 'aged', label: 'Old & stained' },
-  { value: 'modern', label: 'Modern plain' },
-  { value: 'modern-creased', label: 'Modern, creased' },
-]
+// The papers on offer; their look is in papers.css (class `paper-<value>`) and
+// their names in the UI text (i18n `paper.styles`).
+export const PAPERS: PaperStyle[] = ['newsprint', 'aged-clean', 'aged', 'modern', 'modern-creased']

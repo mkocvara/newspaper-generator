@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../../i18n/i18n.svelte'
   import { canMove, equalizeTracks, moveCell, resizeTracks } from '../../model/grid'
   import type { Grid, GridCell } from '../../model/types'
   import { editor } from '../../state/editor.svelte'
@@ -83,8 +84,8 @@
   <button
     class="grip ui-only"
     type="button"
-    title="Drag to move this cell along its column or row"
-    aria-label="Move cell"
+    title={i18n.t.grid.moveCellTitle}
+    aria-label={i18n.t.grid.moveCell}
     {onpointerdown}
     {onpointermove}
     {onpointerup}

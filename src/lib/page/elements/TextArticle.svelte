@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { i18n } from '../../i18n/i18n.svelte'
   import type { TextElement } from '../../model/types'
   import { editor } from '../../state/editor.svelte'
   import EditableText from '../../ui/EditableText.svelte'
@@ -20,10 +21,10 @@
   {@attach fitArticle({ headingPt: sizes.headingPt, bodyPt: sizes.bodyPt, watch })}
 >
   <div class="heading">
-    <EditableText value={element.heading} onchange={set('heading')} placeholder="Heading" wrap />
+    <EditableText value={element.heading} onchange={set('heading')} placeholder={i18n.t.elements.heading} wrap />
   </div>
   <div class="body">
-    <EditableText value={element.body} onchange={set('body')} placeholder="Article text" multiline />
+    <EditableText value={element.body} onchange={set('body')} placeholder={i18n.t.elements.article} multiline />
   </div>
 </div>
 
