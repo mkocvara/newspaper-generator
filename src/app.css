@@ -1,23 +1,22 @@
 :root {
   font-family: 'Caladea', Cambria, Georgia, serif;
 
-  /* Menus, panels and dialogs: the darkest grey that keeps the dark text at
-     WCAG AA contrast (4.5:1), with every colour on it checked to pass too
-     (text 4.5:1, borders and selection marks 3:1). Highlights go lighter, as
-     anything darker would drop the text below AA. */
-  --menu-bg: #898989;
+  /* Menus, panels and dialogs: a grey that keeps the dark text well above
+     WCAG AA contrast (6.3:1), with every colour on it checked to pass too
+     (text 4.5:1, borders and selection marks 3:1). Highlights go lighter. */
+  --menu-bg: #a3a3a3;
   --menu-text: #222222;
-  --menu-hint: #1f1f1f;
-  --menu-field: #a8a8a8;
-  --menu-field-hover: #b5b5b5;
-  --menu-field-border: #3d3d3d;
-  --menu-hover: #9a9a9a;
+  --menu-hint: #3a3a3a;
+  --menu-field: #c2c2c2;
+  --menu-field-hover: #cfcfcf;
+  --menu-field-border: #545454;
+  --menu-hover: #b5b5b5;
   --menu-rule: rgb(0 0 0 / 0.3);
-  --menu-link: #11223e;
-  --menu-accent: #1f3e70;
-  --menu-done: #0d2813;
-  --menu-danger: #7a1b1b;
-  --menu-placeholder: #3b3b3b;
+  --menu-link: #1c3966;
+  --menu-accent: #295395;
+  --menu-done: #16411f;
+  --menu-danger: #a02323;
+  --menu-placeholder: #505050;
 }
 
 body {
