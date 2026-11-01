@@ -17,6 +17,7 @@ import {
   resizeTracks,
   setElement,
   splitLeaf,
+  splitPart,
 } from './grid'
 import { createElement } from './elements'
 import type { CellNode, Grid, GridCell, LeafNode } from './types'
@@ -237,6 +238,103 @@ describe('setElement', () => {
     if (filled.kind !== 'split') throw new Error()
     expect(filled.children[1]).toMatchObject({ id: part, element: { type: 'eyecatcher', main: '', sub: '' } })
     expect(setElement(g, 'missing', null)).toBe(g)
+  })
+})
+
+describe('splitting a merged cell', () => {
+  it('splits a cell across two columns back into two grid cells', () => {
+    let g = grid3()
+    g = mergeToward(g, at(g, 0, 0).id, 'right')
+    g = withNode(g, 0, 0, text('A'))
+    const merged = at(g, 0, 0)
+    g = splitPart(g, merged.id, 'leaf-A', 'row')
+    expectValidTiling(g)
+    expect(g.cells).toHaveLength(9)
+    expect(at(g, 0, 0)).toMatchObject({ id: merged.id, colSpan: 1, node: text('A') })
+    expect(at(g, 1, 0)).toMatchObject({ colSpan: 1, node: { kind: 'leaf', element: null } })
+    expect(at(g, 1, 0).id).not.toBe(merged.id)
+  })
+
+  it('splits a 2x2 block into two cells, either way', () => {
+    let g = grid3()
+    g = mergeToward(g, at(g, 0, 0).id, 'right')
+    g = mergeToward(g, at(g, 0, 0).id, 'down')
+    const block = at(g, 0, 0)
+    const sideBySide = splitPart(g, block.id, block.node.id, 'row')
+    expectValidTiling(sideBySide)
+    expect(at(sideBySide, 0, 0)).toMatchObject({ colSpan: 1, rowSpan: 2 })
+    expect(at(sideBySide, 1, 1)).toMatchObject({ col: 1, colSpan: 1, rowSpan: 2 })
+    const stacked = splitPart(g, block.id, block.node.id, 'column')
+    expectValidTiling(stacked)
+    expect(at(stacked, 0, 0)).toMatchObject({ colSpan: 2, rowSpan: 1 })
+    expect(at(stacked, 1, 1)).toMatchObject({ row: 1, colSpan: 2, rowSpan: 1 })
+  })
+
+  it('cuts at the grid line closest to the middle', () => {
+    const start = grid3()
+    let g = mergeLine(start, at(start, 0, 0).id, 'row')
+    g = { ...g, cols: [1, 1, 2] }
+    expect(at(g, 0, 0).colSpan).toBe(3)
+    const row = at(g, 0, 0)
+    // Widths 1 | 1 | 2: the line after two columns is exactly in the middle.
+    const split = splitPart(g, row.id, row.node.id, 'row')
+    expect(at(split, 0, 0).colSpan).toBe(2)
+    expect(at(split, 2, 0).colSpan).toBe(1)
+    // Equal widths: both inner lines are as close; the first one wins.
+    const even = splitPart({ ...g, cols: [1, 1, 1] }, row.id, row.node.id, 'row')
+    expect(at(even, 0, 0).colSpan).toBe(1)
+    expect(at(even, 1, 0).colSpan).toBe(2)
+  })
+
+  it('splits a full-width part of a split cell along the grid line through it', () => {
+    // A column-high cell, privately split 75/25 into a top and a bottom part
+    // (the reported layout): splitting the top part stacked uses the row line
+    // nearest its middle, and the bottom part stays where it is on the page.
+    const start = grid3()
+    let g = mergeLine(start, at(start, 0, 0).id, 'column')
+    const tall = at(g, 0, 0)
+    const top = text('Top')
+    const bottom = text('Bottom')
+    g = withNode(g, 0, 0, { kind: 'split', id: 's', direction: 'column', sizes: [3, 1], children: [top, bottom] })
+    g = splitPart(g, tall.id, 'leaf-Top', 'column')
+    expectValidTiling(g)
+    expect(at(g, 0, 0)).toMatchObject({ id: tall.id, row: 0, rowSpan: 1, node: top })
+    const rest = at(g, 0, 1)
+    expect(rest).toMatchObject({ row: 1, rowSpan: 2 })
+    if (rest.node.kind !== 'split') throw new Error()
+    expect(rest.node.children[1]).toEqual(bottom)
+    // The bottom part still starts at 75% of the original column, and the
+    // sizes fill the new cell (as flex-grow factors they must sum to 1).
+    const [emptyPart, bottomPart] = rest.node.sizes
+    expect(emptyPart + bottomPart).toBeCloseTo(1)
+    expect(1 / 3 + (2 / 3) * emptyPart).toBeCloseTo(0.75)
+  })
+
+  it('divides a part privately if the grid line would also cut its neighbours', () => {
+    const start = grid3()
+    let g = mergeLine(start, at(start, 0, 0).id, 'column')
+    const tall = at(g, 0, 0)
+    // Side by side halves: a row line through the left one would cut the right one too.
+    g = withNode(g, 0, 0, { kind: 'split', id: 's', direction: 'row', sizes: [1, 1], children: [text('L'), text('R')] })
+    const after = splitPart(g, tall.id, 'leaf-L', 'column')
+    expect(after.cells).toHaveLength(g.cells.length)
+  })
+
+  it('divides privately where there is no grid line to use', () => {
+    let g = grid3()
+    g = mergeToward(g, at(g, 0, 0).id, 'right')
+    const merged = at(g, 0, 0)
+    // Stacked halves of a one-row cell: no row line inside it.
+    const stacked = splitPart(g, merged.id, merged.node.id, 'column')
+    expect(stacked.cells).toHaveLength(g.cells.length)
+    expect(at(stacked, 0, 0).node).toMatchObject({ kind: 'split', direction: 'column' })
+    // A single cell, and a part of an already split cell.
+    const single = at(g, 0, 1)
+    expect(at(splitPart(g, single.id, single.node.id, 'row'), 0, 1).node.kind).toBe('split')
+    const halves = at(stacked, 0, 0).node
+    if (halves.kind !== 'split') throw new Error()
+    const again = splitPart(stacked, merged.id, halves.children[0].id, 'row')
+    expect(again.cells).toHaveLength(stacked.cells.length)
   })
 })
 
