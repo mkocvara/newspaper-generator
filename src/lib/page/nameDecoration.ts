@@ -1,11 +1,9 @@
 import type { NameDecoration, NameEffect, Ornament } from '../model/types'
 
-// Presets for ornaments that look best at a tuned size (and the mirrored
-// fleurons); any other symbols are picked as custom symbols.
+// Presets for ornaments that need a mirrored pair at a tuned size; any other
+// symbols are picked as custom symbols.
 export const ORNAMENTS: { value: Ornament; label: string; symbols?: [string, string] }[] = [
   { value: 'none', label: 'None' },
-  { value: 'bars', label: 'Vertical bars', symbols: ['┃', '┃'] },
-  { value: 'double-bars', label: 'Double bars', symbols: ['‖', '‖'] },
   { value: 'fleurons', label: 'Fleurons', symbols: ['❧', '☙'] },
   { value: 'rules', label: 'Extending rules' },
   { value: 'custom', label: 'Custom symbols' },

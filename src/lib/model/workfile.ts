@@ -38,6 +38,8 @@ export function parseWorkFile(data: unknown): WorkFile | null {
 
 // Symbol ornament presets older pages may use; they load as custom symbols.
 const LEGACY_ORNAMENTS: Record<string, [string, string]> = {
+  bars: ['┃', '┃'],
+  'double-bars': ['‖', '‖'],
   stars: ['★', '★'],
   diamonds: ['◆', '◆'],
 }
