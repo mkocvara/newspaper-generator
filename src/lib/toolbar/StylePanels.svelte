@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Attachment } from 'svelte/attachments'
   import { FONT_CHOICES, loadFont, parseFontInput } from '../fonts'
   import type { Fonts, FrameStyle, Style } from '../model/types'
   import { EFFECTS, ORNAMENTS } from '../page/nameDecoration'
@@ -58,6 +59,20 @@
     }
   }
 
+  // Firefox and Chrome don't step a number input with the mouse wheel, so do
+  // it while the input is focused: one step per wheel notch, committed at once.
+  const wheelStep: Attachment<HTMLInputElement> = (input) => {
+    const onWheel = (event: WheelEvent) => {
+      if (document.activeElement !== input || event.deltaY === 0) return
+      event.preventDefault()
+      if (event.deltaY < 0) input.stepUp()
+      else input.stepDown()
+      input.dispatchEvent(new Event('change', { bubbles: true }))
+    }
+    input.addEventListener('wheel', onWheel, { passive: false })
+    return () => input.removeEventListener('wheel', onWheel)
+  }
+
   // --- Colour: live preview while picking, one undo step for the whole pick.
   let picking = false
   function previewColor(event: Event & { currentTarget: HTMLInputElement }) {
@@ -101,7 +116,9 @@
     {/each}
 
     <div class="add-font">
-      <span class="hint">Add a Google Font by name or link</span>
+      <span class="hint"
+        >Add a <a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer">Google Font</a> by name or link</span
+      >
       <div class="inline">
         <input
           type="text"
@@ -119,7 +136,7 @@
 <Panel label="Text sizes">
   <div class="form">
     <label class="row">
-      <span>Body text (pt)</span>
+      <span>Body text</span>
       <input
         type="number"
         min="5"
@@ -127,10 +144,11 @@
         step="0.5"
         value={style.sizes.bodyPt}
         onchange={numberSetter(5, 20, (s, v) => (s.sizes.bodyPt = v))}
+        {@attach wheelStep}
       />
     </label>
     <label class="row">
-      <span>Headings (pt)</span>
+      <span>Headings</span>
       <input
         type="number"
         min="6"
@@ -138,10 +156,11 @@
         step="0.5"
         value={style.sizes.headingPt}
         onchange={numberSetter(6, 48, (s, v) => (s.sizes.headingPt = v))}
+        {@attach wheelStep}
       />
     </label>
     <label class="row">
-      <span>Image descriptions (pt)</span>
+      <span>Image descriptions</span>
       <input
         type="number"
         min="4"
@@ -149,9 +168,13 @@
         step="0.5"
         value={style.sizes.captionPt}
         onchange={numberSetter(4, 16, (s, v) => (s.sizes.captionPt = v))}
+        {@attach wheelStep}
       />
     </label>
-    <span class="hint">Header, footer and eyecatcher text sizes follow their cells.</span>
+    <span class="hint"
+      >Sizes are in points. Body text shrinks when it wouldn't fit its cell at the set size; headings keep their
+      size unless the article has no body text. Header, footer and eyecatcher text sizes follow their cells.</span
+    >
   </div>
 </Panel>
 
@@ -344,5 +367,9 @@
   .hint {
     color: #666;
     font-size: 12px;
+  }
+
+  .hint a {
+    color: #2f5ea8;
   }
 </style>
