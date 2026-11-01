@@ -141,12 +141,17 @@
     opacity: 1;
   }
 
-  /* Touchscreens: always shown, finger-sized at any zoom. */
+  /* Touchscreens: always shown, finger-sized at any zoom, and in the top-right
+     corner just left of the cell's ⋯ menu (a 20px button at the same scale)
+     rather than over the start of a heading. */
   @media (hover: none) {
     .grip {
+      --scale: calc(var(--ui-scale, 1) * 1.6);
+      left: auto;
+      right: calc(3px + 24px * var(--scale));
       opacity: 1;
-      transform: scale(calc(var(--ui-scale, 1) * 1.6));
-      transform-origin: top left;
+      transform: scale(var(--scale));
+      transform-origin: top right;
     }
   }
 
