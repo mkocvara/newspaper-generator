@@ -1,18 +1,24 @@
 <script lang="ts">
+  import { cancelOnMultiTouch, multiTouch } from './multiTouch'
+
   // A thin draggable strip along one edge of its positioned parent. Reports
   // the drag distance in page millimetres, so callers don't care how the page
   // is scaled on screen. Double-clicking calls `onreset` (e.g. back to 50/50).
+  // A second finger landing mid-drag (to pinch or pan) calls `oncancel`
+  // instead of `onend`, so the drag can be undone.
   let {
     edge,
     onstart,
     onmove,
     onend,
+    oncancel,
     onreset,
   }: {
     edge: 'top' | 'bottom' | 'left' | 'right'
     onstart: () => void
     onmove: (deltaMm: number) => void
     onend: () => void
+    oncancel: () => void
     onreset?: () => void
   } = $props()
 
@@ -21,16 +27,23 @@
 
   let start = 0
   let pxPerMm = 1
+  let stopWatching: (() => void) | undefined
 
   function onpointerdown(event: PointerEvent) {
     const handle = event.currentTarget as HTMLElement
     const page = handle.closest('.page')
-    if (!page) return
+    if (!page || multiTouch()) return
     event.preventDefault()
     handle.setPointerCapture(event.pointerId)
     pxPerMm = page.getBoundingClientRect().width / PAGE_WIDTH_MM
     start = vertical ? event.clientY : event.clientX
     onstart()
+    const pointerId = event.pointerId
+    stopWatching = cancelOnMultiTouch(() => {
+      if (handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId)
+      stopWatching = undefined
+      oncancel()
+    })
   }
 
   function onpointermove(event: PointerEvent) {
@@ -44,6 +57,8 @@
     const handle = event.currentTarget as HTMLElement
     if (!handle.hasPointerCapture(event.pointerId)) return
     handle.releasePointerCapture(event.pointerId)
+    stopWatching?.()
+    stopWatching = undefined
     onend()
   }
 </script>
@@ -97,5 +112,74 @@
   .handle:hover,
   .handle:active {
     background: rgb(70 120 200 / 0.25);
+  }
+
+  /* Touchscreens: a finger-sized grab area in the middle of the border, with
+     a pill showing it; just that area, not the whole border, so it doesn't
+     cover the text beside the border. Sized against the zoom (--ui-scale). */
+  @media (hover: none) {
+    .handle {
+      --size: calc(var(--ui-scale, 1) * 22px);
+      --length: calc(var(--ui-scale, 1) * 64px);
+      background: none;
+    }
+
+    .handle.vertical {
+      left: calc(50% - var(--length) / 2);
+      right: auto;
+      width: var(--length);
+    }
+
+    .handle:not(.vertical) {
+      top: calc(50% - var(--length) / 2);
+      bottom: auto;
+      height: var(--length);
+    }
+
+    .handle::after {
+      content: '';
+      position: absolute;
+      inset: 50% auto auto 50%;
+      translate: -50% -50%;
+      border-radius: 999px;
+      background: rgb(70 120 200 / 0.55);
+    }
+
+    .handle.vertical::after {
+      width: calc(var(--ui-scale, 1) * 36px);
+      height: calc(var(--ui-scale, 1) * 5px);
+    }
+
+    .handle:not(.vertical)::after {
+      width: calc(var(--ui-scale, 1) * 5px);
+      height: calc(var(--ui-scale, 1) * 36px);
+    }
+
+    /* A cell's handles show once it's selected (header and footer handles
+       always show). */
+    :global(.cell:not(.selected)) .handle {
+      display: none;
+    }
+
+    .handle.vertical {
+      height: var(--size);
+    }
+
+    .handle:not(.vertical) {
+      width: var(--size);
+    }
+
+    .top {
+      top: calc(var(--size) / -2);
+    }
+    .bottom {
+      bottom: calc(var(--size) / -2);
+    }
+    .left {
+      left: calc(var(--size) / -2);
+    }
+    .right {
+      right: calc(var(--size) / -2);
+    }
   }
 </style>

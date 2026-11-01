@@ -81,6 +81,8 @@ export const en = {
     pinTitle: 'Pin: keep the toolbar visible',
     unpinTitle: 'Unpin: hide the toolbar when not in use',
     language: 'Language',
+    menu: 'Tools',
+    closeMenu: 'Close tools',
   },
 
   status: {

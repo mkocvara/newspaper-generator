@@ -38,6 +38,7 @@
       editor.page.footer.heightMm = Math.round(height * 2) / 2
     }}
     onend={() => editor.endGesture()}
+    oncancel={() => editor.cancelGesture()}
   />
 
   <FrameRule kind={style.frameStyle} outer="top" />

@@ -6,6 +6,8 @@
   import ResizeHandle from '../../ui/ResizeHandle.svelte'
   import CellNodeView from './CellNodeView.svelte'
   import { drag } from './dragMove.svelte'
+  import { selection, selectOnTap } from './selection.svelte'
+  import { cancelOnMultiTouch, multiTouch } from '../../ui/multiTouch'
 
   // Columns and rows can't be dragged narrower than this.
   const MIN_TRACK_MM = 10
@@ -32,6 +34,7 @@
         editor.page.grid[axis] = resizeTracks(startTracks, border, deltaMm * perMm, MIN_TRACK_MM * perMm)
       },
       onend: () => editor.endGesture(),
+      oncancel: () => editor.cancelGesture(),
       onreset: () =>
         editor.update((p) => {
           p.grid[axis] = equalizeTracks(p.grid[axis], border)
@@ -48,11 +51,21 @@
     return target?.closest<HTMLElement>('[data-cell-id]')?.dataset.cellId ?? null
   }
 
+  let stopWatching: (() => void) | undefined
+
   function onpointerdown(event: PointerEvent) {
+    if (multiTouch()) return
     event.preventDefault()
-    ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+    const grip = event.currentTarget as HTMLElement
+    grip.setPointerCapture(event.pointerId)
     drag.fromId = cell.id
     drag.overId = cell.id
+    // A second finger (to pinch or pan) drops the move.
+    const pointerId = event.pointerId
+    stopWatching = cancelOnMultiTouch(() => {
+      if (grip.hasPointerCapture(pointerId)) grip.releasePointerCapture(pointerId)
+      drag.fromId = drag.overId = null
+    })
   }
 
   function onpointermove(event: PointerEvent) {
@@ -60,6 +73,8 @@
   }
 
   function onpointerup() {
+    stopWatching?.()
+    stopWatching = undefined
     if (drag.fromId !== cell.id) return
     const { fromId, overId } = drag
     drag.fromId = drag.overId = null
@@ -76,6 +91,8 @@
   class:drag-source={drag.fromId === cell.id}
   class:droppable
   class:drop-here={droppable && drag.overId === cell.id}
+  class:selected={selection.cellId === cell.id}
+  {@attach selectOnTap(() => cell.id)}
   style:grid-column="{cell.col + 1} / span {cell.colSpan}"
   style:grid-row="{cell.row + 1} / span {cell.rowSpan}"
 >
@@ -139,6 +156,35 @@
   .cell:hover > .grip,
   .drag-source > .grip {
     opacity: 1;
+  }
+
+  /* Touchscreens: shown on the selected cell (see selection.svelte.ts),
+     finger-sized at any zoom, in the top-right corner just left of the cell's
+     ⋯ menu (a 20px button at the same scale) rather than over the start of a
+     heading. The selected cell is outlined. */
+  @media (hover: none) {
+    .grip {
+      --scale: calc(var(--ui-scale, 1) * 1.6);
+      left: auto;
+      right: calc(3px + 24px * var(--scale));
+      visibility: hidden;
+      transform: scale(var(--scale));
+      transform-origin: top right;
+    }
+
+    .selected > .grip {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .selected {
+      outline: calc(var(--ui-scale, 1) * 2px) dashed rgb(47 94 168 / 0.8);
+      outline-offset: calc(var(--ui-scale, 1) * -2px);
+    }
+
+    :global(.exporting) .selected {
+      outline: none;
+    }
   }
 
   .drag-source {

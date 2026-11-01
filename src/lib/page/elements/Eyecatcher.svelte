@@ -83,4 +83,11 @@
   .sub-hint:focus-within {
     opacity: 1;
   }
+
+  /* Touchscreens have no hover: the hint shows on the selected cell. */
+  @media (hover: none) {
+    :global(.cell.selected) .sub-hint {
+      opacity: 1;
+    }
+  }
 </style>

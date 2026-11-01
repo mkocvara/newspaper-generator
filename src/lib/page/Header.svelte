@@ -103,6 +103,7 @@
       editor.page.header.heightMm = Math.round(height * 2) / 2
     }}
     onend={() => editor.endGesture()}
+    oncancel={() => editor.cancelGesture()}
   />
 </header>
 

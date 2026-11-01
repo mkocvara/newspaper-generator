@@ -12,12 +12,14 @@
   import { handleHistoryShortcut } from './lib/state/shortcuts'
   import Toolbar from './lib/toolbar/Toolbar.svelte'
   import Viewport from './lib/view/Viewport.svelte'
+  import { deselectOnTapOutside } from './lib/page/grid/selection.svelte'
 
   const AUTOSAVE_DELAY_MS = 500
 
   const PIN_KEY = 'newspaper:toolbar-pinned'
-  // The pinned toolbar's height; the page's viewport starts below it.
+  // The docked toolbar's height; the page's viewport starts below it.
   let toolbarHeight = $state(56)
+  let toolbarDocked = $state(true)
 
   let ready = $state(false)
 
@@ -58,6 +60,9 @@
     ready = true
   })
 
+  // Touchscreens: a tap outside the grid's cells deselects the selected cell.
+  $effect(() => deselectOnTapOutside(document.body))
+
   // Lets the browser use the right hyphenation and spelling rules.
   $effect(() => {
     document.documentElement.lang = i18n.language
@@ -83,9 +88,9 @@
 <svelte:window onkeydown={(event) => handleHistoryShortcut(event, editor)} onpagehide={saveNow} />
 <svelte:document onvisibilitychange={() => document.visibilityState === 'hidden' && saveNow()} />
 
-<Toolbar bind:pinned bind:height={toolbarHeight} />
+<Toolbar bind:pinned bind:height={toolbarHeight} bind:docked={toolbarDocked} />
 
-<Viewport top={pinned ? toolbarHeight : 0}>
+<Viewport top={toolbarDocked ? toolbarHeight : 0}>
   {#if ready}
     <Page />
   {/if}

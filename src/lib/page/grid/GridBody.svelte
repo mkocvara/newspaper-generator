@@ -13,6 +13,30 @@
   let heightPx = $state(0)
   const size = $derived({ width: widthPx / MM_PX, height: heightPx / MM_PX })
 
+  // How far the grid sits from the page's top and left edges (layout px). On
+  // touchscreens the column and row tabs go just off the page, clear of the
+  // header text and page content they would otherwise cover at finger size.
+  let wrap = $state<HTMLElement>()
+  let gridTop = $state(0)
+  let gridLeft = $state(0)
+  $effect(() => {
+    if (!wrap) return
+    const page = wrap.closest('article.page') as HTMLElement | null
+    if (!page) return
+    const measure = () => {
+      const pageRect = page.getBoundingClientRect()
+      const zoom = pageRect.width / page.offsetWidth || 1
+      const rect = wrap!.getBoundingClientRect()
+      gridTop = (rect.top - pageRect.top) / zoom
+      gridLeft = (rect.left - pageRect.left) / zoom
+    }
+    const observer = new ResizeObserver(measure)
+    observer.observe(wrap)
+    observer.observe(page)
+    measure()
+    return () => observer.disconnect()
+  })
+
   // Each track's start and size as a percentage of the grid.
   function spans(tracks: number[]) {
     const total = tracks.reduce((a, b) => a + b, 0)
@@ -41,7 +65,7 @@
   }
 </script>
 
-<div class="grid-wrap">
+<div class="grid-wrap" bind:this={wrap} style:--grid-top="{gridTop}px" style:--grid-left="{gridLeft}px">
   <div
     class="grid"
     bind:clientWidth={widthPx}
@@ -107,5 +131,27 @@
   .grid-wrap:hover .tab,
   .tab:has(:global(.open)) {
     opacity: 1;
+  }
+
+  /* Touchscreens: always shown, finger-sized at any zoom, growing away from
+     the grid. */
+  @media (hover: none) {
+    .tab {
+      opacity: 1;
+    }
+
+    /* Just above the page's top edge, growing upwards off the page. */
+    .col-tab {
+      top: calc(-1 * var(--grid-top) - 26px);
+      transform: scale(calc(var(--ui-scale, 1) * 1.6));
+      transform-origin: bottom center;
+    }
+
+    /* Just left of the page's left edge, growing leftwards off the page. */
+    .row-tab {
+      left: calc(-1 * var(--grid-left) - 26px);
+      transform: scale(calc(var(--ui-scale, 1) * 1.6));
+      transform-origin: right center;
+    }
   }
 </style>

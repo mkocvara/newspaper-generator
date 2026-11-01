@@ -86,6 +86,7 @@
         }}
         onmove={resizeSplit}
         onend={() => editor.endGesture()}
+        oncancel={() => editor.cancelGesture()}
         onreset={() =>
           editor.update((p) => {
             const live = findNode(p.grid, node.id)
@@ -147,5 +148,21 @@
   .leaf:hover > .controls,
   .controls:has(:global(.open)) {
     opacity: 1;
+  }
+
+  /* Touchscreens have no hover: shown on the selected cell, at a
+     finger-friendly size whatever the zoom (--ui-scale is set by the
+     viewport). */
+  @media (hover: none) {
+    .controls {
+      visibility: hidden;
+      transform: scale(calc(var(--ui-scale, 1) * 1.6));
+      transform-origin: top right;
+    }
+
+    :global(.cell.selected) .controls {
+      visibility: visible;
+      opacity: 1;
+    }
   }
 </style>

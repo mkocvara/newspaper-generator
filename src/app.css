@@ -1,5 +1,27 @@
 :root {
   font-family: 'Caladea', Cambria, Georgia, serif;
+
+  /* Menus, panels and dialogs: a yellowish, paper-like off-white (about as
+     light as a mid-light grey) with a warm near-black text above WCAG AAA
+     contrast (8.5:1). Every colour on it is checked to pass AA (text 4.5:1,
+     borders and selection marks 3:1). Highlights go lighter. */
+  --menu-bg: #c6bb9a;
+  --menu-text: #241f16;
+  --menu-hint: #534b3a;
+  --menu-field: #ddd4bb;
+  --menu-field-hover: #e8e1cc;
+  --menu-field-border: #6f6547;
+  --menu-hover: #d3c9ab;
+  --menu-rule: rgb(70 55 25 / 0.35);
+  --menu-link: #254b86;
+  --menu-accent: #2f5ea8;
+  --menu-done: #1d5629;
+  --menu-danger: #b42828;
+  --menu-placeholder: #645b46;
+  /* Pop-up menus (cell, tabs, Export) are a little lighter, as they open over
+     the page and looked dark against it. */
+  --menu-popup-bg: #cec3a7;
+  --menu-popup-hover: #ddd4bb;
 }
 
 body {
@@ -16,4 +38,13 @@ body {
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
   text-shadow: none !important;
+}
+
+/* Placeholders in menu fields: dark enough for AA on the grey fields, and
+   italic so they don't pass for typed text. */
+.panel ::placeholder,
+.sheet ::placeholder {
+  color: var(--menu-placeholder);
+  font-style: italic;
+  opacity: 1;
 }
