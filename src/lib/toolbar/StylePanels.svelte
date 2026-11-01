@@ -195,7 +195,7 @@
       </div>
 
       {#if fontLibrary.missingDefaults.length}
-        <button type="button" class="panel-button start" onclick={() => fontLibrary.restoreDefaults()}>
+        <button type="button" class="panel-button restore" onclick={() => fontLibrary.restoreDefaults()}>
           Restore default fonts ({fontLibrary.missingDefaults.length} removed)
         </button>
       {/if}
@@ -420,11 +420,11 @@
 
   .manage {
     margin-top: 2px;
-    text-align: center;
   }
 
-  .start {
-    justify-self: start;
+  .manage,
+  .restore {
+    text-align: center;
   }
 
   .manage-head {
