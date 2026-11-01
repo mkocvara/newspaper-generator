@@ -21,8 +21,10 @@ export function refitAll() {
   window.dispatchEvent(new Event(REFIT_EVENT))
 }
 
+// scroll and client sizes are rounded differently, so a box of fractional
+// width can report up to 1px of overflow that isn't there.
 function overflows(el: HTMLElement): boolean {
-  return el.scrollWidth > el.clientWidth + 0.5 || el.scrollHeight > el.clientHeight + 0.5
+  return el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1
 }
 
 // Binary-search the largest font size at which the element's content fits
