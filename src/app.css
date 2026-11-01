@@ -9,3 +9,11 @@ body {
   /* The page pans and zooms inside its own viewport instead. */
   overflow: hidden;
 }
+
+/* PDF export: letters drawn as real PDF text are left out of the page image
+   (see src/lib/pdf/pdfExport.ts). */
+[data-pdf-text] {
+  color: transparent !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow: none !important;
+}
