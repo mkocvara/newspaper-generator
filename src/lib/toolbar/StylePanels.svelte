@@ -172,9 +172,8 @@
       />
     </label>
     <span class="hint"
-      >Sizes are in points. When an article doesn't fit its cell, its body text shrinks first (down to 5 pt), then
-      its heading (down to 6 pt); after that the body text is cut off with an ellipsis. Header, footer and eyecatcher
-      text sizes follow their cells.</span
+      >Sizes are in points. When article text doesn't fit its cell, its body text shrinks first, then its heading.
+      Header, footer and eyecatcher text sizes follow their cells.</span
     >
   </div>
 </Panel>
