@@ -29,3 +29,15 @@ export function ornamentSymbols(decoration: NameDecoration): [string, string] | 
   }
   return ORNAMENTS.find((o) => o.value === decoration.ornament)?.symbols ?? null
 }
+
+// Suggestions for custom ornaments, offered as a grid of buttons. All are
+// text symbols (no emoji-style ones, which wouldn't take the ink colour),
+// grouped loosely: stars, flowers and leaves, shapes, crosses and marks,
+// brackets and lines.
+export const SYMBOL_CHOICES = [
+  ...'✦✧★☆✪✯✶✷✸✹✺✻✼❋❊⁂⋆',
+  ...'❦❧☙❥✿❀❁✾❃❖⚜☘',
+  ...'◆◇◈●○◉◎■□▪▲△▼▽◀▶',
+  ...'✠✚✜☩✙†‡§¶※☼☾♠♣♦♛♔',
+  ...'«»‹›⟨⟩〈〉【】|‖¦—~⁓≈',
+]

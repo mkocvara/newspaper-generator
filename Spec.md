@@ -119,7 +119,7 @@ Below, you can add notes and additional clarifications regarding the content of 
   - *Ornaments* before and after the name: none, vertical bars, double bars, stars, diamonds, fleurons (❧ … ☙), extending rules, or custom Unicode symbols entered by the user.
   - *Text effect*: none, drop shadow, 3D extrude, engraved, outline, hatched.
   - Ornaments and effects scale with the name and take part of its space. Everything uses the ink colour (no separate colour for now).
-  - Custom symbols use two fields (before / after), with "after" defaulting to the same as "before".
+  - Custom symbols use two fields (before / after), with "after" defaulting to the same as "before". Below them, a grid of suggested symbols (stars, fleurons, shapes, crosses and marks, brackets and lines; no emoji-style symbols, which wouldn't take the ink colour) inserts the clicked symbol at the cursor of the last-focused field (Before until one is focused).
 - **Grid editing (stage 3):**
   - *Merging* content: the merged cell keeps the content of the cell the merge started from, or if that is empty, the first non-empty cell's (reading order). Merging a whole column/row is available from the cell menu. A merge always grows to the smallest rectangle that doesn't cut through other cells.
   - *Moving:* a cell moves along an unbroken run of cells in its column that all share its column span (or along its row, sharing its row span). Sizes along the direction of movement may differ; each cell keeps its own size. A move across rows and columns shifts the cells between the two places by one slot in reading order (left to right, top to bottom); all of those cells must be the same size as the moved one.
