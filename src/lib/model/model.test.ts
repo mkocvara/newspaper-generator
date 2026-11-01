@@ -51,6 +51,12 @@ describe('parseWorkFile', () => {
     })
   })
 
+  it('falls back to the default paper for unknown ones', () => {
+    const old = JSON.parse(JSON.stringify(toWorkFile(createDefaultPage(), {})))
+    old.page.style.paper = 'white'
+    expect(parseWorkFile(old)!.page.style.paper).toBe('newsprint')
+  })
+
   it('rejects other JSON', () => {
     expect(parseWorkFile({ hello: 'world' })).toBeNull()
     expect(parseWorkFile(null)).toBeNull()

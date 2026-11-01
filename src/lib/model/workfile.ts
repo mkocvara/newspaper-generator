@@ -1,5 +1,5 @@
 import { createDefaultPage } from './defaults'
-import type { Assets, CellNode, NameDecoration, Page, Style, WorkFile } from './types'
+import { PAPER_STYLES, type Assets, type CellNode, type NameDecoration, type Page, type Style, type WorkFile } from './types'
 
 export function collectAssetIds(page: Page): Set<string> {
   const ids = new Set<string>()
@@ -59,6 +59,8 @@ function withStyleDefaults(style: Partial<Style>): Style {
     ...defaults,
     ...style,
     frameStyle: frameStyle ?? defaults.frameStyle,
+    // A paper that no longer exists falls back to the default.
+    paper: PAPER_STYLES.includes(style.paper as Style['paper']) ? style.paper! : defaults.paper,
     fonts: { ...defaults.fonts, ...style.fonts },
     sizes: { ...defaults.sizes, ...style.sizes },
     border: { ...defaults.border, ...style.border },

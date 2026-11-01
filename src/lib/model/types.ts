@@ -98,7 +98,8 @@ export type FrameStyle =
   | 'zigzag'
   | 'wave'
 
-export type PaperStyle = 'newsprint' | 'aged' | 'modern' | 'modern-creased' | 'white'
+export const PAPER_STYLES = ['newsprint', 'aged-clean', 'aged', 'modern', 'modern-creased'] as const
+export type PaperStyle = (typeof PAPER_STYLES)[number]
 
 export interface Style {
   paper: PaperStyle
