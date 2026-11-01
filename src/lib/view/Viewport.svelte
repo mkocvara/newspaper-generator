@@ -55,11 +55,16 @@
     clamp()
   }
 
+  // On touchscreens the grid's row tabs, finger-sized, stick out to the left
+  // of the page, so fitting leaves room for them beside the vertical bar.
+  const TOUCH_LEFT_ROOM = 72
+
   function fit() {
+    const left = window.matchMedia('(hover: none)').matches ? TOUCH_LEFT_ROOM : MARGIN
     zoom = clampZoom(
-      Math.min((view.width - 2 * MARGIN) / page.width, (view.height - 2 * MARGIN) / page.height),
+      Math.min((view.width - left - MARGIN) / page.width, (view.height - 2 * MARGIN) / page.height),
     )
-    x = (view.width - page.width * zoom) / 2
+    x = left + (view.width - left - MARGIN - page.width * zoom) / 2
     y = (view.height - page.height * zoom) / 2
     clamp()
   }
@@ -123,6 +128,61 @@
     target.addEventListener('pointerup', onUp)
     target.addEventListener('pointercancel', onUp)
   }
+
+  // Touch: two fingers pan and pinch-zoom (one finger is left alone, for
+  // tapping, selecting text and dragging handles). Listened to in the capture
+  // phase so a finger already captured by a handle is still counted.
+  $effect(() => {
+    if (!viewport) return
+    const touches = new Map<number, { x: number; y: number }>()
+    let gesture: { distance: number; pageX: number; pageY: number; zoom: number } | null = null
+    const local = (p: { x: number; y: number }) => {
+      const rect = viewport!.getBoundingClientRect()
+      return { x: p.x - rect.left, y: p.y - rect.top }
+    }
+    const pair = () => {
+      const [a, b] = [...touches.values()]
+      const mid = local({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })
+      return { mid, distance: Math.hypot(a.x - b.x, a.y - b.y) || 1 }
+    }
+    const start = () => {
+      const { mid, distance } = pair()
+      // The page point under the fingers' midpoint stays under it.
+      gesture = { distance, pageX: (mid.x - x) / zoom, pageY: (mid.y - y) / zoom, zoom }
+    }
+    const onDown = (event: PointerEvent) => {
+      if (event.pointerType !== 'touch') return
+      touches.set(event.pointerId, { x: event.clientX, y: event.clientY })
+      if (touches.size === 2) start()
+    }
+    const onMove = (event: PointerEvent) => {
+      if (!touches.has(event.pointerId)) return
+      touches.set(event.pointerId, { x: event.clientX, y: event.clientY })
+      if (!gesture || touches.size !== 2) return
+      event.preventDefault()
+      const { mid, distance } = pair()
+      zoom = clampZoom((gesture.zoom * distance) / gesture.distance)
+      x = mid.x - gesture.pageX * zoom
+      y = mid.y - gesture.pageY * zoom
+      clamp()
+    }
+    const onUp = (event: PointerEvent) => {
+      if (!touches.delete(event.pointerId)) return
+      gesture = null
+      if (touches.size === 2) start()
+    }
+    const options = { capture: true }
+    viewport.addEventListener('pointerdown', onDown, options)
+    viewport.addEventListener('pointermove', onMove, { capture: true, passive: false })
+    viewport.addEventListener('pointerup', onUp, options)
+    viewport.addEventListener('pointercancel', onUp, options)
+    return () => {
+      viewport!.removeEventListener('pointerdown', onDown, options)
+      viewport!.removeEventListener('pointermove', onMove, options)
+      viewport!.removeEventListener('pointerup', onUp, options)
+      viewport!.removeEventListener('pointercancel', onUp, options)
+    }
+  })
 
   // --- Floating bars. The track stands for every view the panning allows;
   // the thumb is the current view within it.
@@ -195,7 +255,13 @@
   onmousedown={(e) => e.button === 1 && e.preventDefault()}
   role="presentation"
 >
-  <div class="stage" bind:this={stage} style:transform="translate({x}px, {y}px) scale({zoom})">
+  <!-- --ui-scale lets editing controls keep a finger-friendly size at any zoom. -->
+  <div
+    class="stage"
+    bind:this={stage}
+    style:transform="translate({x}px, {y}px) scale({zoom})"
+    style:--ui-scale={1 / zoom}
+  >
     {@render children()}
   </div>
 
@@ -243,6 +309,9 @@
     right: 0;
     bottom: 0;
     overflow: hidden;
+    /* The app handles two-finger pan and zoom itself; one-finger gestures
+       (taps, text selection, handle drags) work as usual. */
+    touch-action: none;
   }
 
   .stage {
@@ -263,6 +332,16 @@
     --box-h: 26px;
     --bar: 10px;
     font: 12px/1 system-ui, sans-serif;
+  }
+
+  /* Fingers need thicker bars and a bigger zoom box. */
+  @media (pointer: coarse) {
+    .bars {
+      --bar: 18px;
+      --box-w: 76px;
+      --box-h: 34px;
+      font-size: 14px;
+    }
   }
 
   .track {

@@ -717,4 +717,17 @@
   .hint a {
     color: #2f5ea8;
   }
+
+  /* Phone: the panels open inside the full-width tools sheet. (Last, so it
+     overrides the rules above.) */
+  @media (max-width: 700px) {
+    .form,
+    .form.fonts {
+      min-width: 0;
+    }
+
+    .papers {
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    }
+  }
 </style>

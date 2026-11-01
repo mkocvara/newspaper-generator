@@ -81,6 +81,8 @@ export const cs: Strings = {
     pinTitle: 'Připnout: lišta zůstane viditelná',
     unpinTitle: 'Odepnout: lišta se skryje, když se nepoužívá',
     language: 'Jazyk',
+    menu: 'Nástroje',
+    closeMenu: 'Zavřít nástroje',
   },
 
   status: {

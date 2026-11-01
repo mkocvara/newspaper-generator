@@ -98,4 +98,67 @@
   .handle:active {
     background: rgb(70 120 200 / 0.25);
   }
+
+  /* Touchscreens: a finger-sized grab area in the middle of the border, with
+     a pill showing it; just that area, not the whole border, so it doesn't
+     cover the text beside the border. Sized against the zoom (--ui-scale). */
+  @media (hover: none) {
+    .handle {
+      --size: calc(var(--ui-scale, 1) * 22px);
+      --length: calc(var(--ui-scale, 1) * 64px);
+      background: none;
+    }
+
+    .handle.vertical {
+      left: calc(50% - var(--length) / 2);
+      right: auto;
+      width: var(--length);
+    }
+
+    .handle:not(.vertical) {
+      top: calc(50% - var(--length) / 2);
+      bottom: auto;
+      height: var(--length);
+    }
+
+    .handle::after {
+      content: '';
+      position: absolute;
+      inset: 50% auto auto 50%;
+      translate: -50% -50%;
+      border-radius: 999px;
+      background: rgb(70 120 200 / 0.55);
+    }
+
+    .handle.vertical::after {
+      width: calc(var(--ui-scale, 1) * 36px);
+      height: calc(var(--ui-scale, 1) * 5px);
+    }
+
+    .handle:not(.vertical)::after {
+      width: calc(var(--ui-scale, 1) * 5px);
+      height: calc(var(--ui-scale, 1) * 36px);
+    }
+
+    .handle.vertical {
+      height: var(--size);
+    }
+
+    .handle:not(.vertical) {
+      width: var(--size);
+    }
+
+    .top {
+      top: calc(var(--size) / -2);
+    }
+    .bottom {
+      bottom: calc(var(--size) / -2);
+    }
+    .left {
+      left: calc(var(--size) / -2);
+    }
+    .right {
+      right: calc(var(--size) / -2);
+    }
+  }
 </style>

@@ -83,4 +83,11 @@
   .sub-hint:focus-within {
     opacity: 1;
   }
+
+  /* Touchscreens have no hover, so the hint stays visible. */
+  @media (hover: none) {
+    .sub-hint {
+      opacity: 1;
+    }
+  }
 </style>

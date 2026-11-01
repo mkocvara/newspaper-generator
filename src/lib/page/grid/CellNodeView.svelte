@@ -148,4 +148,14 @@
   .controls:has(:global(.open)) {
     opacity: 1;
   }
+
+  /* Touchscreens have no hover: always shown, at a finger-friendly size
+     whatever the zoom (--ui-scale is set by the viewport). */
+  @media (hover: none) {
+    .controls {
+      opacity: 1;
+      transform: scale(calc(var(--ui-scale, 1) * 1.6));
+      transform-origin: top right;
+    }
+  }
 </style>

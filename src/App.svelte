@@ -16,8 +16,9 @@
   const AUTOSAVE_DELAY_MS = 500
 
   const PIN_KEY = 'newspaper:toolbar-pinned'
-  // The pinned toolbar's height; the page's viewport starts below it.
+  // The docked toolbar's height; the page's viewport starts below it.
   let toolbarHeight = $state(56)
+  let toolbarDocked = $state(true)
 
   let ready = $state(false)
 
@@ -83,9 +84,9 @@
 <svelte:window onkeydown={(event) => handleHistoryShortcut(event, editor)} onpagehide={saveNow} />
 <svelte:document onvisibilitychange={() => document.visibilityState === 'hidden' && saveNow()} />
 
-<Toolbar bind:pinned bind:height={toolbarHeight} />
+<Toolbar bind:pinned bind:height={toolbarHeight} bind:docked={toolbarDocked} />
 
-<Viewport top={pinned ? toolbarHeight : 0}>
+<Viewport top={toolbarDocked ? toolbarHeight : 0}>
   {#if ready}
     <Page />
   {/if}

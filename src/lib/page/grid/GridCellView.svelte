@@ -141,6 +141,15 @@
     opacity: 1;
   }
 
+  /* Touchscreens: always shown, finger-sized at any zoom. */
+  @media (hover: none) {
+    .grip {
+      opacity: 1;
+      transform: scale(calc(var(--ui-scale, 1) * 1.6));
+      transform-origin: top left;
+    }
+  }
+
   .drag-source {
     opacity: 0.45;
   }

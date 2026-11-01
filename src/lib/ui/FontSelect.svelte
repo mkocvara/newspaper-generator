@@ -51,8 +51,15 @@
     if (family !== undefined && family !== value) onchange(family)
   }
 
+  // Scroll only the list (scrollIntoView could also scroll whatever the
+  // list sits in, which counts as an outside scroll and closes it).
   function scrollToActive() {
-    list?.querySelector(`#${CSS.escape(`${id}-${active}`)}`)?.scrollIntoView({ block: 'nearest' })
+    const option = list?.querySelector<HTMLElement>(`#${CSS.escape(`${id}-${active}`)}`)
+    if (!list || !option) return
+    if (option.offsetTop < list.scrollTop) list.scrollTop = option.offsetTop
+    else if (option.offsetTop + option.offsetHeight > list.scrollTop + list.clientHeight) {
+      list.scrollTop = option.offsetTop + option.offsetHeight - list.clientHeight
+    }
   }
 
   function move(to: number) {

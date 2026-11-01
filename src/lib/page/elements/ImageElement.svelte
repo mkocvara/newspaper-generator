@@ -232,6 +232,17 @@
     opacity: 1;
   }
 
+  /* Touchscreens: always shown, finger-sized at any zoom. */
+  @media (hover: none) {
+    .tools {
+      opacity: 1;
+      /* Text buttons: a little smaller than the icon controls, so they don't
+         overhang a small cell as much. */
+      transform: scale(calc(var(--ui-scale, 1) * 1.3));
+      transform-origin: bottom right;
+    }
+  }
+
   .tools button {
     padding: 2px 6px;
     border: 1px solid rgb(0 0 0 / 0.2);
