@@ -74,6 +74,12 @@ export class Editor {
     return toWorkFile(this.#snapshot(), this.assets)
   }
 
+  // Replace the page with an imported work file, as one undoable step.
+  importFile(file: WorkFile) {
+    this.assets = { ...this.assets, ...file.assets }
+    this.update((page) => Object.assign(page, file.page))
+  }
+
   load(file: WorkFile) {
     this.page = file.page
     this.assets = file.assets

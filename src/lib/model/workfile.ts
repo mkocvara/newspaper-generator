@@ -1,4 +1,5 @@
-import type { Assets, CellNode, Page, WorkFile } from './types'
+import { createDefaultPage } from './defaults'
+import type { Assets, CellNode, Page, Style, WorkFile } from './types'
 
 export function collectAssetIds(page: Page): Set<string> {
   const ids = new Set<string>()
@@ -31,5 +32,22 @@ export function parseWorkFile(data: unknown): WorkFile | null {
   const grid = page.grid
   if (!isObject(grid) || !Array.isArray(grid.cols) || !Array.isArray(grid.rows)) return null
   if (!Array.isArray(grid.cells)) return null
-  return data as unknown as WorkFile
+  const file = data as unknown as WorkFile
+  return { ...file, page: { ...file.page, style: withStyleDefaults(file.page.style) } }
+}
+
+// Fill in style options added after a file was saved, so older work files and
+// autosaves keep loading.
+function withStyleDefaults(style: Partial<Style>): Style {
+  const defaults = createDefaultPage().style
+  const frameStyle = (style.frameStyle as string) === 'thick-thin' ? 'thick-outer' : style.frameStyle
+  return {
+    ...defaults,
+    ...style,
+    frameStyle: frameStyle ?? defaults.frameStyle,
+    fonts: { ...defaults.fonts, ...style.fonts },
+    sizes: { ...defaults.sizes, ...style.sizes },
+    border: { ...defaults.border, ...style.border },
+    nameDecoration: { ...defaults.nameDecoration, ...style.nameDecoration },
+  }
 }

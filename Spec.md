@@ -124,3 +124,10 @@ Below, you can add notes and additional clarifications regarding the content of 
   - *Eyecatcher:* text is as large as fits the cell and wraps between words. When the secondary line is empty it takes no space; a `<Secondary text>` hint appears over the bottom of the cell on hover so it can still be filled in.
   - *Text:* heading and body use the page-wide sizes; if they don't fit, both shrink together for that cell only. Enter starts a new line in the body. Justified body text is hyphenated.
   - *Image:* "scale and fill" (default) is interpreted as showing the whole image scaled to fit the cell; "crop" fills the cell and crops the overflow. To confirm. Image tools (Replace, B/W, Crop) appear on hover; images can also be dropped onto the cell. Images larger than 2400 px on their longest side are scaled down on import to keep work files small.
+- **Toolbar (stage 5):**
+  - Hidden by default; hovering the top edge of the window (a small ▾ tab hints at it) slides it down, and it stays while hovered or while one of its panels is open. Pinning keeps it visible and moves the page down so the bar doesn't cover it. The pin setting is remembered per browser.
+  - *Undo/Redo* buttons sit at the left.
+  - *Styling* is split into four panels: Fonts (a role-by-role picker with 16 suggested Google Fonts; more can be added by name or by pasting a Google Fonts link), Text sizes (pt), Frame & borders, and Newspaper name (ornaments, custom symbols, effect).
+  - *Import* replaces the page with a work file as one undoable step. Older work files gain any newer style options at their defaults.
+  - *Export:* PNG, JPG and PDF are rendered at A4 300 dpi (2481 × 3508 px) without placeholders, handles or other editing aids; the PDF holds that image on an A4 page. File names come from the newspaper name (e.g. `the-daily-chronicle.pdf`).
+  - *Background:* the paper grain is a small PNG tile (the earlier SVG noise filter rendered black in exports).

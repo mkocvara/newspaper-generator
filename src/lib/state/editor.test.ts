@@ -65,6 +65,16 @@ describe('Editor history', () => {
     expect(Object.keys(editor.toWorkFile().assets)).toEqual([used])
   })
 
+  it('imports a work file as an undoable step', () => {
+    const source = new Editor()
+    source.update((p) => (p.header.name = 'Imported'))
+    const editor = new Editor()
+    editor.importFile(source.toWorkFile())
+    expect(editor.page.header.name).toBe('Imported')
+    editor.undo()
+    expect(editor.page.header.name).toBe('')
+  })
+
   it('loads a work file and resets history', () => {
     const editor = new Editor()
     editor.update((p) => (p.header.name = 'Old'))

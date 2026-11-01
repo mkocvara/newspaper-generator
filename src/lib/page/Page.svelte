@@ -43,7 +43,8 @@
 
     /* Generated newsprint: warm off-white, faint grain, a soft vignette, and a
        vertical and horizontal fold crease through the middle. Kept subtle so
-       text contrast isn't affected. */
+       text contrast isn't affected. The grain is a small PNG tile rather than
+       an SVG noise filter, because image export renders SVG filters black. */
     background-color: #f2ede1;
     background-image:
       linear-gradient(
@@ -63,7 +64,7 @@
         transparent calc(50% + 5mm)
       ),
       radial-gradient(ellipse at center, transparent 55%, rgb(120 100 60 / 0.1) 100%),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      url('../../assets/paper-grain.png');
   }
 
   .body {

@@ -4,6 +4,7 @@
   import { fitText } from '../ui/fitText'
   import ResizeHandle from '../ui/ResizeHandle.svelte'
   import FrameRule from './FrameRule.svelte'
+  import { ornamentSymbols } from './nameDecoration'
   import { MM_PX } from './units'
 
   const MIN_HEIGHT_MM = 12
@@ -17,6 +18,8 @@
 
   const header = $derived(editor.page.header)
   const style = $derived(editor.page.style)
+  const decoration = $derived(style.nameDecoration)
+  const symbols = $derived(ornamentSymbols(decoration))
   const sidePx = $derived(Math.min(SIDE_TEXT_MAX_PX, header.heightMm * MM_PX * SIDE_TEXT_RATIO))
 
   // The name stays centred on the page, so both side columns are as wide as
@@ -52,9 +55,26 @@
 
     <div
       class="slot name"
-      {@attach fitText({ max: header.heightMm * MM_PX, wrapGain: WRAP_GAIN, watch: style.fonts.name })}
+      {@attach fitText({
+        max: header.heightMm * MM_PX,
+        wrapGain: WRAP_GAIN,
+        watch: `${style.fonts.name}|${decoration.ornament}|${symbols}`,
+      })}
     >
-      <EditableText value={header.name} onchange={set('name')} placeholder="Newspaper Name" wrap />
+      <!-- Ornaments are part of the name's space, so they scale with it. -->
+      <div class="name-line effect-{decoration.effect}">
+        {#if decoration.ornament === 'rules'}
+          <span class="rule" aria-hidden="true"></span>
+        {:else if symbols}
+          <span class="ornament" aria-hidden="true">{symbols[0]}</span>
+        {/if}
+        <EditableText value={header.name} onchange={set('name')} placeholder="Newspaper Name" wrap />
+        {#if decoration.ornament === 'rules'}
+          <span class="rule" aria-hidden="true"></span>
+        {:else if symbols}
+          <span class="ornament" aria-hidden="true">{symbols[1]}</span>
+        {/if}
+      </div>
     </div>
 
     <div
@@ -125,6 +145,74 @@
     text-align: center;
     font-family: var(--font-name);
     font-weight: 700;
+  }
+
+  .name-line {
+    --ink: #1b1a17;
+    display: flex;
+    align-items: center;
+    gap: 0.25em;
+    max-width: 100%;
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Never narrower than its text (or longest word when wrapping), so the
+     ornaments can't overlap it and fitText sees any overflow. */
+  .name-line > :global(.editable) {
+    min-width: min-content;
+  }
+
+  .ornament {
+    flex: none;
+    font-size: 0.6em;
+    font-weight: 400;
+  }
+
+  .rule {
+    flex: 1 1 1.5em;
+    min-width: 1.2em;
+    height: 0.07em;
+    background: var(--ink);
+    box-shadow: 0 0.12em 0 var(--ink);
+    transform: translateY(-0.06em);
+  }
+
+  /* Name effects. They decorate the ornaments too. */
+  .effect-shadow {
+    text-shadow: 0.06em 0.06em 0 rgb(27 26 23 / 0.3);
+  }
+
+  .effect-extrude {
+    text-shadow:
+      0.012em 0.012em 0 #5d574c,
+      0.024em 0.024em 0 #5d574c,
+      0.036em 0.036em 0 #5d574c,
+      0.048em 0.048em 0 #5d574c,
+      0.06em 0.06em 0 #5d574c,
+      0.09em 0.09em 0.03em rgb(0 0 0 / 0.25);
+  }
+
+  .effect-engraved {
+    color: #2a2823;
+    text-shadow:
+      0 0.03em 0 rgb(255 255 255 / 0.85),
+      0 -0.012em 0 rgb(0 0 0 / 0.35);
+  }
+
+  .effect-outline {
+    color: transparent;
+    -webkit-text-stroke: 0.025em var(--ink);
+    caret-color: var(--ink);
+  }
+
+  .effect-hatched {
+    color: transparent;
+    background-image: repeating-linear-gradient(135deg, var(--ink) 0 0.035em, transparent 0.035em 0.085em);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-stroke: 0.012em var(--ink);
+    caret-color: var(--ink);
   }
 
   .measure {
