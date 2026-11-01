@@ -3,6 +3,7 @@
   import { parseWorkFile } from '../model/workfile'
   import { editor } from '../state/editor.svelte'
   import Menu from '../ui/Menu.svelte'
+  import NewPaperDialog from './NewPaperDialog.svelte'
   import StylePanels from './StylePanels.svelte'
 
   // Sticky top bar. Unless pinned, it slides away when not hovered (a small tab
@@ -42,7 +43,7 @@
     if (!file) return
     try {
       const parsed = parseWorkFile(JSON.parse(await file.text()))
-      if (!parsed) return say(`${file.name} isn't a newspaper work file.`)
+      if (!parsed) return say(`${file.name} isn't a newspaper preset.`)
       editor.importFile(parsed)
       say(`Imported ${file.name}. Undo (Ctrl+Z) brings back the previous page.`)
     } catch {
@@ -99,10 +100,17 @@
           { label: 'Image (JPG)', action: () => runExport('jpeg') },
           { label: 'PDF', action: () => runExport('pdf') },
           'separator',
-          { label: 'Work file (JSON)', action: () => runExport('json') },
+          { label: 'Importable preset', action: () => runExport('json') },
         ]}
       />
     </div>
+    <NewPaperDialog
+      onexport={() => runExport('json')}
+      onconfirm={() => {
+        editor.reset()
+        say('Started a new paper. Undo (Ctrl+Z) brings back the previous one.')
+      }}
+    />
   </div>
 
   <span class="status" role="status">{status}</span>
@@ -148,9 +156,9 @@
     z-index: 100;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 10px;
     height: 56px;
-    padding: 0 16px;
+    padding: 0 12px;
     box-sizing: border-box;
     background: #2b2924;
     color: #eee;
@@ -176,19 +184,21 @@
   }
 
   .group + .group {
-    padding-left: 16px;
+    padding-left: 10px;
     border-left: 1px solid rgb(255 255 255 / 0.15);
   }
 
   .toolbar :global(.tb-button),
   .export :global(.trigger) {
+    flex: none;
+    white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
     width: auto;
     height: 36px;
-    padding: 0 10px;
+    padding: 0 8px;
     border: 1px solid rgb(255 255 255 / 0.2);
     border-radius: 5px;
     background: rgb(255 255 255 / 0.08);
@@ -220,15 +230,49 @@
     font-size: 20px;
   }
 
+  /* Messages show as a notice just under the bar (even while it's hidden),
+     so they need no room in it. */
   .status {
-    flex: 1;
-    color: #cfc8b8;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 12px;
+    max-width: min(480px, calc(100vw - 24px));
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: #2b2924;
+    color: #e8e1d0;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.35);
+    pointer-events: none;
+  }
+
+  .status:empty {
+    display: none;
+  }
+
+  /* Narrow windows: tighten everything so the whole bar still fits. */
+  @media (max-width: 960px) {
+    .toolbar {
+      gap: 6px;
+      padding: 0 8px;
+      font-size: 12px;
+    }
+
+    .group {
+      gap: 4px;
+    }
+
+    .group + .group {
+      padding-left: 6px;
+    }
+
+    .toolbar :global(.tb-button),
+    .export :global(.trigger) {
+      padding: 0 6px;
+    }
   }
 
   .toolbar .pin {
+    margin-left: auto;
     font-size: 13px;
     opacity: 0.6;
   }
