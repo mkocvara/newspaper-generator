@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { canMove, moveCell, resizeTracks } from '../../model/grid'
+  import { canMove, equalizeTracks, moveCell, resizeTracks } from '../../model/grid'
   import type { Grid, GridCell } from '../../model/types'
   import { editor } from '../../state/editor.svelte'
   import ResizeHandle from '../../ui/ResizeHandle.svelte'
@@ -31,6 +31,10 @@
         editor.page.grid[axis] = resizeTracks(startTracks, border, deltaMm * perMm, MIN_TRACK_MM * perMm)
       },
       onend: () => editor.endGesture(),
+      onreset: () =>
+        editor.update((p) => {
+          p.grid[axis] = equalizeTracks(p.grid[axis], border)
+        }),
     }
   }
 

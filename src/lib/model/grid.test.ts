@@ -2,14 +2,15 @@ import { describe, expect, it } from 'vitest'
 import { createDefaultPage } from './defaults'
 import {
   canMergeLine,
+  canMergeLeafToward,
   canMergeToward,
-  canMergeWithSibling,
   canMove,
+  equalizeTracks,
   insertColumn,
   insertRow,
   mergeLine,
+  mergeLeafToward,
   mergeToward,
-  mergeWithSibling,
   moveCell,
   removeColumn,
   removeRow,
@@ -119,6 +120,12 @@ describe('resizeTracks', () => {
   })
 })
 
+describe('equalizeTracks', () => {
+  it('splits the two tracks beside a border 50/50', () => {
+    expect(equalizeTracks([1, 1.5, 0.5], 2)).toEqual([1, 1, 1])
+  })
+})
+
 describe('merging', () => {
   it('merges with the neighbour to the right', () => {
     const start = grid3()
@@ -188,6 +195,22 @@ describe('moving', () => {
     expectValidTiling(moved)
   })
 
+  it('moves across rows and columns, shifting cells in reading order', () => {
+    const g23 = removeColumn(grid3(), 2) // 2 columns x 3 rows
+    const ids = g23.cells.slice().sort((a, b) => a.row - b.row || a.col - b.col).map((c) => c.id)
+    const moved = moveCell(g23, ids[0], ids[5]) // top-left to bottom-right
+    const order = moved.cells.slice().sort((a, b) => a.row - b.row || a.col - b.col).map((c) => c.id)
+    expect(order).toEqual([ids[1], ids[2], ids[3], ids[4], ids[5], ids[0]])
+    expectValidTiling(moved)
+  })
+
+  it('does not move across rows and columns past differently sized cells', () => {
+    let g = grid3()
+    g = mergeToward(g, at(g, 1, 1).id, 'right') // (1,1)-(2,1) merged
+    expect(canMove(g, at(g, 0, 0).id, at(g, 2, 2).id)).toBe(false)
+    expect(canMove(g, at(g, 1, 0).id, at(g, 0, 1).id)).toBe(true) // only 1x1 cells between
+  })
+
   it('only moves where the layout allows it', () => {
     let g = grid3()
     g = mergeLine(g, at(g, 1, 0).id, 'column')
@@ -210,10 +233,12 @@ describe('splitting', () => {
     expect(node.children[0]).toEqual(text('A'))
     expect(g.cells).toHaveLength(9) // the rest of the layout is untouched
 
+    const cell = at(g, 0, 0).id
     const empty = node.children[1].id
-    expect(canMergeWithSibling(g, empty)).toBe(true)
-    // Merging the empty half lets the content fill the cell again.
-    expect(at(mergeWithSibling(g, empty), 0, 0).node).toEqual(text('A'))
+    // The right half merges back to the left; the content fills the cell again.
+    expect(canMergeLeafToward(g, cell, empty, 'left')).toBe(true)
+    expect(at(mergeLeafToward(g, cell, empty, 'left'), 0, 0).node).toEqual(text('A'))
+    expect(at(mergeLeafToward(g, cell, 'leaf-A', 'right'), 0, 0).node).toEqual(text('A'))
   })
 
   it('splits nested parts independently', () => {
@@ -223,13 +248,24 @@ describe('splitting', () => {
     if (root.kind !== 'split') throw new Error()
     g = splitLeaf(g, root.children[1].id, 'column')
     const after = at(g, 0, 0).node
-    if (after.kind !== 'split') throw new Error()
+    if (after.kind !== 'split' || after.children[1].kind !== 'split') throw new Error()
     expect(after.children[1]).toMatchObject({ kind: 'split', direction: 'column' })
-    expect(canMergeWithSibling(g, root.children[0].id)).toBe(true)
+
+    // Bottom-right part: "above" stays inside its own split; "left" collapses
+    // the outer split; "right" leaves the cell and merges grid cells.
+    const cell = at(g, 0, 0).id
+    const bottomRight = after.children[1].children[1].id
+    const above = at(mergeLeafToward(g, cell, bottomRight, 'up'), 0, 0).node
+    expect(above).toMatchObject({ kind: 'split', direction: 'row' })
+    expect(at(mergeLeafToward(g, cell, bottomRight, 'left'), 0, 0).node.kind).toBe('leaf')
+    const right = mergeLeafToward(g, cell, bottomRight, 'right')
+    expect(at(right, 0, 0)).toMatchObject({ colSpan: 2, node: after })
   })
 
-  it('cannot merge an unsplit cell with a sibling', () => {
+  it('falls back to merging grid cells when the cell is not split', () => {
     const g = grid3()
-    expect(canMergeWithSibling(g, at(g, 0, 0).node.id)).toBe(false)
+    const cell = at(g, 0, 0)
+    expect(canMergeLeafToward(g, cell.id, cell.node.id, 'left')).toBe(false)
+    expect(at(mergeLeafToward(g, cell.id, cell.node.id, 'down'), 0, 0).rowSpan).toBe(2)
   })
 })

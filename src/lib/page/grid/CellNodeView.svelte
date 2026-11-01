@@ -1,12 +1,10 @@
 <script lang="ts">
   import {
+    canMergeLeafToward,
     canMergeLine,
-    canMergeToward,
-    canMergeWithSibling,
     findNode,
+    mergeLeafToward,
     mergeLine,
-    mergeToward,
-    mergeWithSibling,
     splitLeaf,
     type Direction,
   } from '../../model/grid'
@@ -52,13 +50,13 @@
       { label: 'Split side by side', action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'row')) },
       { label: 'Split top and bottom', action: () => editor.updateGrid((g) => splitLeaf(g, node.id, 'column')) },
     ]
-    if (canMergeWithSibling(grid, node.id)) {
-      items.push({ label: 'Merge with other half', action: () => editor.updateGrid((g) => mergeWithSibling(g, node.id)) })
-    }
-    const merges: MenuEntry[] = MERGES.filter(([dir]) => canMergeToward(grid, cell.id, dir)).map(([dir, label]) => ({
-      label,
-      action: () => editor.updateGrid((g) => mergeToward(g, cell.id, dir)),
-    }))
+    // Within a split cell, a direction first means the neighbouring part.
+    const merges: MenuEntry[] = MERGES.filter(([dir]) => canMergeLeafToward(grid, cell.id, node.id, dir)).map(
+      ([dir, label]) => ({
+        label,
+        action: () => editor.updateGrid((g) => mergeLeafToward(g, cell.id, node.id, dir)),
+      }),
+    )
     for (const axis of ['column', 'row'] as const) {
       if (canMergeLine(grid, cell.id, axis)) {
         merges.push({ label: `Merge entire ${axis}`, action: () => editor.updateGrid((g) => mergeLine(g, cell.id, axis)) })
@@ -80,6 +78,11 @@
         }}
         onmove={resizeSplit}
         onend={() => editor.endGesture()}
+        onreset={() =>
+          editor.update((p) => {
+            const live = findNode(p.grid, node.id)
+            if (live?.kind === 'split') live.sizes = [1, 1]
+          })}
       />
     </div>
     <div class="part" style:flex-grow={node.sizes[1]}>

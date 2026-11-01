@@ -1,17 +1,19 @@
 <script lang="ts">
   // A thin draggable strip along one edge of its positioned parent. Reports
   // the drag distance in page millimetres, so callers don't care how the page
-  // is scaled on screen.
+  // is scaled on screen. Double-clicking calls `onreset` (e.g. back to 50/50).
   let {
     edge,
     onstart,
     onmove,
     onend,
+    onreset,
   }: {
     edge: 'top' | 'bottom' | 'left' | 'right'
     onstart: () => void
     onmove: (deltaMm: number) => void
     onend: () => void
+    onreset?: () => void
   } = $props()
 
   const PAGE_WIDTH_MM = 210
@@ -55,6 +57,7 @@
   {onpointermove}
   {onpointerup}
   onpointercancel={onpointerup}
+  ondblclick={onreset}
 ></div>
 
 <style>

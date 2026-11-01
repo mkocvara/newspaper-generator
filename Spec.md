@@ -115,6 +115,7 @@ Below, you can add notes and additional clarifications regarding the content of 
   - To confirm: custom symbols use two fields (before / after), with "after" defaulting to the same as "before".
 - **Grid editing (stage 3):**
   - *Merging* content: the merged cell keeps the content of the cell the merge started from, or if that is empty, the first non-empty cell's (reading order). Merging a whole column/row is available from the cell menu. A merge always grows to the smallest rectangle that doesn't cut through other cells.
-  - *Moving:* a cell moves along an unbroken run of cells in its column that all share its column span (or along its row, sharing its row span). Sizes along the direction of movement may differ; each cell keeps its own size.
+  - *Moving:* a cell moves along an unbroken run of cells in its column that all share its column span (or along its row, sharing its row span). Sizes along the direction of movement may differ; each cell keeps its own size. A move across rows and columns shifts the cells between the two places by one slot in reading order (left to right, top to bottom); all of those cells must be the same size as the moved one.
+  - *Double-clicking* a column/row border or a split divider makes the two sides 50/50.
   - *Adding/removing columns and rows:* via spreadsheet-style tabs on the grid edges (insert before / after, delete), so the target column/row is unambiguous with merged cells.
-  - *Split cells:* the divider inside a split cell can be dragged to resize the two parts; splits can be undone with "Merge with other half" (an empty half gives its space to the other).
+  - *Split cells:* the divider inside a split cell can be dragged to resize the two parts; in a split cell, "Merge with cell to the left/right/above/below" first merges with the neighbouring part inside the cell (undoing that split; an empty part gives its space to the other), and otherwise merges the whole cell with the neighbouring grid cell.

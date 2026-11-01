@@ -113,6 +113,14 @@ export function resizeTracks(sizes: number[], border: number, delta: number, min
   return next
 }
 
+// Make the two tracks beside a border equal (a 50/50 split of their space).
+export function equalizeTracks(sizes: number[], border: number): number[] {
+  const half = (sizes[border - 1] + sizes[border]) / 2
+  const next = [...sizes]
+  next[border - 1] = next[border] = half
+  return next
+}
+
 // --- Merging ------------------------------------------------------------
 
 function hasContent(node: CellNode): boolean {
@@ -224,12 +232,35 @@ function moveInColumn(grid: Grid, fromId: string, toId: string): Grid {
   return { ...grid, cells: grid.cells.map((c) => placed.get(c.id) ?? c) }
 }
 
-// Move a cell to another cell's place along its column or row; the cells in
-// between are pushed along to fill the gap.
+const readingOrder = (cells: GridCell[]) => [...cells].sort((a, b) => a.row - b.row || a.col - b.col)
+const sameSize = (a: GridCell, b: GridCell) => a.colSpan === b.colSpan && a.rowSpan === b.rowSpan
+
+// Move across rows and columns: the cells between the two places (in reading
+// order) shift one slot along. Only allowed when all of them are the same
+// size, so every cell lands in a slot it exactly fills.
+function moveInReadingOrder(grid: Grid, fromId: string, toId: string): Grid {
+  const order = readingOrder(grid.cells)
+  const from = order.findIndex((c) => c.id === fromId)
+  const to = order.findIndex((c) => c.id === toId)
+  if (from < 0 || to < 0 || from === to) return grid
+  const range = order.slice(Math.min(from, to), Math.max(from, to) + 1)
+  if (!range.every((c) => sameSize(c, range[0]))) return grid
+
+  const slots = range.map(({ col, row }) => ({ col, row }))
+  const occupants = from < to ? [...range.slice(1), range[0]] : [range.at(-1)!, ...range.slice(0, -1)]
+  const placed = new Map(occupants.map((c, i) => [c.id, { ...c, ...slots[i] }]))
+  return { ...grid, cells: grid.cells.map((c) => placed.get(c.id) ?? c) }
+}
+
+// Move a cell to another cell's place. Along its own column or row, the cells
+// in between are pushed along (sizes may differ along that line); otherwise
+// equally sized cells shift along in reading order.
 export function moveCell(grid: Grid, fromId: string, toId: string): Grid {
   const vertical = moveInColumn(grid, fromId, toId)
   if (vertical !== grid) return vertical
-  return viaTranspose(grid, (g) => moveInColumn(g, fromId, toId))
+  const horizontal = viaTranspose(grid, (g) => moveInColumn(g, fromId, toId))
+  if (horizontal !== grid) return horizontal
+  return moveInReadingOrder(grid, fromId, toId)
 }
 
 export const canMove = (grid: Grid, fromId: string, toId: string) => moveCell(grid, fromId, toId) !== grid
@@ -274,20 +305,41 @@ export function splitLeaf(grid: Grid, leafId: string, direction: SplitNode['dire
   )
 }
 
-const isParentOf = (node: CellNode, childId: string): node is SplitNode =>
-  node.kind === 'split' && node.children.some((c) => c.id === childId)
-
-export function canMergeWithSibling(grid: Grid, leafId: string): boolean {
-  return mapNodes(grid, (node) => (isParentOf(node, leafId) ? node : null)) !== grid
+// The splits from a cell's root down to a node, with which child the path
+// takes at each one.
+function pathTo(node: CellNode, id: string): { split: SplitNode; index: 0 | 1 }[] | null {
+  if (node.id === id) return []
+  if (node.kind === 'leaf') return null
+  for (const index of [0, 1] as const) {
+    const rest = pathTo(node.children[index], id)
+    if (rest) return [{ split: node, index }, ...rest]
+  }
+  return null
 }
 
-// Undo a split from one of its halves. The half keeps the space if it has
-// content; otherwise its sibling (which may itself be split) takes over.
-export function mergeWithSibling(grid: Grid, leafId: string): Grid {
-  return mapNodes(grid, (node) => {
-    if (!isParentOf(node, leafId)) return null
-    const [first, second] = node.children
-    const [self, sibling] = first.id === leafId ? [first, second] : [second, first]
-    return hasContent(self) ? self : sibling
-  })
+// The innermost split that has a part on the `dir` side of the leaf.
+function splitToward(cell: GridCell, leafId: string, dir: Direction) {
+  const path = pathTo(cell.node, leafId) ?? []
+  const [axis, side] = ({ right: ['row', 0], left: ['row', 1], down: ['column', 0], up: ['column', 1] } as const)[dir]
+  return path.findLast(({ split, index }) => split.direction === axis && index === side)
+}
+
+export function canMergeLeafToward(grid: Grid, cellId: string, leafId: string, dir: Direction): boolean {
+  const cell = findCell(grid, cellId)
+  return !!cell && (!!splitToward(cell, leafId, dir) || canMergeToward(grid, cellId, dir))
+}
+
+// Merge a part of a split cell with whatever lies in `dir`: first the
+// neighbouring part within the cell (undoing that split), else the
+// neighbouring grid cell (merging the whole cell). Within a cell, the side the
+// merge started from keeps the space if it has content; otherwise the other
+// side (which may itself be split) takes over.
+export function mergeLeafToward(grid: Grid, cellId: string, leafId: string, dir: Direction): Grid {
+  const cell = findCell(grid, cellId)
+  const target = cell && splitToward(cell, leafId, dir)
+  if (!target) return mergeToward(grid, cellId, dir)
+  const { split, index } = target
+  const self = split.children[index]
+  const other = split.children[index === 0 ? 1 : 0]
+  return mapNodes(grid, (node) => (node.id === split.id ? (hasContent(self) ? self : other) : null))
 }
