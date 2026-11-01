@@ -39,8 +39,8 @@ export const cs: Strings = {
 
   grid: {
     cellLayout: 'Rozvržení buňky',
-    insert: { eyecatcher: 'Vložit poutač', text: 'Vložit text', image: 'Vložit obrázek' },
-    changeTo: { eyecatcher: 'Změnit na poutač', text: 'Změnit na text', image: 'Změnit na obrázek' },
+    insert: { eyecatcher: 'Vložit poutač', text: 'Vložit článek', image: 'Vložit obrázek' },
+    changeTo: { eyecatcher: 'Změnit na poutač', text: 'Změnit na článek', image: 'Změnit na obrázek' },
     clearCell: 'Vyprázdnit buňku',
     splitSideBySide: 'Rozdělit vedle sebe',
     splitTopBottom: 'Rozdělit nad sebe',
