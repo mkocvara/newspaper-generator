@@ -1,9 +1,12 @@
 import type { NameDecoration, NameEffect, Ornament } from '../model/types'
 
-// Symbol ornaments are all picked as custom symbols (from the grid of
-// suggestions or typed); only the drawn rules are a style of their own.
-export const ORNAMENTS: { value: Ornament; label: string }[] = [
+// Presets for ornaments that look best at a tuned size (and the mirrored
+// fleurons); any other symbols are picked as custom symbols.
+export const ORNAMENTS: { value: Ornament; label: string; symbols?: [string, string] }[] = [
   { value: 'none', label: 'None' },
+  { value: 'bars', label: 'Vertical bars', symbols: ['┃', '┃'] },
+  { value: 'double-bars', label: 'Double bars', symbols: ['‖', '‖'] },
+  { value: 'fleurons', label: 'Fleurons', symbols: ['❧', '☙'] },
   { value: 'rules', label: 'Extending rules' },
   { value: 'custom', label: 'Custom symbols' },
 ]
@@ -24,7 +27,7 @@ export function ornamentSymbols(decoration: NameDecoration): [string, string] | 
     const after = decoration.customAfter.trim() || before
     return before || after ? [before, after] : null
   }
-  return null
+  return ORNAMENTS.find((o) => o.value === decoration.ornament)?.symbols ?? null
 }
 
 // Suggestions for custom ornaments, offered as a grid of buttons. All are

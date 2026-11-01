@@ -347,7 +347,7 @@
         }}
       >
         {#each ORNAMENTS as o (o.value)}
-          <option value={o.value}>{o.label}</option>
+          <option value={o.value}>{o.symbols ? `${o.label}  ${o.symbols[0]} … ${o.symbols[1]}` : o.label}</option>
         {/each}
       </select>
     </label>
@@ -384,6 +384,18 @@
           }}
         />
       </label>
+      <label class="row">
+        <span>Symbol size</span>
+        <input
+          type="number"
+          min="30"
+          max="250"
+          step="10"
+          value={style.nameDecoration.customScale}
+          onchange={numberSetter(30, 250, (s, v) => (s.nameDecoration.customScale = v))}
+          {@attach wheelStep}
+        />
+      </label>
       <div class="symbols" role="group" aria-label="Symbols">
         {#each SYMBOL_CHOICES as symbol (symbol)}
           <button
@@ -396,7 +408,8 @@
         {/each}
       </div>
       <span class="hint"
-        >Click a symbol to add it to the highlighted field, or type any Unicode symbols. Fields can hold several.</span
+        >Click a symbol to add it to the highlighted field, or type any Unicode symbols. Fields can hold several. Size is
+        in % of the preset ornaments' size.</span
       >
     {/if}
     <label class="row">

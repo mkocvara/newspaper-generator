@@ -43,11 +43,11 @@ describe('parseWorkFile', () => {
 
   it('turns old symbol ornament presets into custom symbols', () => {
     const old = JSON.parse(JSON.stringify(toWorkFile(createDefaultPage(), {})))
-    old.page.style.nameDecoration.ornament = 'fleurons'
+    old.page.style.nameDecoration.ornament = 'stars'
     expect(parseWorkFile(old)!.page.style.nameDecoration).toMatchObject({
       ornament: 'custom',
-      customBefore: '❧',
-      customAfter: '☙',
+      customBefore: '★',
+      customAfter: '★',
     })
   })
 

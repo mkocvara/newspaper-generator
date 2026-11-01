@@ -20,6 +20,8 @@
   const style = $derived(editor.page.style)
   const decoration = $derived(style.nameDecoration)
   const symbols = $derived(ornamentSymbols(decoration))
+  // Presets have a fixed size; custom symbols can be scaled.
+  const symbolScale = $derived(decoration.ornament === 'custom' ? decoration.customScale / 100 : 1)
   const sidePx = $derived(Math.min(SIDE_TEXT_MAX_PX, header.heightMm * MM_PX * SIDE_TEXT_RATIO))
 
   // The name stays centred on the page, so both side columns are as wide as
@@ -58,7 +60,7 @@
       {@attach fitText({
         max: header.heightMm * MM_PX,
         wrapGain: WRAP_GAIN,
-        watch: `${style.fonts.name}|${decoration.ornament}|${symbols}`,
+        watch: `${style.fonts.name}|${decoration.ornament}|${symbols}|${symbolScale}`,
       })}
     >
       <!-- Ornaments are part of the name's space, so they scale with it. -->
@@ -66,13 +68,13 @@
         {#if decoration.ornament === 'rules'}
           <span class="rule" aria-hidden="true"></span>
         {:else if symbols}
-          <span class="ornament" aria-hidden="true">{symbols[0]}</span>
+          <span class="ornament" aria-hidden="true" style:--scale={symbolScale}>{symbols[0]}</span>
         {/if}
         <EditableText value={header.name} onchange={set('name')} placeholder="Newspaper Name" wrap />
         {#if decoration.ornament === 'rules'}
           <span class="rule" aria-hidden="true"></span>
         {:else if symbols}
-          <span class="ornament" aria-hidden="true">{symbols[1]}</span>
+          <span class="ornament" aria-hidden="true" style:--scale={symbolScale}>{symbols[1]}</span>
         {/if}
       </div>
     </div>
@@ -164,7 +166,7 @@
 
   .ornament {
     flex: none;
-    font-size: 0.6em;
+    font-size: calc(0.6em * var(--scale, 1));
     font-weight: 400;
   }
 
