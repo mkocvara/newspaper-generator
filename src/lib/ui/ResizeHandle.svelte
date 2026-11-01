@@ -140,6 +140,12 @@
       height: calc(var(--ui-scale, 1) * 36px);
     }
 
+    /* A cell's handles show once it's selected (header and footer handles
+       always show). */
+    :global(.cell:not(.selected)) .handle {
+      display: none;
+    }
+
     .handle.vertical {
       height: var(--size);
     }

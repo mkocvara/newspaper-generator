@@ -84,9 +84,9 @@
     opacity: 1;
   }
 
-  /* Touchscreens have no hover, so the hint stays visible. */
+  /* Touchscreens have no hover: the hint shows on the selected cell. */
   @media (hover: none) {
-    .sub-hint {
+    :global(.cell.selected) .sub-hint {
       opacity: 1;
     }
   }

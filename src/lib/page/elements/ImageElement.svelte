@@ -232,10 +232,18 @@
     opacity: 1;
   }
 
-  /* Touchscreens: always shown, finger-sized at any zoom. */
+  /* Touchscreens: shown on the selected cell, finger-sized at any zoom. */
   @media (hover: none) {
     .tools {
+      visibility: hidden;
+    }
+
+    :global(.cell.selected) .tools {
+      visibility: visible;
       opacity: 1;
+    }
+
+    .tools {
       /* Text buttons: a little smaller than the icon controls, so they don't
          overhang a small cell as much. */
       transform: scale(calc(var(--ui-scale, 1) * 1.3));

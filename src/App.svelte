@@ -12,6 +12,7 @@
   import { handleHistoryShortcut } from './lib/state/shortcuts'
   import Toolbar from './lib/toolbar/Toolbar.svelte'
   import Viewport from './lib/view/Viewport.svelte'
+  import { deselectOnTapOutside } from './lib/page/grid/selection.svelte'
 
   const AUTOSAVE_DELAY_MS = 500
 
@@ -58,6 +59,9 @@
     editor.load(saved ?? toWorkFile(createDefaultPage(new Date(), i18n.t.page.footerDefault), {}))
     ready = true
   })
+
+  // Touchscreens: a tap outside the grid's cells deselects the selected cell.
+  $effect(() => deselectOnTapOutside(document.body))
 
   // Lets the browser use the right hyphenation and spelling rules.
   $effect(() => {
