@@ -4,6 +4,7 @@
   import type { Fonts, FrameStyle, Style } from '../model/types'
   import { EFFECTS, ORNAMENTS } from '../page/nameDecoration'
   import { editor } from '../state/editor.svelte'
+  import FontSelect from '../ui/FontSelect.svelte'
   import Panel from '../ui/Panel.svelte'
 
   const style = $derived(editor.page.style)
@@ -25,6 +26,17 @@
       (a, b) => a.localeCompare(b),
     ),
   )
+
+  // The font menus show each name in its own font, so load them all when the
+  // Fonts panel opens, glyphs included, so the names don't flash in a fallback
+  // font when a menu first opens.
+  const loadFontOptions: Attachment = () => {
+    for (const family of fontOptions) {
+      loadFont(family, style.customFonts).then((ok) => {
+        if (ok) document.fonts.load(`16px "${family}"`, family)
+      })
+    }
+  }
 
   let fontInput = $state('')
   let fontMessage = $state('')
@@ -96,23 +108,20 @@
 </script>
 
 <Panel label="Fonts">
-  <div class="form">
+  <div class="form fonts" {@attach loadFontOptions}>
     {#each FONT_ROLES as [role, label] (role)}
-      <label class="row">
+      <div class="row">
         <span>{label}</span>
-        <select
+        <FontSelect
           value={style.fonts[role]}
-          onchange={(e) => {
-            const family = e.currentTarget.value
+          options={fontOptions}
+          {label}
+          onchange={(family) => {
             loadFont(family, style.customFonts)
             set((s) => (s.fonts[role] = family))
           }}
-        >
-          {#each fontOptions as family (family)}
-            <option value={family}>{family}</option>
-          {/each}
-        </select>
-      </label>
+        />
+      </div>
     {/each}
 
     <div class="add-font">
@@ -280,6 +289,10 @@
     display: grid;
     gap: 10px;
     min-width: 300px;
+  }
+
+  .form.fonts {
+    min-width: 350px;
   }
 
   .row {

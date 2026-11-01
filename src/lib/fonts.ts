@@ -23,6 +23,9 @@ export const FONT_CHOICES = [
   'UnifrakturMaguntia',
 ]
 
+// CSS font-family for a chosen font, with fallbacks while it loads.
+export const fontStack = (family: string) => `"${family}", Cambria, Georgia, serif`
+
 const GOOGLE_CSS = 'https://fonts.googleapis.com/css2'
 const loads = new Map<string, Promise<boolean>>()
 
