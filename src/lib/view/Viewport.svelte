@@ -55,8 +55,8 @@
     clamp()
   }
 
-  // On touchscreens the grid's row tabs, finger-sized, stick out to the left
-  // of the page, so fitting leaves room for them beside the vertical bar.
+  // On touchscreens the grid's row tabs, finger-sized, sit just off the page's
+  // left edge, so fitting leaves room for them beside the vertical bar.
   const TOUCH_LEFT_ROOM = 72
 
   function fit() {
@@ -413,5 +413,13 @@
 
   .zoom-level:hover {
     background: rgb(40 37 32 / 0.95);
+  }
+
+  /* Touch: the vertical bar hugs the left edge, leaving room for the grid's
+     row tabs beside the page. (Last, to override the bar's position above.) */
+  @media (pointer: coarse) {
+    .track.vertical {
+      left: var(--inset);
+    }
   }
 </style>

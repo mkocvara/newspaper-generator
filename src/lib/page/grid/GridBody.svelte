@@ -13,11 +13,12 @@
   let heightPx = $state(0)
   const size = $derived({ width: widthPx / MM_PX, height: heightPx / MM_PX })
 
-  // How far the grid sits below the page's top edge (layout px). On
-  // touchscreens the column tabs go above the page, clear of the header text
-  // they would otherwise cover at finger size.
+  // How far the grid sits from the page's top and left edges (layout px). On
+  // touchscreens the column and row tabs go just off the page, clear of the
+  // header text and page content they would otherwise cover at finger size.
   let wrap = $state<HTMLElement>()
   let gridTop = $state(0)
+  let gridLeft = $state(0)
   $effect(() => {
     if (!wrap) return
     const page = wrap.closest('article.page') as HTMLElement | null
@@ -25,7 +26,9 @@
     const measure = () => {
       const pageRect = page.getBoundingClientRect()
       const zoom = pageRect.width / page.offsetWidth || 1
-      gridTop = (wrap!.getBoundingClientRect().top - pageRect.top) / zoom
+      const rect = wrap!.getBoundingClientRect()
+      gridTop = (rect.top - pageRect.top) / zoom
+      gridLeft = (rect.left - pageRect.left) / zoom
     }
     const observer = new ResizeObserver(measure)
     observer.observe(wrap)
@@ -62,7 +65,7 @@
   }
 </script>
 
-<div class="grid-wrap" bind:this={wrap} style:--grid-top="{gridTop}px">
+<div class="grid-wrap" bind:this={wrap} style:--grid-top="{gridTop}px" style:--grid-left="{gridLeft}px">
   <div
     class="grid"
     bind:clientWidth={widthPx}
@@ -144,7 +147,9 @@
       transform-origin: bottom center;
     }
 
+    /* Just left of the page's left edge, growing leftwards off the page. */
     .row-tab {
+      left: calc(-1 * var(--grid-left) - 26px);
       transform: scale(calc(var(--ui-scale, 1) * 1.6));
       transform-origin: right center;
     }
