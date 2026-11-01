@@ -40,6 +40,8 @@
 
   let fontInput = $state('')
   let fontMessage = $state('')
+  // The panel's content goes away when it closes; take the message with it.
+  const clearMessageOnClose: Attachment = () => () => (fontMessage = '')
 
   async function addFont() {
     const fonts = parseFontInput(fontInput)
@@ -137,7 +139,7 @@
         />
         <button type="button" onclick={addFont}>Add</button>
       </div>
-      {#if fontMessage}<span class="hint" role="status">{fontMessage}</span>{/if}
+      {#if fontMessage}<span class="hint" role="status" {@attach clearMessageOnClose}>{fontMessage}</span>{/if}
     </div>
   </div>
 </Panel>
