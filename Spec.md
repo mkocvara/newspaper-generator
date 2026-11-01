@@ -1,7 +1,7 @@
 # Summary - Newspaper Generator
 This is the spec for a small web application for generating a digital image of a custom newspaper page with custom content.
 
-The app will have a stable background and design, but allow in-place editing of the content and flexibility in the final layout.
+The app will have a consistent design with a choice of paper backgrounds, but allow in-place editing of the content and flexibility in the final layout.
 
 If you find any information contained here to be ambiguous or unclear, ASK ABOUT IT INSTEAD OF INFERRING OR MAKING YOUR OWN DECISIONS.
 
@@ -13,7 +13,7 @@ The main feature is the editable newspaper page. It should be sized as an A4 pag
 
 The page will have a few sections: a Header, a Footer, and a Body, each editable individually.
 
-The background image should look like newspaper paper with fold lines in the middle. It shouldn't look too busy to preserve contrast with text.
+By default, the background should look like newspaper paper with fold lines in the middle. It shouldn't look too busy to preserve contrast with text. Other papers can be chosen in the toolbar (see Paper).
 
 ### Header
 Header is naturally at the top. It should be a bar containing, from left to right: date and time (editable text, date only prefilled as default as a hint, medium size regular font), Newspaper Name (editable text, large bold text), and location of print (editable text, same as date-time). It should be enclosed in a top and bottom bar for styling.
@@ -44,14 +44,14 @@ Big, blocky text usually meant for top of a page (but can be anywhere). Large bo
 Much like the Eyecatcher, this element is made up of two text boxes - the heading (larger, bold text, not capitals) and a longer text field for the content. This content is the baseline text of the newspaper and should have consistent sizing (the size set in the toolbar). If an article doesn't fit its cell, its body text shrinks first, then its heading; if even that isn't enough, the body text is cut off with an ellipsis. Heading is justified left, body text is justified into a block.
 
 #### Image
-This element is for displaying images chosen from the local device (stored in the work file). Underneath the image there should be a text box with smaller, italicised text, meant for describing the content of the image; justified to the centre.
+This element is for displaying images chosen from the local device (stored in the preset). Underneath the image there should be a text box with smaller, italicised text, meant for describing the content of the image; justified to the centre.
 
 There should be a toggle to render the image in the ink colour (see Ink Colour).
 
 Another toggle should be between how the image fits the cell. By default, the whole image is scaled to fit the cell; a toggle switches to cropping it to fill the cell, and the cropped image can be dragged to choose which part shows.
 
 ### Footer
-A footer is divided from the body of the page with a bar similar or same as the bottom one of the header (consistent styling is key). It should have three editable text boxes, one justified to the left, one to the right, and one centred. All same text styling, small text, regular font. Only the right one should have a default prefilled text saying "Page 1".
+A footer is divided from the body of the page with a bar similar or same as the bottom one of the header (consistent styling is key). It should have three editable text boxes, one justified to the left, one to the right, and one centred. All same text styling, small text, regular font. Only the right one should have a default prefilled text saying "Page 1" (in the current UI language).
 
 It should also be resizable by dragging the upper border (similar to the header). This should change the size of the text in the footer.
 
@@ -69,9 +69,11 @@ c. Header and footer frame style.
 d. Cell border thickness
 
 ### Import/Export
-An Export button should give three options: export as image (jpg, png), as pdf, or as a work file (json file). 
+An Export button should give four options: image (JPG, PNG), PDF (with the text as real, selectable text where possible), or an importable preset (a JSON file).
 
-The work json file can be saved locally and uploaded later with the Import button in order to restore work later. This file will need to keep all relevant info to restore the layout and the content that the newspaper page had at export time.
+The preset can be saved locally and loaded later with the Import button in order to restore work later. This file will need to keep all relevant info to restore the layout and the content that the newspaper page had at export time.
+
+A New Paper button resets the page to its default, after warning that current changes will be lost and offering to export a preset first.
 
 ### Undo/Redo
 Mapped also to Ctrl+Z and Ctrl+Y, the app should have undo and redo functionality for layout, style and content changes.
@@ -88,7 +90,10 @@ A toolbar option for choosing the colour of the ink the newspaper is printed in.
 
 It offers a colour picker and a few classic ink presets (e.g. black, sepia brown, navy, dark red, dark green).
 
-For images, the greyscale toggle becomes an ink toggle (the button can say "Ink" for short). It renders the image in the ink colour as if printed on the paper: dark parts in ink, light parts letting the paper show through.
+For images, the ink toggle (the button can say "Ink" for short) renders the image in the ink colour as if printed on the paper: dark parts in ink, light parts letting the paper show through.
+
+### Paper
+A toolbar option for choosing the paper the newspaper is printed on, shown as small previews: newsprint (the default), old paper, old and stained paper, modern plain paper, and modern creased paper. The choice is saved with the page.
 
 ## Zoom and Pan
 The newspaper page should be zoomable independently of the wider page, so zooming never affects the toolbar.
@@ -96,6 +101,9 @@ The newspaper page should be zoomable independently of the wider page, so zoomin
 The scroll wheel zooms in and out (towards the pointer), and dragging with the middle mouse button pans, anywhere over the page or around it. The view starts zoomed to fit the whole page in the window, and the zoom ranges from 25% to 400%. The zoom level and position aren't remembered between visits.
 
 Floating bars on the left and at the bottom show the zoom level and the visible part of the page; dragging the inner bar pans. Where the two bars meet, a box shows the zoom percentage; clicking it resets the zoom to 100%.
+
+## Languages
+All text in the app can be switched between English and Czech with a toggle in the toolbar. The choice is remembered; at first, the app follows the browser's language. Text already on a page is never changed.
 
 # Example Newspaper
 In the project folder, there is an image called "example-newspaper.png". This is not a source of truth and it is not a goal to emulate, but it is an example of the inspiration behind the app and shows the kind of styling we wan
@@ -109,14 +117,13 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Merging:** merged cells are always rectangles. Merging more than two at once (e.g. a whole column) is allowed if it can be done elegantly.
 - **Splitting:** splitting a cell only affects that cell; it never alters the rest of the layout (no new page-wide grid lines).
 - **Moving:** moving a cell pushes the others along (no swapping). Moves that would break other parts of the layout must not be possible.
-- **Text overflow:** text that doesn't fit its cell shrinks to fit.
+- **Text overflow:** text that doesn't fit its cell shrinks to fit; articles shrink their body first, then their heading, and finally cut the body off with an ellipsis (see Elements).
 - **Fonts:** Caladea is used instead of Cambria (Cambria is not a Google Font; Caladea is metrically compatible).
 - **Header/footer frame styles:** single line, double line, two thick-and-thin variants (thick line outside or thin line outside), dashed, dotted, dash and dot (`── · ── ·`), zigzag and wave. "Outside" is the side facing away from the header/footer text, so the header's top and bottom bars mirror each other.
 - **Placeholders:** empty text boxes show a faint hint in angle brackets (e.g. `<Newspaper Name>`); hints are never exported.
 - **Header text sizing:** date and location grow with the header height up to a cap, so extra height goes to the newspaper name. The name and location may wrap between words, but only when that allows a clearly larger font (≥30%); otherwise they stay on one line and shrink to fit.
 - **Unsaved typing:** when the tab is hidden or closed, the text box being edited is committed and the page is saved immediately.
 - **Images:** stored (embedded) in the JSON work file so work can be fully restored.
-- **Background:** generated (CSS gradients for the folds and vignette, plus a small PNG grain tile); may be revisited.
 - **Header date default:** today's date in the format `d. m. YYYY`, no zero-padding (e.g. `5. 3. 2026`).
 - **Empty cells:** a cell with no element inserted shows nothing.
 - **Eyecatcher:** text is centred.
@@ -141,16 +148,16 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Toolbar (stage 5):**
   - Pinned by default: it stays visible and the page sits below it. Unpinned, it hides; hovering the strip it occupies (a small ▾ tab hints at it) slides it down, and it stays while hovered or while one of its panels is open. The pin setting is remembered per browser, not in the work file.
   - *Undo/Redo* buttons sit at the left.
-  - *Styling* is split into five panels:
+  - *Styling* is split into six panels:
     - *Fonts:* a role-by-role picker whose menus show each font in its own font. *Manage fonts…* lists the fonts on offer (18 suggested Google Fonts to start): any can be removed (text using it switches to Caladea, undoably), the defaults restored, and more added by name or Google Fonts link. The list is kept per browser; fonts a page uses join it automatically, e.g. on import.
     - *Text sizes:* in points; a focused field also steps with the mouse wheel.
     - *Frame & borders:* frame style and cell border thickness (which also steps with the mouse wheel).
     - *Newspaper name:* ornaments, custom symbols, effect.
+    - *Paper:* see Paper below.
     - *Ink:* see Ink colour below.
-  - *Import* replaces the page with a work file as one undoable step. In the UI the work file is called an "Importable preset" (the Export menu option) or "preset".
-  - *New Paper* (next to Export) resets the page to the default after a confirmation dialog that warns the changes will be lost and offers to export a preset first; the reset is also undoable. Older work files gain any newer style options at their defaults.
+  - *Import* replaces the page with a work file as one undoable step; older work files gain any newer style options at their defaults. In the UI the work file is called an "Importable preset" (the Export menu option) or "preset".
+  - *New Paper* (next to Export) resets the page to the default after a confirmation dialog that warns the changes will be lost and offers to export a preset first; the reset is also undoable.
   - *Export:* PNG, JPG and PDF are rendered at A4 300 dpi (2481 × 3508 px) without placeholders, handles or other editing aids; the PDF holds that image on an A4 page, with the text as real PDF text on top (see PDF text below). File names come from the newspaper name (e.g. `the-daily-chronicle.pdf`).
-  - *Background:* the paper grain is a small PNG tile (the earlier SVG noise filter rendered black in exports).
 - **Ink colour:**
   - Default is the near-black `#1b1a17`. The Ink panel in the toolbar offers presets (black, sepia brown, navy, dark red, dark green) and a custom colour picker; a pick is one undo step.
   - It colours all page text, the header/footer frames, cell borders and the name's ornaments. The name effects' tones (shadow, extrude sides, engraving) are the ink thinned with paper or transparency, so they follow it.
@@ -161,7 +168,7 @@ Below, you can add notes and additional clarifications regarding the content of 
   - The page is scaled with a CSS transform inside its own viewport (below the pinned toolbar), so its layout, text fitting and exports are unaffected; the window itself no longer scrolls.
   - Ctrl+wheel is left to the browser's own zoom. Middle-click doesn't paste or start autoscroll over the page.
   - Panning works at any zoom (also when the whole page is in view) and stops once only a quarter of the window's width or height (or the whole page, if smaller) still shows the page, so its edge never leaves the view. Pressing a bar's track jumps there; with a bar focused, the arrow keys pan. Resetting to 100% keeps the middle of the view in place.
-- **Paper:** a Paper panel in the toolbar picks the page's background, saved with the page and in presets (undoable): *Newsprint* (the default, unchanged), *Old paper* (yellowed, coarser grain, browned edges, big creases folded in half and in thirds), *Old & stained* (the same with coffee rings, water stains and foxing spots, drawn as an irregular, noise-generated PNG layer made by `scripts/make-stains.py`), *Modern plain* (clean, bright, a whisper of grain) and *Modern, creased* (the same with two crisp folds). Each also sets the paper tone the ink effects mix with. Backgrounds are CSS gradients plus the PNG grain tile, so exports match the screen.
+- **Paper:** a Paper panel in the toolbar picks the page's background, saved with the page and in presets (undoable): *Newsprint* (the default, unchanged), *Old paper* (yellowed, coarser grain, browned edges, big creases folded in half and in thirds), *Old & stained* (the same with coffee rings, water stains and foxing spots, drawn as an irregular, noise-generated PNG layer made by `scripts/make-stains.py`), *Modern plain* (clean, bright, a whisper of grain) and *Modern, creased* (the same with two crisp folds). Each also sets the paper tone the ink effects mix with. Backgrounds are CSS gradients plus PNGs (the grain tile and the stain layer); an earlier SVG noise filter rendered black in exports, so no SVG filters are used.
 - **Languages:** English and Czech, switched with an EN | CS toggle at the right of the toolbar (by the pin). The choice is remembered per browser; before that, the app follows the browser's language (Czech if preferred, else English). All UI text is translated, including placeholders and menus; the page's `lang` follows it, so hyphenation uses that language's rules. Text already on a page is the user's and never changes; only new pages (first visit, New Paper) get the prefilled footer ("Page 1" / "Strana 1") in the current language. Translations live in `src/lib/i18n/` (Czech is typed against English, so a missing string is a type error); the Czech is to be proof-read by the user.
 - **Toolbar wrapping:** when the window is too narrow for one row (or labels are longer, as in Czech), the toolbar wraps onto a second row and the page area starts below its actual height.
 - **PDF text:** text in the built-in fonts is real, selectable PDF text in its own embedded font, placed word by word where the browser laid it out (letter spacing fitted to each word's width, hyphens added at hyphenated line breaks), and left out of the page image. The fonts' static TTFs are fetched from fonts.gstatic.com at export time; their addresses come from `src/lib/pdf/font-manifest.json`, made by `scripts/make-font-manifest.mjs` (Google's download list can't be read from a browser). Text that can't be real text stays in the image with an invisible, selectable and searchable copy on top: fonts the user added, the name with an effect, ornaments, text cut off with an ellipsis, and symbols outside Latin/Latin Extended. A bold that a font doesn't have is imitated with a thin outline.
