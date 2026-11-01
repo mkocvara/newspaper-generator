@@ -3,6 +3,7 @@
   import { parseWorkFile } from '../model/workfile'
   import { editor } from '../state/editor.svelte'
   import Menu from '../ui/Menu.svelte'
+  import NewPaperDialog from './NewPaperDialog.svelte'
   import StylePanels from './StylePanels.svelte'
 
   // Sticky top bar. Unless pinned, it slides away when not hovered (a small tab
@@ -42,7 +43,7 @@
     if (!file) return
     try {
       const parsed = parseWorkFile(JSON.parse(await file.text()))
-      if (!parsed) return say(`${file.name} isn't a newspaper work file.`)
+      if (!parsed) return say(`${file.name} isn't a newspaper preset.`)
       editor.importFile(parsed)
       say(`Imported ${file.name}. Undo (Ctrl+Z) brings back the previous page.`)
     } catch {
@@ -99,10 +100,17 @@
           { label: 'Image (JPG)', action: () => runExport('jpeg') },
           { label: 'PDF', action: () => runExport('pdf') },
           'separator',
-          { label: 'Work file (JSON)', action: () => runExport('json') },
+          { label: 'Importable preset', action: () => runExport('json') },
         ]}
       />
     </div>
+    <NewPaperDialog
+      onexport={() => runExport('json')}
+      onconfirm={() => {
+        editor.reset()
+        say('Started a new paper. Undo (Ctrl+Z) brings back the previous one.')
+      }}
+    />
   </div>
 
   <span class="status" role="status">{status}</span>
@@ -182,6 +190,8 @@
 
   .toolbar :global(.tb-button),
   .export :global(.trigger) {
+    flex: none;
+    white-space: nowrap;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -222,6 +232,7 @@
 
   .status {
     flex: 1;
+    min-width: 0;
     color: #cfc8b8;
     white-space: nowrap;
     overflow: hidden;

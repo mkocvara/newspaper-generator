@@ -75,6 +75,21 @@ describe('Editor history', () => {
     expect(editor.page.header.name).toBe('')
   })
 
+  it('resets to a default page as an undoable step', () => {
+    const editor = new Editor()
+    editor.update((p) => {
+      p.header.name = 'Old'
+      p.style.ink = '#1f2f55'
+      p.grid.cols = [1, 2]
+    })
+    editor.reset()
+    expect(editor.page.header.name).toBe('')
+    expect(editor.page.style.ink).toBe('#1b1a17')
+    expect(editor.page.grid.cols).toEqual([1, 1, 1])
+    editor.undo()
+    expect(editor.page.header.name).toBe('Old')
+  })
+
   it('loads a work file and resets history', () => {
     const editor = new Editor()
     editor.update((p) => (p.header.name = 'Old'))

@@ -140,7 +140,8 @@ Below, you can add notes and additional clarifications regarding the content of 
     - *Frame & borders:* frame style and cell border thickness (which also steps with the mouse wheel).
     - *Newspaper name:* ornaments, custom symbols, effect.
     - *Ink:* see Ink colour below.
-  - *Import* replaces the page with a work file as one undoable step. Older work files gain any newer style options at their defaults.
+  - *Import* replaces the page with a work file as one undoable step. In the UI the work file is called an "Importable preset" (the Export menu option) or "preset".
+  - *New Paper* (next to Export) resets the page to the default after a confirmation dialog that warns the changes will be lost and offers to export a preset first; the reset is also undoable. Older work files gain any newer style options at their defaults.
   - *Export:* PNG, JPG and PDF are rendered at A4 300 dpi (2481 × 3508 px) without placeholders, handles or other editing aids; the PDF holds that image on an A4 page. File names come from the newspaper name (e.g. `the-daily-chronicle.pdf`).
   - *Background:* the paper grain is a small PNG tile (the earlier SVG noise filter rendered black in exports).
 - **Ink colour:**
