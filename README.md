@@ -14,6 +14,7 @@ Built with Svelte 5, Vite and TypeScript.
 npm install
 npm run dev      # start dev server
 npm run check    # type-check
+npm test         # unit tests
 npm run build    # production build to dist/
 ```
 
