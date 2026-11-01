@@ -31,6 +31,16 @@ describe('parseWorkFile', () => {
     expect(parseWorkFile(JSON.parse(JSON.stringify(file)))).toEqual(file)
   })
 
+  it('fills in style options missing from older files', () => {
+    const file = toWorkFile(createDefaultPage(), {})
+    const old = JSON.parse(JSON.stringify(file))
+    delete old.page.style.nameDecoration
+    old.page.style.frameStyle = 'thick-thin'
+    const parsed = parseWorkFile(old)!
+    expect(parsed.page.style.nameDecoration).toEqual(file.page.style.nameDecoration)
+    expect(parsed.page.style.frameStyle).toBe('thick-outer')
+  })
+
   it('rejects other JSON', () => {
     expect(parseWorkFile({ hello: 'world' })).toBeNull()
     expect(parseWorkFile(null)).toBeNull()

@@ -34,6 +34,7 @@ export function createDefaultPage(today = new Date()): Page {
       sizes: { bodyPt: 9, headingPt: 14, captionPt: 8 },
       frameStyle: 'double',
       border: { widthPt: 0.75, color: '#222222' },
+      nameDecoration: { ornament: 'none', customBefore: '', customAfter: '', effect: 'none' },
     },
   }
 }

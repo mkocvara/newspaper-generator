@@ -101,6 +101,18 @@ export interface Style {
     widthPt: number
     color: string
   }
+  nameDecoration: NameDecoration
+}
+
+export type Ornament = 'none' | 'bars' | 'double-bars' | 'stars' | 'diamonds' | 'fleurons' | 'rules' | 'custom'
+export type NameEffect = 'none' | 'shadow' | 'extrude' | 'engraved' | 'outline' | 'hatched'
+
+export interface NameDecoration {
+  ornament: Ornament
+  // Used when ornament is 'custom'; an empty `customAfter` repeats `customBefore`.
+  customBefore: string
+  customAfter: string
+  effect: NameEffect
 }
 
 export interface Fonts {

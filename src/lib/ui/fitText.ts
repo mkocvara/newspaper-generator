@@ -21,13 +21,15 @@ export function refitAll() {
   window.dispatchEvent(new Event(REFIT_EVENT))
 }
 
-function overflows(el: HTMLElement): boolean {
-  return el.scrollWidth > el.clientWidth + 0.5 || el.scrollHeight > el.clientHeight + 0.5
+// scroll and client sizes are rounded differently, so a box of fractional
+// width can report up to 1px of overflow that isn't there.
+export function overflows(el: HTMLElement): boolean {
+  return el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1
 }
 
 // Binary-search the largest font size at which the element's content fits
-// inside its own box; leaves it applied and returns it.
-function search(el: HTMLElement, max: number, min: number): number {
+// inside its own box; leaves it applied and returns it (min if nothing fits).
+export function search(el: HTMLElement, max: number, min: number): number {
   el.style.fontSize = `${max}px`
   if (!overflows(el)) return max
   let lo = min
@@ -61,22 +63,24 @@ export function fit(el: HTMLElement, { max, min = 4, wrapGain }: FitOptions) {
 
 // Keeps text fitted as the box resizes, the text changes, or fonts load.
 export function fitText(options: FitOptions): Attachment<HTMLElement> {
-  return (el) => {
-    const run = () => fit(el, options)
-    run()
+  return (el) => refitOnChange(el, () => fit(el, options))
+}
 
-    const resize = new ResizeObserver(run)
-    resize.observe(el)
-    const mutation = new MutationObserver(run)
-    mutation.observe(el, { subtree: true, childList: true, characterData: true })
-    document.fonts.addEventListener('loadingdone', run)
-    window.addEventListener(REFIT_EVENT, run)
+// Runs `run` now and whenever the element resizes, its text changes, fonts
+// load or a refit is requested; returns the cleanup.
+export function refitOnChange(el: HTMLElement, run: () => void): () => void {
+  run()
+  const resize = new ResizeObserver(run)
+  resize.observe(el)
+  const mutation = new MutationObserver(run)
+  mutation.observe(el, { subtree: true, childList: true, characterData: true })
+  document.fonts.addEventListener('loadingdone', run)
+  window.addEventListener(REFIT_EVENT, run)
 
-    return () => {
-      resize.disconnect()
-      mutation.disconnect()
-      document.fonts.removeEventListener('loadingdone', run)
-      window.removeEventListener(REFIT_EVENT, run)
-    }
+  return () => {
+    resize.disconnect()
+    mutation.disconnect()
+    document.fonts.removeEventListener('loadingdone', run)
+    window.removeEventListener(REFIT_EVENT, run)
   }
 }
