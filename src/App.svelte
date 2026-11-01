@@ -28,7 +28,7 @@
 
 <main>
   {#if ready}
-    <Page page={editor.page} />
+    <Page />
   {/if}
 </main>
 

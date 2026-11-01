@@ -1,31 +1,32 @@
 <script lang="ts">
-  import type { Page } from '../model/types'
+  import { editor } from '../state/editor.svelte'
+  import Footer from './Footer.svelte'
   import GridBody from './GridBody.svelte'
+  import Header from './Header.svelte'
 
-  let { page }: { page: Page } = $props()
+  const style = $derived(editor.page.style)
+  const family = (name: string) => `"${name}", Cambria, Georgia, serif`
 </script>
 
-<!-- A4 sheet. Header and footer are placeholders until stage 2. -->
+<!-- A4 sheet. -->
 <article
   class="page"
-  style:--border-width="{page.style.border.widthPt}pt"
-  style:--border-color={page.style.border.color}
+  style:--border-width="{style.border.widthPt}pt"
+  style:--border-color={style.border.color}
+  style:--font-body={family(style.fonts.body)}
+  style:--font-heading={family(style.fonts.heading)}
+  style:--font-caption={family(style.fonts.caption)}
+  style:--font-eyecatcher={family(style.fonts.eyecatcher)}
+  style:--font-header-footer={family(style.fonts.headerFooter)}
+  style:--font-name={family(style.fonts.name)}
 >
-  <header style:height="{page.header.heightMm}mm">
-    <span>{page.header.date}</span>
-    <strong>{page.header.name}</strong>
-    <span>{page.header.location}</span>
-  </header>
+  <Header />
 
   <section class="body">
-    <GridBody grid={page.grid} />
+    <GridBody grid={editor.page.grid} />
   </section>
 
-  <footer style:height="{page.footer.heightMm}mm">
-    <span>{page.footer.left}</span>
-    <span>{page.footer.center}</span>
-    <span>{page.footer.right}</span>
-  </footer>
+  <Footer />
 </article>
 
 <style>
@@ -36,6 +37,7 @@
     padding: 12mm;
     display: flex;
     flex-direction: column;
+    gap: 3mm;
     color: #1b1a17;
     box-shadow: 0 2px 12px rgb(0 0 0 / 0.35);
 
@@ -64,21 +66,13 @@
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  header,
-  footer {
-    flex: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-block: 1pt solid currentColor;
-  }
-
-  footer {
-    border-bottom: none;
-  }
-
   .body {
     flex: 1;
     min-height: 0;
+  }
+
+  /* Editing affordances (drag handles etc.) never appear in exports. */
+  .page:global(.exporting) :global(.ui-only) {
+    display: none;
   }
 </style>
