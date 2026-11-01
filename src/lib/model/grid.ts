@@ -303,39 +303,97 @@ function mapNodes(grid: Grid, replace: (node: CellNode) => CellNode | null): Gri
 }
 
 // Split a cell (or a part of a split cell) in two, its content staying in the
-// first half; 'row' places the halves side by side, 'column' stacks them. A
-// whole, unsplit cell that spans several columns (side by side) or rows
-// (stacked) splits along its grid line closest to the middle, back into two
-// normal grid cells that move and resize with the grid. Otherwise there is no
-// grid line to use, and the part gets its own divider (splitLeaf).
+// first half; 'row' places the halves side by side, 'column' stacks them.
+//
+// Where a grid line runs through the part across the split (a column line for
+// side by side, a row line for stacked), the split follows it instead: the
+// cell is cut along that line into two normal grid cells that move and resize
+// with the grid. That needs the part to span its cell's full height (side by
+// side) or width (stacked), so the line cuts nothing else; the other parts
+// keep their place on the page. Of several such lines, the one closest to the
+// part's middle is used (the first on a tie). Otherwise the part gets its own
+// divider (splitLeaf).
 export function splitPart(grid: Grid, cellId: string, leafId: string, direction: SplitNode['direction']): Grid {
-  const cell = findCell(grid, cellId)
-  if (cell?.node.kind === 'leaf' && cell.node.id === leafId) {
-    const result = direction === 'row' ? unmergeColumns(grid, cellId) : viaTranspose(grid, (g) => unmergeColumns(g, cellId))
-    if (result !== grid) return result
-  }
-  return splitLeaf(grid, leafId, direction)
+  return splitAlongGridLine(grid, cellId, leafId, direction) ?? splitLeaf(grid, leafId, direction)
 }
 
-// Cut a cell spanning several columns at the column line nearest its middle
-// (by width; the first such line on a tie). Unchanged if it spans one column.
-function unmergeColumns(grid: Grid, cellId: string): Grid {
-  const cell = findCell(grid, cellId)
-  if (!cell || cell.colSpan < 2) return grid
-  const widths = grid.cols.slice(cell.col, cell.col + cell.colSpan)
-  const half = widths.reduce((a, b) => a + b, 0) / 2
-  let best = 1
-  let bestGap = Infinity
-  let sum = 0
-  for (let k = 1; k < cell.colSpan; k++) {
-    sum += widths[k - 1]
-    const gap = Math.abs(sum - half)
-    if (gap < bestGap - 1e-9) [best, bestGap] = [k, gap]
+// One stretch of a cell along the split's axis: a part, and where it starts and
+// ends as fractions of the cell.
+interface Stretch {
+  node: CellNode
+  from: number
+  to: number
+}
+
+// The cell's parts in order along `direction`, looking through splits in that
+// direction only (a split the other way is one stretch).
+function stretches(node: CellNode, direction: SplitNode['direction'], from = 0, to = 1): Stretch[] {
+  if (node.kind === 'leaf' || node.direction !== direction) return [{ node, from, to }]
+  const mid = from + ((to - from) * node.sizes[0]) / (node.sizes[0] + node.sizes[1])
+  return [...stretches(node.children[0], direction, from, mid), ...stretches(node.children[1], direction, mid, to)]
+}
+
+// Stretches back into one node: nested splits in `direction`, sized to match.
+// Sizes are normalised to sum to 1: they become flex-grow factors, and factors
+// summing to less than 1 would leave part of the cell unfilled.
+function joinStretches(parts: Stretch[], direction: SplitNode['direction']): CellNode {
+  if (parts.length === 1) return parts[0].node
+  const [first, ...rest] = parts
+  const firstLength = first.to - first.from
+  const restLength = rest[rest.length - 1].to - rest[0].from
+  const total = firstLength + restLength
+  return {
+    kind: 'split',
+    id: newId(),
+    direction,
+    sizes: [firstLength / total, restLength / total],
+    children: [first.node, joinStretches(rest, direction)],
   }
-  const first: GridCell = { ...cell, colSpan: best }
-  const second: GridCell = { ...emptyCell(cell.col + best, cell.row), colSpan: cell.colSpan - best, rowSpan: cell.rowSpan }
-  const cells = grid.cells.flatMap((c) => (c.id === cellId ? [first, second] : [c]))
-  return { ...grid, cells }
+}
+
+function splitAlongGridLine(
+  grid: Grid,
+  cellId: string,
+  leafId: string,
+  direction: SplitNode['direction'],
+): Grid | null {
+  const cell = findCell(grid, cellId)
+  if (!cell) return null
+  const across = direction === 'row'
+  const [start, span, tracks] = across ? [cell.col, cell.colSpan, grid.cols] : [cell.row, cell.rowSpan, grid.rows]
+  const parts = stretches(cell.node, direction)
+  const target = parts.findIndex((p) => p.node.id === leafId)
+  // The part must be one of the stretches, i.e. span the cell the other way.
+  if (target === -1 || span < 2) return null
+  const part = parts[target]
+
+  // The cell's inner grid lines, as fractions of the cell; the one inside the
+  // part closest to its middle.
+  const sizes = tracks.slice(start, start + span)
+  const total = sizes.reduce((a, b) => a + b, 0)
+  const middle = (part.from + part.to) / 2
+  let line = -1
+  let at = 0
+  let sum = 0
+  for (let k = 1; k < span; k++) {
+    sum += sizes[k - 1]
+    const pos = sum / total
+    const inside = pos > part.from + 1e-9 && pos < part.to - 1e-9
+    if (inside && (line === -1 || Math.abs(pos - middle) < Math.abs(at - middle) - 1e-9)) [line, at] = [k, pos]
+  }
+  if (line === -1) return null
+
+  // The part's content stays on the first side; its far side becomes empty.
+  const before = [...parts.slice(0, target), { node: part.node, from: part.from, to: at }]
+  const after = [{ node: emptyLeaf(), from: at, to: part.to }, ...parts.slice(target + 1)]
+  const first: GridCell = { ...cell, ...(across ? { colSpan: line } : { rowSpan: line }), node: joinStretches(before, direction) }
+  const second: GridCell = {
+    ...emptyCell(across ? start + line : cell.col, across ? cell.row : start + line),
+    colSpan: across ? span - line : cell.colSpan,
+    rowSpan: across ? cell.rowSpan : span - line,
+    node: joinStretches(after, direction),
+  }
+  return { ...grid, cells: grid.cells.flatMap((c) => (c.id === cellId ? [first, second] : [c])) }
 }
 
 // Give a part its own divider: its content stays in the first half. 'row'

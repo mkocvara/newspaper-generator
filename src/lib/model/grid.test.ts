@@ -286,6 +286,40 @@ describe('splitting a merged cell', () => {
     expect(at(even, 1, 0).colSpan).toBe(2)
   })
 
+  it('splits a full-width part of a split cell along the grid line through it', () => {
+    // A column-high cell, privately split 75/25 into a top and a bottom part
+    // (the reported layout): splitting the top part stacked uses the row line
+    // nearest its middle, and the bottom part stays where it is on the page.
+    const start = grid3()
+    let g = mergeLine(start, at(start, 0, 0).id, 'column')
+    const tall = at(g, 0, 0)
+    const top = text('Top')
+    const bottom = text('Bottom')
+    g = withNode(g, 0, 0, { kind: 'split', id: 's', direction: 'column', sizes: [3, 1], children: [top, bottom] })
+    g = splitPart(g, tall.id, 'leaf-Top', 'column')
+    expectValidTiling(g)
+    expect(at(g, 0, 0)).toMatchObject({ id: tall.id, row: 0, rowSpan: 1, node: top })
+    const rest = at(g, 0, 1)
+    expect(rest).toMatchObject({ row: 1, rowSpan: 2 })
+    if (rest.node.kind !== 'split') throw new Error()
+    expect(rest.node.children[1]).toEqual(bottom)
+    // The bottom part still starts at 75% of the original column, and the
+    // sizes fill the new cell (as flex-grow factors they must sum to 1).
+    const [emptyPart, bottomPart] = rest.node.sizes
+    expect(emptyPart + bottomPart).toBeCloseTo(1)
+    expect(1 / 3 + (2 / 3) * emptyPart).toBeCloseTo(0.75)
+  })
+
+  it('divides a part privately if the grid line would also cut its neighbours', () => {
+    const start = grid3()
+    let g = mergeLine(start, at(start, 0, 0).id, 'column')
+    const tall = at(g, 0, 0)
+    // Side by side halves: a row line through the left one would cut the right one too.
+    g = withNode(g, 0, 0, { kind: 'split', id: 's', direction: 'row', sizes: [1, 1], children: [text('L'), text('R')] })
+    const after = splitPart(g, tall.id, 'leaf-L', 'column')
+    expect(after.cells).toHaveLength(g.cells.length)
+  })
+
   it('divides privately where there is no grid line to use', () => {
     let g = grid3()
     g = mergeToward(g, at(g, 0, 0).id, 'right')
