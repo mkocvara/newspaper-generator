@@ -66,7 +66,7 @@ a. Fonts (individually, for body text, heading text, image descriptions, eyecatc
 b. Body text size and heading size. Image description font size.
     *Note: no sizing for header, footer, or eyecatcher fonts, as they resize with their cells.*
 c. Header and footer frame style.
-d. Cell border thickness and colour.
+d. Cell border thickness
 
 ### Import/Export
 An Export button should give three options: export as image (jpg, png), as pdf, or as a work file (json file). 
@@ -82,6 +82,13 @@ e.g.:
 - simple vertical bars (or other cool symbols or patterns) before and after
 - special shading
 - 3d effect
+
+### Ink Colour
+A toolbar option for choosing the colour of the ink the newspaper is printed in. The ink colour is used for all the elements representing print on the page: all text, the header and footer bars, cell borders, and the newspaper name's ornaments and effects.
+
+It offers a colour picker and a few classic ink presets (e.g. black, sepia brown, navy, dark red, dark green).
+
+For images, the greyscale toggle becomes an ink toggle (the button can say "Ink" for short). It renders the image in the ink colour as if printed on the paper: dark parts in ink, light parts letting the paper show through.
 
 # Example Newspaper
 In the project folder, there is an image called "example-newspaper.png". This is not a source of truth and it is not a goal to emulate, but it is an example of the inspiration behind the app and shows the kind of styling we wan
@@ -123,7 +130,7 @@ Below, you can add notes and additional clarifications regarding the content of 
   - *Inserting:* the cell menu offers "Insert eyecatcher / text / image" for an empty part, and "Change to …" / "Clear cell" for a filled one (undo restores the previous content).
   - *Eyecatcher:* text is as large as fits the cell and wraps between words. When the secondary line is empty it takes no space; a `<Secondary text>` hint appears over the bottom of the cell on hover so it can still be filled in.
   - *Text:* heading and body use the page-wide sizes; if they don't fit, both shrink together for that cell only. Enter starts a new line in the body. Justified body text is hyphenated.
-  - *Image:* "scale and fill" (default) is interpreted as showing the whole image scaled to fit the cell; "crop" fills the cell and crops the overflow. To confirm. Image tools (Replace, B/W, Crop) appear on hover; images can also be dropped onto the cell. Images larger than 2400 px on their longest side are scaled down on import to keep work files small.
+  - *Image:* "scale and fill" (default) is interpreted as showing the whole image scaled to fit the cell; "crop" fills the cell and crops the overflow. To confirm. Image tools (Replace, Ink, Crop) appear on hover; images can also be dropped onto the cell. Images larger than 2400 px on their longest side are scaled down on import to keep work files small.
 - **Toolbar (stage 5):**
   - Hidden by default; hovering the top edge of the window (a small ▾ tab hints at it) slides it down, and it stays while hovered or while one of its panels is open. Pinning keeps it visible and moves the page down so the bar doesn't cover it. The pin setting is remembered per browser.
   - *Undo/Redo* buttons sit at the left.
@@ -131,3 +138,9 @@ Below, you can add notes and additional clarifications regarding the content of 
   - *Import* replaces the page with a work file as one undoable step. Older work files gain any newer style options at their defaults.
   - *Export:* PNG, JPG and PDF are rendered at A4 300 dpi (2481 × 3508 px) without placeholders, handles or other editing aids; the PDF holds that image on an A4 page. File names come from the newspaper name (e.g. `the-daily-chronicle.pdf`).
   - *Background:* the paper grain is a small PNG tile (the earlier SVG noise filter rendered black in exports).
+- **Ink colour:**
+  - Default is the near-black `#1b1a17`. The Ink panel in the toolbar offers presets (black, sepia brown, navy, dark red, dark green) and a custom colour picker; a pick is one undo step.
+  - It colours all page text, the header/footer frames, cell borders and the name's ornaments. The name effects' tones (shadow, extrude sides, engraving) are the ink thinned with paper or transparency, so they follow it.
+  - Editing aids (placeholders, handles, menus) are never printed, so they keep their own colours.
+  - The image *Ink* toggle replaces B/W: each pixel becomes ink with an opacity set by how dark it was, so light areas show the paper. It's rendered in a canvas (not a CSS/SVG filter) so exports match the screen, and the rendered copy isn't stored in the work file.
+  - The cell border colour option is gone; no older work files used it, so there's no migration.
