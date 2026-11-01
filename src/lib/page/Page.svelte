@@ -1,11 +1,11 @@
 <script lang="ts">
+  import { fontStack } from '../fonts'
   import { editor } from '../state/editor.svelte'
   import Footer from './Footer.svelte'
   import GridBody from './grid/GridBody.svelte'
   import Header from './Header.svelte'
 
   const style = $derived(editor.page.style)
-  const family = (name: string) => `"${name}", Cambria, Georgia, serif`
 </script>
 
 <!-- A4 sheet. -->
@@ -13,12 +13,12 @@
   class="page"
   style:--border-width="{style.border.widthPt}pt"
   style:--border-color={style.border.color}
-  style:--font-body={family(style.fonts.body)}
-  style:--font-heading={family(style.fonts.heading)}
-  style:--font-caption={family(style.fonts.caption)}
-  style:--font-eyecatcher={family(style.fonts.eyecatcher)}
-  style:--font-header-footer={family(style.fonts.headerFooter)}
-  style:--font-name={family(style.fonts.name)}
+  style:--font-body={fontStack(style.fonts.body)}
+  style:--font-heading={fontStack(style.fonts.heading)}
+  style:--font-caption={fontStack(style.fonts.caption)}
+  style:--font-eyecatcher={fontStack(style.fonts.eyecatcher)}
+  style:--font-header-footer={fontStack(style.fonts.headerFooter)}
+  style:--font-name={fontStack(style.fonts.name)}
 >
   <Header />
 
