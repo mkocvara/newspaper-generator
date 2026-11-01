@@ -457,10 +457,10 @@
   input[type='number'] {
     font: inherit;
     padding: 3px 6px;
-    border: 1px solid rgb(0 0 0 / 0.25);
+    border: 1px solid var(--menu-field-border);
     border-radius: 4px;
-    background: #fff;
-    color: #222;
+    background: var(--menu-field);
+    color: var(--menu-text);
   }
 
   select {
@@ -476,8 +476,8 @@
   }
 
   input.symbol.target {
-    border-color: #2f5ea8;
-    box-shadow: 0 0 0 1px #2f5ea8;
+    border-color: var(--menu-accent);
+    box-shadow: 0 0 0 1px var(--menu-accent);
   }
 
   .symbols {
@@ -491,25 +491,25 @@
   .symbols button {
     aspect-ratio: 1;
     padding: 0;
-    border: 1px solid rgb(0 0 0 / 0.15);
+    border: 1px solid var(--menu-rule);
     border-radius: 4px;
-    background: #fff;
-    color: #222;
+    background: var(--menu-field);
+    color: var(--menu-text);
     font-size: 17px;
     line-height: 1;
     cursor: pointer;
   }
 
   .symbols button:hover {
-    border-color: #2f5ea8;
-    background: rgb(70 120 200 / 0.1);
+    border-color: var(--menu-accent);
+    background: var(--menu-hover);
   }
 
   input[type='color'] {
     width: 48px;
     height: 26px;
     padding: 0;
-    border: 1px solid rgb(0 0 0 / 0.25);
+    border: 1px solid var(--menu-field-border);
     border-radius: 4px;
   }
 
@@ -527,7 +527,7 @@
     border: 2px solid transparent;
     border-radius: 6px;
     background: none;
-    color: #222;
+    color: var(--menu-text);
     font: inherit;
     font-size: 12px;
     line-height: 1.2;
@@ -536,11 +536,11 @@
   }
 
   .paper-choice:hover {
-    background: rgb(70 120 200 / 0.08);
+    background: var(--menu-hover);
   }
 
   .paper-choice[aria-checked='true'] {
-    border-color: #2f5ea8;
+    border-color: var(--menu-accent);
   }
 
   /* A4 in miniature: the paper is drawn on a full-size sheet scaled down,
@@ -579,7 +579,7 @@
   }
 
   .swatch[aria-pressed='true'] {
-    box-shadow: 0 0 0 2px #2f5ea8;
+    box-shadow: 0 0 0 2px var(--menu-accent);
   }
 
   fieldset {
@@ -587,7 +587,7 @@
     gap: 4px;
     margin: 0;
     padding: 8px 10px;
-    border: 1px solid rgb(0 0 0 / 0.15);
+    border: 1px solid var(--menu-rule);
     border-radius: 6px;
   }
 
@@ -602,7 +602,7 @@
   }
 
   .panel-button:hover {
-    background: #e8e8e8;
+    background: var(--menu-field-hover);
   }
 
   .manage {
@@ -629,7 +629,7 @@
     overflow-y: auto;
     margin: 0;
     padding: 4px;
-    border: 1px solid rgb(0 0 0 / 0.15);
+    border: 1px solid var(--menu-rule);
     border-radius: 6px;
     list-style: none;
   }
@@ -643,7 +643,7 @@
   }
 
   .font-list li:hover {
-    background: rgb(70 120 200 / 0.08);
+    background: var(--menu-hover);
   }
 
   .font-name {
@@ -656,7 +656,7 @@
   }
 
   .in-use {
-    color: #666;
+    color: var(--menu-hint);
     font-size: 11px;
   }
 
@@ -667,20 +667,20 @@
     border: 1px solid transparent;
     border-radius: 4px;
     background: none;
-    color: #888;
+    color: var(--menu-hint);
     font-size: 16px;
     line-height: 1;
     cursor: pointer;
   }
 
   .remove:hover {
-    border-color: rgb(180 40 40 / 0.4);
-    background: rgb(180 40 40 / 0.08);
-    color: #b42828;
+    border-color: var(--menu-danger);
+    background: rgb(122 27 27 / 0.12);
+    color: var(--menu-danger);
   }
 
   .font-list .empty {
-    color: #666;
+    color: var(--menu-hint);
     font-size: 12px;
   }
 
@@ -688,7 +688,7 @@
     display: grid;
     gap: 4px;
     padding-top: 8px;
-    border-top: 1px solid rgb(0 0 0 / 0.1);
+    border-top: 1px solid var(--menu-rule);
   }
 
   .inline {
@@ -703,19 +703,19 @@
   .panel-button {
     font: inherit;
     padding: 3px 12px;
-    border: 1px solid rgb(0 0 0 / 0.25);
+    border: 1px solid var(--menu-field-border);
     border-radius: 4px;
-    background: #f4f4f4;
+    background: var(--menu-field);
     cursor: pointer;
   }
 
   .hint {
-    color: #666;
+    color: var(--menu-hint);
     font-size: 12px;
   }
 
   .hint a {
-    color: #2f5ea8;
+    color: var(--menu-link);
   }
 
   /* Phone: the panels open inside the full-width tools sheet. (Last, so it

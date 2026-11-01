@@ -63,10 +63,10 @@
     max-height: calc(100vh - 80px);
     overflow: auto;
     padding: 12px;
-    border: 1px solid rgb(0 0 0 / 0.15);
+    border: 1px solid var(--menu-rule);
     border-radius: 8px;
-    background: #fff;
-    color: #222;
+    background: var(--menu-bg);
+    color: var(--menu-text);
     box-shadow: 0 6px 24px rgb(0 0 0 / 0.25);
   }
 

@@ -155,9 +155,9 @@
     overflow-y: auto;
     padding: 4px;
     font: 13px/1.3 system-ui, sans-serif;
-    border: 1px solid rgb(0 0 0 / 0.15);
+    border: 1px solid var(--menu-rule);
     border-radius: 6px;
-    background: #fff;
+    background: var(--menu-bg);
     box-shadow: 0 4px 16px rgb(0 0 0 / 0.2);
   }
 
@@ -168,7 +168,7 @@
     border: none;
     border-radius: 4px;
     background: none;
-    color: #222;
+    color: var(--menu-text);
     font: inherit;
     text-align: left;
     white-space: nowrap;
@@ -176,7 +176,7 @@
   }
 
   .popover button:hover {
-    background: rgb(70 120 200 / 0.12);
+    background: var(--menu-hover);
   }
 
   /* Fingers need bigger items. */
@@ -193,6 +193,6 @@
   hr {
     margin: 4px 0;
     border: none;
-    border-top: 1px solid rgb(0 0 0 / 0.1);
+    border-top: 1px solid var(--menu-rule);
   }
 </style>

@@ -1,5 +1,23 @@
 :root {
   font-family: 'Caladea', Cambria, Georgia, serif;
+
+  /* Menus, panels and dialogs: the darkest grey that keeps the dark text at
+     WCAG AA contrast (4.5:1), with every colour on it checked to pass too
+     (text 4.5:1, borders and selection marks 3:1). Highlights go lighter, as
+     anything darker would drop the text below AA. */
+  --menu-bg: #898989;
+  --menu-text: #222222;
+  --menu-hint: #1f1f1f;
+  --menu-field: #a8a8a8;
+  --menu-field-hover: #b5b5b5;
+  --menu-field-border: #3d3d3d;
+  --menu-hover: #9a9a9a;
+  --menu-rule: rgb(0 0 0 / 0.3);
+  --menu-link: #11223e;
+  --menu-accent: #1f3e70;
+  --menu-done: #0d2813;
+  --menu-danger: #7a1b1b;
+  --menu-placeholder: #3b3b3b;
 }
 
 body {
@@ -16,4 +34,13 @@ body {
   color: transparent !important;
   -webkit-text-fill-color: transparent !important;
   text-shadow: none !important;
+}
+
+/* Placeholders in menu fields: dark enough for AA on the grey fields, and
+   italic so they don't pass for typed text. */
+.panel ::placeholder,
+.sheet ::placeholder {
+  color: var(--menu-placeholder);
+  font-style: italic;
+  opacity: 1;
 }

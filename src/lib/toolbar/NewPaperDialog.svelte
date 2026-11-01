@@ -46,8 +46,8 @@
     padding: 20px 22px;
     border: none;
     border-radius: 10px;
-    background: #fff;
-    color: #222;
+    background: var(--menu-bg);
+    color: var(--menu-text);
     font: 14px/1.45 system-ui, sans-serif;
     box-shadow: 0 10px 40px rgb(0 0 0 / 0.35);
   }
@@ -66,7 +66,7 @@
   }
 
   .done {
-    color: #2a7a3a;
+    color: var(--menu-done);
   }
 
   .actions {
@@ -78,16 +78,16 @@
 
   .actions button {
     padding: 6px 12px;
-    border: 1px solid rgb(0 0 0 / 0.25);
+    border: 1px solid var(--menu-field-border);
     border-radius: 5px;
-    background: #f4f4f4;
-    color: #222;
+    background: var(--menu-field);
+    color: var(--menu-text);
     font: inherit;
     cursor: pointer;
   }
 
   .actions button:hover {
-    background: #e8e8e8;
+    background: var(--menu-field-hover);
   }
 
   .actions .danger {

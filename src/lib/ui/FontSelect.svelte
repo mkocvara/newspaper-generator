@@ -184,10 +184,10 @@
     gap: 6px;
     width: 190px;
     padding: 3px 6px;
-    border: 1px solid rgb(0 0 0 / 0.25);
+    border: 1px solid var(--menu-field-border);
     border-radius: 4px;
-    background: #fff;
-    color: #222;
+    background: var(--menu-field);
+    color: var(--menu-text);
     font: inherit;
     text-align: left;
     cursor: pointer;
@@ -211,10 +211,10 @@
     box-sizing: border-box;
     overflow-y: auto;
     padding: 4px;
-    border: 1px solid rgb(0 0 0 / 0.15);
+    border: 1px solid var(--menu-rule);
     border-radius: 6px;
-    background: #fff;
-    color: #222;
+    background: var(--menu-bg);
+    color: var(--menu-text);
     box-shadow: 0 6px 20px rgb(0 0 0 / 0.25);
     outline: none;
   }
@@ -233,10 +233,10 @@
   }
 
   .option.selected {
-    box-shadow: inset 3px 0 #2f5ea8;
+    box-shadow: inset 3px 0 var(--menu-accent);
   }
 
   .option.active {
-    background: rgb(70 120 200 / 0.14);
+    background: var(--menu-hover);
   }
 </style>
