@@ -3,6 +3,7 @@
   import { fontStack, loadFont, parseFontInput } from '../fonts'
   import type { Fonts, FrameStyle, Style } from '../model/types'
   import { EFFECTS, ORNAMENTS, SYMBOL_CHOICES } from '../page/nameDecoration'
+  import { PAPERS } from '../page/papers'
   import { editor } from '../state/editor.svelte'
   import { FALLBACK_FONT, fontLibrary } from '../state/fontLibrary.svelte'
   import FontSelect from '../ui/FontSelect.svelte'
@@ -312,6 +313,23 @@
   </div>
 </Panel>
 
+<Panel label="Paper">
+  <div class="papers" role="radiogroup" aria-label="Paper">
+    {#each PAPERS as paper (paper.value)}
+      <button
+        type="button"
+        role="radio"
+        class="paper-choice"
+        aria-checked={style.paper === paper.value}
+        onclick={() => set((s) => (s.paper = paper.value))}
+      >
+        <span class="paper-sample" aria-hidden="true"><span class="sheet paper-{paper.value}"></span></span>
+        <span>{paper.label}</span>
+      </button>
+    {/each}
+  </div>
+</Panel>
+
 <Panel label="Ink">
   <div class="form">
     <div class="swatches" role="group" aria-label="Ink presets">
@@ -508,6 +526,55 @@
     padding: 0;
     border: 1px solid rgb(0 0 0 / 0.25);
     border-radius: 4px;
+  }
+
+  .papers {
+    display: grid;
+    grid-template-columns: repeat(5, 84px);
+    gap: 10px;
+  }
+
+  .paper-choice {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background: none;
+    color: #222;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .paper-choice:hover {
+    background: rgb(70 120 200 / 0.08);
+  }
+
+  .paper-choice[aria-checked='true'] {
+    border-color: #2f5ea8;
+  }
+
+  /* A4 in miniature: the paper is drawn on a full-size sheet scaled down,
+     so its mm-sized details (creases, edges) shrink in proportion. */
+  .paper-sample {
+    width: 63px;
+    height: 89px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.35);
+  }
+
+  .sheet {
+    display: block;
+    width: 210mm;
+    height: 297mm;
+    /* 63px / 210mm */
+    transform: scale(0.0794);
+    transform-origin: 0 0;
+    box-shadow: var(--paper-inset, none);
   }
 
   .swatches {

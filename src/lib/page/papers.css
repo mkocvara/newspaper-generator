@@ -1,0 +1,136 @@
+/* The paper backgrounds, shared by the page and the previews in the Paper
+   panel. Positions are in percentages so a preview is a true miniature. Only
+   gradients and the PNG grain tile are used: image export renders SVG filters
+   black. Each paper also sets --paper, the tone the ink effects (extrude,
+   engraving) mix with. */
+
+.paper-newsprint {
+  /* Warm off-white, faint grain, a soft vignette, and a vertical and
+     horizontal fold crease through the middle. Subtle, to keep contrast. */
+  --paper: #f2ede1;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(
+      to right,
+      transparent calc(50% - 5mm),
+      rgb(90 75 50 / 0.05) calc(50% - 0.3mm),
+      rgb(90 75 50 / 0.12) 50%,
+      rgb(255 255 255 / 0.35) calc(50% + 0.3mm),
+      transparent calc(50% + 5mm)
+    ),
+    linear-gradient(
+      to bottom,
+      transparent calc(50% - 5mm),
+      rgb(90 75 50 / 0.05) calc(50% - 0.3mm),
+      rgb(90 75 50 / 0.12) 50%,
+      rgb(255 255 255 / 0.35) calc(50% + 0.3mm),
+      transparent calc(50% + 5mm)
+    ),
+    radial-gradient(ellipse at center, transparent 55%, rgb(120 100 60 / 0.1) 100%),
+    url('../../assets/paper-grain.png');
+}
+
+.paper-aged {
+  /* Yellowed and handled: burnt edges, big creases (folded in half, then in
+     thirds), a coffee ring, water stains and foxing spots. */
+  --paper: #e2cc9b;
+  background-color: var(--paper);
+  background-image:
+    /* Creases: a dark fold line with a bright ridge beside it and a broad
+       shadow either side. */
+    linear-gradient(
+      to right,
+      transparent calc(50% - 9mm),
+      rgb(80 55 20 / 0.12) calc(50% - 1mm),
+      rgb(70 45 15 / 0.38) 50%,
+      rgb(255 245 220 / 0.55) calc(50% + 0.5mm),
+      rgb(80 55 20 / 0.1) calc(50% + 2mm),
+      transparent calc(50% + 9mm)
+    ),
+    linear-gradient(
+      to bottom,
+      transparent calc(33.3% - 9mm),
+      rgb(80 55 20 / 0.12) calc(33.3% - 1mm),
+      rgb(70 45 15 / 0.36) 33.3%,
+      rgb(255 245 220 / 0.5) calc(33.3% + 0.5mm),
+      rgb(80 55 20 / 0.1) calc(33.3% + 2mm),
+      transparent calc(33.3% + 9mm),
+      transparent calc(66.6% - 9mm),
+      rgb(80 55 20 / 0.12) calc(66.6% - 1mm),
+      rgb(70 45 15 / 0.36) 66.6%,
+      rgb(255 245 220 / 0.5) calc(66.6% + 0.5mm),
+      rgb(80 55 20 / 0.1) calc(66.6% + 2mm),
+      transparent calc(66.6% + 9mm)
+    ),
+    /* Coffee ring: a dark rim with a faint fill. */
+    radial-gradient(
+      circle at 79% 15%,
+      rgb(140 90 35 / 0.06) 0 8.6%,
+      rgb(130 80 30 / 0.28) 9.4%,
+      rgb(130 80 30 / 0.06) 10.4%,
+      transparent 11%
+    ),
+    /* Water stains: overlapping soft blotches with darker tide lines. */
+    radial-gradient(
+      ellipse 24% 13% at 22% 86%,
+      rgb(130 90 40 / 0.14) 0 70%,
+      rgb(110 75 30 / 0.22) 84%,
+      transparent 92%
+    ),
+    radial-gradient(ellipse 15% 9% at 33% 78%, rgb(130 90 40 / 0.12) 0 68%, rgb(110 75 30 / 0.18) 82%, transparent 90%),
+    radial-gradient(ellipse 18% 11% at 88% 58%, rgb(140 100 45 / 0.1) 0 72%, transparent 90%),
+    /* Foxing: small brown age spots. */
+    radial-gradient(circle at 12% 22%, rgb(120 75 25 / 0.45) 0 0.35%, transparent 0.8%),
+    radial-gradient(circle at 15% 25%, rgb(120 75 25 / 0.3) 0 0.25%, transparent 0.6%),
+    radial-gradient(circle at 63% 44%, rgb(120 75 25 / 0.35) 0 0.3%, transparent 0.7%),
+    radial-gradient(circle at 41% 9%, rgb(120 75 25 / 0.3) 0 0.25%, transparent 0.6%),
+    radial-gradient(circle at 70% 91%, rgb(120 75 25 / 0.4) 0 0.4%, transparent 0.9%),
+    radial-gradient(circle at 92% 33%, rgb(120 75 25 / 0.3) 0 0.3%, transparent 0.7%),
+    radial-gradient(circle at 6% 61%, rgb(120 75 25 / 0.35) 0 0.3%, transparent 0.7%),
+    /* Darkened, uneven edges. */
+    radial-gradient(ellipse at 50% 45%, transparent 45%, rgb(120 80 30 / 0.22) 80%, rgb(90 55 15 / 0.45) 100%),
+    url('../../assets/paper-grain.png'),
+    url('../../assets/paper-grain.png');
+  background-size: auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, auto, 256px, 128px;
+  /* Added to the page's drop shadow: edges browned from handling. */
+  --paper-inset: inset 0 0 6mm rgb(100 65 20 / 0.3);
+}
+
+.paper-modern,
+.paper-modern-creased {
+  /* Clean, bright stock with only a whisper of grain (the grain tile seen
+     through a mostly opaque wash of the paper colour). */
+  --paper: #fbfaf6;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(rgb(251 250 246 / 0.8), rgb(251 250 246 / 0.8)),
+    url('../../assets/paper-grain.png');
+}
+
+.paper-modern-creased {
+  /* Two crisp folds: a sharp line, one side catching a little shade. */
+  background-image:
+    linear-gradient(
+      to right,
+      transparent calc(50% - 14mm),
+      rgb(0 0 0 / 0.035) calc(50% - 0.25mm),
+      rgb(0 0 0 / 0.14) 50%,
+      rgb(255 255 255 / 0.9) calc(50% + 0.25mm),
+      transparent calc(50% + 0.8mm)
+    ),
+    linear-gradient(
+      to bottom,
+      transparent calc(50% - 14mm),
+      rgb(0 0 0 / 0.035) calc(50% - 0.25mm),
+      rgb(0 0 0 / 0.14) 50%,
+      rgb(255 255 255 / 0.9) calc(50% + 0.25mm),
+      transparent calc(50% + 0.8mm)
+    ),
+    linear-gradient(rgb(251 250 246 / 0.8), rgb(251 250 246 / 0.8)),
+    url('../../assets/paper-grain.png');
+}
+
+.paper-white {
+  --paper: #ffffff;
+  background: var(--paper);
+}

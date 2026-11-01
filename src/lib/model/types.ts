@@ -98,7 +98,10 @@ export type FrameStyle =
   | 'zigzag'
   | 'wave'
 
+export type PaperStyle = 'newsprint' | 'aged' | 'modern' | 'modern-creased' | 'white'
+
 export interface Style {
+  paper: PaperStyle
   fonts: Fonts
   // Where to load the fonts in use from, for those added by Google Fonts link
   // (so the page works in other browsers). Kept in step with `fonts`.
