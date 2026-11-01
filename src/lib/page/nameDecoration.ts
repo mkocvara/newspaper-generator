@@ -5,6 +5,10 @@ import type { NameDecoration, NameEffect, Ornament } from '../model/types'
 export const ORNAMENTS: { value: Ornament; label: string; symbols?: [string, string] }[] = [
   { value: 'none', label: 'None' },
   { value: 'fleurons', label: 'Fleurons', symbols: ['❧', '☙'] },
+  { value: 'guillemets-in', label: 'Guillemets, pointing in', symbols: ['»', '«'] },
+  { value: 'guillemets-out', label: 'Guillemets, pointing out', symbols: ['«', '»'] },
+  { value: 'hands', label: 'Pointing hands', symbols: ['☛', '☚'] },
+  { value: 'curls', label: 'Curls', symbols: ['⊰', '⊱'] },
   { value: 'rules', label: 'Extending rules' },
   { value: 'custom', label: 'Custom symbols' },
 ]
@@ -37,5 +41,5 @@ export const SYMBOL_CHOICES = [
   ...'❦❧☙❥✿❀❁✾❃❖⚜☘',
   ...'◆◇◈●○◉◎■□▪▲△▼▽◀▶',
   ...'✠✚✜☩✙†‡§¶※☼☾♠♣♦♛♔',
-  ...'«»‹›⟨⟩〈〉【】┃|‖¦—~⁓≈',
+  ...'«»‹›⟨⟩〈〉【】⊰⊱☛☚┃|‖¦—~⁓≈',
 ]

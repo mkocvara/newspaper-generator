@@ -117,7 +117,15 @@ export interface Style {
   nameDecoration: NameDecoration
 }
 
-export type Ornament = 'none' | 'fleurons' | 'rules' | 'custom'
+export type Ornament =
+  | 'none'
+  | 'fleurons'
+  | 'guillemets-in'
+  | 'guillemets-out'
+  | 'hands'
+  | 'curls'
+  | 'rules'
+  | 'custom'
 export type NameEffect = 'none' | 'shadow' | 'extrude' | 'engraved' | 'outline' | 'hatched'
 
 export interface NameDecoration {
