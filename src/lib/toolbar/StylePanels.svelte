@@ -150,7 +150,7 @@
           />
         </div>
       {/each}
-      <button type="button" class="link-button" onclick={() => (managing = true)}>Manage fonts…</button>
+      <button type="button" class="panel-button manage" onclick={() => (managing = true)}>Manage fonts…</button>
     {:else}
       <div class="manage-head">
         <button type="button" class="link-button" onclick={() => (managing = false)}>‹ Back</button>
@@ -189,7 +189,7 @@
             bind:value={fontInput}
             onkeydown={(e) => e.key === 'Enter' && addFont()}
           />
-          <button type="button" onclick={addFont}>Add</button>
+          <button type="button" class="panel-button" onclick={addFont}>Add</button>
         </div>
         {#if fontMessage}<span class="hint" role="status" {@attach clearMessageOnClose}>{fontMessage}</span>{/if}
       </div>
@@ -414,6 +414,15 @@
     gap: 6px;
   }
 
+  .panel-button:hover {
+    background: #e8e8e8;
+  }
+
+  .manage {
+    justify-self: start;
+    margin-top: 2px;
+  }
+
   .link-button {
     justify-self: start;
     padding: 0;
@@ -514,7 +523,7 @@
     flex: 1;
   }
 
-  .inline button {
+  .panel-button {
     font: inherit;
     padding: 3px 12px;
     border: 1px solid rgb(0 0 0 / 0.25);
