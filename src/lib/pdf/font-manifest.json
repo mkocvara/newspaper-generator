@@ -1,0 +1,88 @@
+{
+  "Caladea": {
+    "normal": "https://fonts.gstatic.com/s/caladea/v10/kJEzBugZ7AAjhybUjR93-9IztOc.ttf",
+    "italic": "https://fonts.gstatic.com/s/caladea/v10/kJExBugZ7AAjhybUvR19__A2pOdvDA.ttf",
+    "bold": "https://fonts.gstatic.com/s/caladea/v10/kJE2BugZ7AAjhybUtaNY39oYqO52FZ0.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/caladea/v10/kJE0BugZ7AAjhybUvR1FQ98SrMxzBZ2lDA.ttf"
+  },
+  "Abril Fatface": {
+    "normal": "https://fonts.gstatic.com/s/abrilfatface/v25/zOL64pLDlL1D99S8g8PtiKchm-BsjOLhZBY.ttf"
+  },
+  "Anton": {
+    "normal": "https://fonts.gstatic.com/s/anton/v27/1Ptgg87LROyAm0K08i4gS7lu.ttf"
+  },
+  "Bebas Neue": {
+    "normal": "https://fonts.gstatic.com/s/bebasneue/v16/JTUSjIg69CK48gW7PXooxW5rygbi49c.ttf"
+  },
+  "Cinzel": {
+    "normal": "https://fonts.gstatic.com/s/cinzel/v26/8vIU7ww63mVu7gtR-kwKxNvkNOjw-tbnTYrvDE5ZdqU.ttf",
+    "bold": "https://fonts.gstatic.com/s/cinzel/v26/8vIU7ww63mVu7gtR-kwKxNvkNOjw-jHgTYrvDE5ZdqU.ttf"
+  },
+  "EB Garamond": {
+    "normal": "https://fonts.gstatic.com/s/ebgaramond/v33/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-6_RUA4V-e6yHgQ.ttf",
+    "bold": "https://fonts.gstatic.com/s/ebgaramond/v33/SlGDmQSNjdsmc35JDF1K5E55YMjF_7DPuGi-DPNUA4V-e6yHgQ.ttf",
+    "italic": "https://fonts.gstatic.com/s/ebgaramond/v33/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7e8QI96WamXgXFI.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/ebgaramond/v33/SlGFmQSNjdsmc35JDF1K5GRwUjcdlttVFm-rI7dbR496WamXgXFI.ttf"
+  },
+  "Libre Baskerville": {
+    "normal": "https://fonts.gstatic.com/s/librebaskerville/v24/kmKUZrc3Hgbbcjq75U4uslyuy4kn0olVQ-LglH6T17uj8Q4SCQlOvuPCfQ.ttf",
+    "bold": "https://fonts.gstatic.com/s/librebaskerville/v24/kmKUZrc3Hgbbcjq75U4uslyuy4kn0olVQ-LglH6T17ujFgkSCQlOvuPCfQ.ttf",
+    "italic": "https://fonts.gstatic.com/s/librebaskerville/v24/kmKWZrc3Hgbbcjq75U4uslyuy4kn0qNccR04_RUJeby2OU36SgNKnObSfbge.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/librebaskerville/v24/kmKWZrc3Hgbbcjq75U4uslyuy4kn0qNccR04_RUJeby2OU0dTQNKnObSfbge.ttf"
+  },
+  "Lora": {
+    "normal": "https://fonts.gstatic.com/s/lora/v37/0QI6MX1D_JOuGQbT0gvTJPa787weuyJGmKxemMeZ.ttf",
+    "bold": "https://fonts.gstatic.com/s/lora/v37/0QI6MX1D_JOuGQbT0gvTJPa787z5vCJGmKxemMeZ.ttf",
+    "italic": "https://fonts.gstatic.com/s/lora/v37/0QI8MX1D_JOuMw_hLdO6T2wV9KnW-MoFkqh8ndeZzZ0.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/lora/v37/0QI8MX1D_JOuMw_hLdO6T2wV9KnW-C0Ckqh8ndeZzZ0.ttf"
+  },
+  "Merriweather": {
+    "normal": "https://fonts.gstatic.com/s/merriweather/v33/u-4D0qyriQwlOrhSvowK_l5UcA6zuSYEqOzpPY3EOZJ5eX1WtLaQwmYiScCmDxhtNOKl8yDr3icqE1f0KvXKYQ.ttf",
+    "bold": "https://fonts.gstatic.com/s/merriweather/v33/u-4D0qyriQwlOrhSvowK_l5UcA6zuSYEqOzpPY3EOZJ5eX1WtLaQwmYiScCmDxhtNOKl8yDrOSAqE1f0KvXKYQ.ttf",
+    "italic": "https://fonts.gstatic.com/s/merriweather/v33/u-4B0qyriQwlOrhSvowK_l5-eTxCVx0ZbwLvKH2G89tLmp0v5yA-xXPqCzLvPee1XYk_XSf-FmTCUF3wCPDaYa_F.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/merriweather/v33/u-4B0qyriQwlOrhSvowK_l5-eTxCVx0ZbwLvKH2G89tLmp0v5yA-xXPqCzLvPee1XYk_XSf-FmQlV13wCPDaYa_F.ttf"
+  },
+  "Old Standard TT": {
+    "normal": "https://fonts.gstatic.com/s/oldstandardtt/v22/MwQubh3o1vLImiwAVvYawgcf2eVurVC5RHdCZg.ttf",
+    "italic": "https://fonts.gstatic.com/s/oldstandardtt/v22/MwQsbh3o1vLImiwAVvYawgcf2eVer1q9ZnJSZtQG.ttf",
+    "bold": "https://fonts.gstatic.com/s/oldstandardtt/v22/MwQrbh3o1vLImiwAVvYawgcf2eVWEX-dTFxeb80flQ.ttf"
+  },
+  "Oswald": {
+    "normal": "https://fonts.gstatic.com/s/oswald/v57/TK3_WkUHHAIjg75cFRf3bXL8LICs1_FvgUFoZAaRliE.ttf",
+    "bold": "https://fonts.gstatic.com/s/oswald/v57/TK3_WkUHHAIjg75cFRf3bXL8LICs1xZogUFoZAaRliE.ttf"
+  },
+  "Playfair Display": {
+    "normal": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKdFvUDQZNLo_U2r.ttf",
+    "bold": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFvD-vYSZviVYUb_rj3ij__anPXJzDwcbmjWBN2PKeiukDQZNLo_U2r.ttf",
+    "italic": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_qiTbtbK-F2rA0s.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/playfairdisplay/v40/nuFRD-vYSZviVYUb_rj3ij__anPXDTnCjmHKM4nYO7KN_k-UbtbK-F2rA0s.ttf"
+  },
+  "PT Serif": {
+    "normal": "https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvDFRxL6ddjb-.ttf",
+    "italic": "https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFTzrq_cyb-vco.ttf",
+    "bold": "https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt65qVXSr3pNNB.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/ptserif/v19/EJRQQgYoZZY2vCFuvAFT9gaQVy7VocNB6Iw.ttf"
+  },
+  "Roboto Slab": {
+    "normal": "https://fonts.gstatic.com/s/robotoslab/v36/BngbUXZYTXPIvIBgJJSb6s3BzlRRfKOFbvjojISWaG5iddG-1A.ttf",
+    "bold": "https://fonts.gstatic.com/s/robotoslab/v36/BngbUXZYTXPIvIBgJJSb6s3BzlRRfKOFbvjoa4OWaG5iddG-1A.ttf"
+  },
+  "Source Serif 4": {
+    "normal": "https://fonts.gstatic.com/s/sourceserif4/v15/vEFy2_tTDB4M7-auWDN0ahZJW3IX2ih5nk3AucvUPf2OAVIJmeUDygwjihdqrhxXD-wGvjU.ttf",
+    "bold": "https://fonts.gstatic.com/s/sourceserif4/v15/vEFy2_tTDB4M7-auWDN0ahZJW3IX2ih5nk3AucvUPf2OAVIJmeUDygwjivBtrhxXD-wGvjU.ttf",
+    "italic": "https://fonts.gstatic.com/s/sourceserif4/v15/vEF02_tTDB4M7-auWDN0ahZJW1ge6NmXpVAHV83Bfb_0SGD2QYxoUKIkn98pRl9dC84DrjXEXw.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/sourceserif4/v15/vEF02_tTDB4M7-auWDN0ahZJW1ge6NmXpVAHV83Bfb_0SGD2QYxoUKIkn98poVhdC84DrjXEXw.ttf"
+  },
+  "Spectral": {
+    "normal": "https://fonts.gstatic.com/s/spectral/v15/rnCr-xNNww_2s0amA-M-mHnOSOuk.ttf",
+    "italic": "https://fonts.gstatic.com/s/spectral/v15/rnCt-xNNww_2s0amA9M8kn3sTfukQHs.ttf",
+    "bold": "https://fonts.gstatic.com/s/spectral/v15/rnCs-xNNww_2s0amA9uCt13GY_etWWIJ.ttf",
+    "bolditalic": "https://fonts.gstatic.com/s/spectral/v15/rnCu-xNNww_2s0amA9M8qsHDafOPXHIJErY.ttf"
+  },
+  "Special Elite": {
+    "normal": "https://fonts.gstatic.com/s/specialelite/v20/XLYgIZbkc4JPUL5CVArUVL0nhncESXFtUsM.ttf"
+  },
+  "UnifrakturMaguntia": {
+    "normal": "https://fonts.gstatic.com/s/unifrakturmaguntia/v22/WWXPlieVYwiGNomYU-ciRLRvEmK7oaVun2xNNgNa1A.ttf"
+  }
+}
