@@ -105,6 +105,9 @@ Floating bars on the left and at the bottom show the zoom level and the visible 
 ## Languages
 All text in the app can be switched between English and Czech with a toggle in the toolbar. The choice is remembered; at first, the app follows the browser's language. Text already on a page is never changed.
 
+## Mobile
+The app should be fully usable on a phone: a compact toolbar with all tools in a menu, always-visible touch controls, and two-finger pan and pinch zoom.
+
 # Example Newspaper
 In the project folder, there is an image called "example-newspaper.png". This is not a source of truth and it is not a goal to emulate, but it is an example of the inspiration behind the app and shows the kind of styling we wan
 
