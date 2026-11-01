@@ -420,9 +420,9 @@
 
   .manage {
     margin-top: 2px;
+    text-align: center;
   }
 
-  .manage,
   .start {
     justify-self: start;
   }
