@@ -43,6 +43,16 @@ describe('Editor history', () => {
     expect(editor.canUndo).toBe(false)
   })
 
+  it('cancels a gesture back to where it started, unrecorded', () => {
+    const editor = new Editor()
+    const start = editor.page.header.heightMm
+    editor.beginGesture()
+    editor.page.header.heightMm = start + 7
+    editor.cancelGesture()
+    expect(editor.page.header.heightMm).toBe(start)
+    expect(editor.canUndo).toBe(false)
+  })
+
   it('ignores a gesture that ends where it started', () => {
     const editor = new Editor()
     editor.beginGesture()

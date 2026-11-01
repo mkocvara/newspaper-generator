@@ -86,6 +86,7 @@
         }}
         onmove={resizeSplit}
         onend={() => editor.endGesture()}
+        oncancel={() => editor.cancelGesture()}
         onreset={() =>
           editor.update((p) => {
             const live = findNode(p.grid, node.id)

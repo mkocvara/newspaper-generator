@@ -7,6 +7,7 @@
   import { readImage } from '../../ui/readImage'
   import { patchElement, PT_PX } from './edit'
   import { inkImage } from './inkImage'
+  import { cancelOnMultiTouch, multiTouch } from '../../ui/multiTouch'
 
   // An image from the user's device with a centred italic description below.
   let { element, leafId }: { element: ImageElement; leafId: string } = $props()
@@ -47,7 +48,7 @@
   // offsets it by -overflow * x / 100, so a pointer move of d px changes the
   // percentage by -d / overflow * 100.
   function startPan(event: PointerEvent) {
-    if (event.button !== 0) return
+    if (event.button !== 0 || multiTouch()) return
     const img = event.currentTarget as HTMLImageElement
     const frame = img.getBoundingClientRect()
     const scale = Math.max(frame.width / img.naturalWidth, frame.height / img.naturalHeight)
@@ -72,12 +73,22 @@
         y: overflowY < 1 ? start.y : clamp(start.y - ((move.clientY - startY) / overflowY) * 100),
       }
     }
-    const onEnd = () => {
+    const stop = () => {
       img.removeEventListener('pointermove', onMove)
       img.removeEventListener('pointerup', onEnd)
       img.removeEventListener('pointercancel', onEnd)
+      if (img.hasPointerCapture(event.pointerId)) img.releasePointerCapture(event.pointerId)
+    }
+    const onEnd = () => {
+      stopWatching()
+      stop()
       editor.endGesture()
     }
+    // A second finger (to pinch or pan the page) undoes this pan.
+    const stopWatching = cancelOnMultiTouch(() => {
+      stop()
+      editor.cancelGesture()
+    })
     img.addEventListener('pointermove', onMove)
     img.addEventListener('pointerup', onEnd)
     img.addEventListener('pointercancel', onEnd)

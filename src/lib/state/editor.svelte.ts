@@ -48,6 +48,13 @@ export class Editor {
     this.#gestureStart = null
   }
 
+  // Abandon a gesture: back to the page as it was at its start, unrecorded.
+  cancelGesture() {
+    if (!this.#gestureStart) return
+    this.page = this.#gestureStart
+    this.#gestureStart = null
+  }
+
   undo() {
     const previous = this.#past.at(-1)
     if (!previous) return

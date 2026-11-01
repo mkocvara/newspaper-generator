@@ -1,18 +1,24 @@
 <script lang="ts">
+  import { cancelOnMultiTouch, multiTouch } from './multiTouch'
+
   // A thin draggable strip along one edge of its positioned parent. Reports
   // the drag distance in page millimetres, so callers don't care how the page
   // is scaled on screen. Double-clicking calls `onreset` (e.g. back to 50/50).
+  // A second finger landing mid-drag (to pinch or pan) calls `oncancel`
+  // instead of `onend`, so the drag can be undone.
   let {
     edge,
     onstart,
     onmove,
     onend,
+    oncancel,
     onreset,
   }: {
     edge: 'top' | 'bottom' | 'left' | 'right'
     onstart: () => void
     onmove: (deltaMm: number) => void
     onend: () => void
+    oncancel: () => void
     onreset?: () => void
   } = $props()
 
@@ -21,16 +27,23 @@
 
   let start = 0
   let pxPerMm = 1
+  let stopWatching: (() => void) | undefined
 
   function onpointerdown(event: PointerEvent) {
     const handle = event.currentTarget as HTMLElement
     const page = handle.closest('.page')
-    if (!page) return
+    if (!page || multiTouch()) return
     event.preventDefault()
     handle.setPointerCapture(event.pointerId)
     pxPerMm = page.getBoundingClientRect().width / PAGE_WIDTH_MM
     start = vertical ? event.clientY : event.clientX
     onstart()
+    const pointerId = event.pointerId
+    stopWatching = cancelOnMultiTouch(() => {
+      if (handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId)
+      stopWatching = undefined
+      oncancel()
+    })
   }
 
   function onpointermove(event: PointerEvent) {
@@ -44,6 +57,8 @@
     const handle = event.currentTarget as HTMLElement
     if (!handle.hasPointerCapture(event.pointerId)) return
     handle.releasePointerCapture(event.pointerId)
+    stopWatching?.()
+    stopWatching = undefined
     onend()
   }
 </script>

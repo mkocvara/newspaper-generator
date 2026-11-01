@@ -7,6 +7,7 @@
   import CellNodeView from './CellNodeView.svelte'
   import { drag } from './dragMove.svelte'
   import { selection, selectOnTap } from './selection.svelte'
+  import { cancelOnMultiTouch, multiTouch } from '../../ui/multiTouch'
 
   // Columns and rows can't be dragged narrower than this.
   const MIN_TRACK_MM = 10
@@ -33,6 +34,7 @@
         editor.page.grid[axis] = resizeTracks(startTracks, border, deltaMm * perMm, MIN_TRACK_MM * perMm)
       },
       onend: () => editor.endGesture(),
+      oncancel: () => editor.cancelGesture(),
       onreset: () =>
         editor.update((p) => {
           p.grid[axis] = equalizeTracks(p.grid[axis], border)
@@ -49,11 +51,21 @@
     return target?.closest<HTMLElement>('[data-cell-id]')?.dataset.cellId ?? null
   }
 
+  let stopWatching: (() => void) | undefined
+
   function onpointerdown(event: PointerEvent) {
+    if (multiTouch()) return
     event.preventDefault()
-    ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+    const grip = event.currentTarget as HTMLElement
+    grip.setPointerCapture(event.pointerId)
     drag.fromId = cell.id
     drag.overId = cell.id
+    // A second finger (to pinch or pan) drops the move.
+    const pointerId = event.pointerId
+    stopWatching = cancelOnMultiTouch(() => {
+      if (grip.hasPointerCapture(pointerId)) grip.releasePointerCapture(pointerId)
+      drag.fromId = drag.overId = null
+    })
   }
 
   function onpointermove(event: PointerEvent) {
@@ -61,6 +73,8 @@
   }
 
   function onpointerup() {
+    stopWatching?.()
+    stopWatching = undefined
     if (drag.fromId !== cell.id) return
     const { fromId, overId } = drag
     drag.fromId = drag.overId = null
