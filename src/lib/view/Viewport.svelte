@@ -251,7 +251,9 @@
      bar above it and the horizontal bar to its right. */
   .bars {
     --inset: 8px;
-    --gap: 6px;
+    /* Space at each end of a bar: by the zoom box and at the far end. */
+    --gap: 18px;
+    --end: 48px;
     --box-w: 56px;
     --box-h: 26px;
     --bar: 10px;
@@ -270,14 +272,14 @@
 
   .track.vertical {
     left: calc(var(--inset) + (var(--box-w) - var(--bar)) / 2);
-    top: var(--inset);
+    top: var(--end);
     bottom: calc(var(--inset) + var(--box-h) + var(--gap));
     width: var(--bar);
   }
 
   .track.horizontal {
     left: calc(var(--inset) + var(--box-w) + var(--gap));
-    right: var(--inset);
+    right: var(--end);
     bottom: calc(var(--inset) + (var(--box-h) - var(--bar)) / 2);
     height: var(--bar);
   }
