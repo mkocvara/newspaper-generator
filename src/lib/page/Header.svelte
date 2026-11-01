@@ -20,8 +20,7 @@
   const style = $derived(editor.page.style)
   const decoration = $derived(style.nameDecoration)
   const symbols = $derived(ornamentSymbols(decoration))
-  // Presets have a fixed size; custom symbols can be scaled.
-  const symbolScale = $derived(decoration.ornament === 'custom' ? decoration.customScale / 100 : 1)
+  const symbolScale = $derived(decoration.ornamentScale / 100)
   const sidePx = $derived(Math.min(SIDE_TEXT_MAX_PX, header.heightMm * MM_PX * SIDE_TEXT_RATIO))
 
   // The name stays centred on the page, so both side columns are as wide as

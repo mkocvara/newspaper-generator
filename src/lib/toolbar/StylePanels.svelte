@@ -351,6 +351,21 @@
         {/each}
       </select>
     </label>
+    {#if style.nameDecoration.ornament !== 'none' && style.nameDecoration.ornament !== 'rules'}
+      <label class="row">
+        <span>Ornament size</span>
+        <input
+          type="number"
+          min="30"
+          max="250"
+          step="10"
+          value={style.nameDecoration.ornamentScale}
+          onchange={numberSetter(30, 250, (s, v) => (s.nameDecoration.ornamentScale = v))}
+          {@attach wheelStep}
+        />
+      </label>
+      <span class="hint">Ornament size is in % of the standard size.</span>
+    {/if}
     {#if style.nameDecoration.ornament === 'custom'}
       <label class="row">
         <span>Before the name</span>
@@ -384,18 +399,6 @@
           }}
         />
       </label>
-      <label class="row">
-        <span>Symbol size</span>
-        <input
-          type="number"
-          min="30"
-          max="250"
-          step="10"
-          value={style.nameDecoration.customScale}
-          onchange={numberSetter(30, 250, (s, v) => (s.nameDecoration.customScale = v))}
-          {@attach wheelStep}
-        />
-      </label>
       <div class="symbols" role="group" aria-label="Symbols">
         {#each SYMBOL_CHOICES as symbol (symbol)}
           <button
@@ -408,8 +411,7 @@
         {/each}
       </div>
       <span class="hint"
-        >Click a symbol to add it to the highlighted field, or type any Unicode symbols. Fields can hold several. Size is
-        in % of the preset ornaments' size.</span
+        >Click a symbol to add it to the highlighted field, or type any Unicode symbols. Fields can hold several.</span
       >
     {/if}
     <label class="row">

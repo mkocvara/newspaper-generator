@@ -35,7 +35,7 @@ export function createDefaultPage(today = new Date()): Page {
       frameStyle: 'double',
       ink: '#1b1a17',
       border: { widthPt: 0.75 },
-      nameDecoration: { ornament: 'none', customBefore: '', customAfter: '', customScale: 100, effect: 'none' },
+      nameDecoration: { ornament: 'none', customBefore: '', customAfter: '', ornamentScale: 100, effect: 'none' },
     },
   }
 }

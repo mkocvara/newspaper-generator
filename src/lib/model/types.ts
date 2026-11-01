@@ -133,8 +133,8 @@ export interface NameDecoration {
   // Used when ornament is 'custom'; an empty `customAfter` repeats `customBefore`.
   customBefore: string
   customAfter: string
-  // Size of custom symbols, in % of the presets' size.
-  customScale: number
+  // Size of symbol ornaments, in % of their standard size.
+  ornamentScale: number
   effect: NameEffect
 }
 
