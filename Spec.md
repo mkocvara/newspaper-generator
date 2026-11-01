@@ -76,6 +76,13 @@ The work json file can be saved locally and uploaded later with the Import butto
 ### Undo/Redo
 Mapped also to Ctrl+Z and Ctrl+Y, the app should have undo and redo functionality for layout changes.
 
+### Newspaper Name Decoration
+Options to decorate the newspaper name in the header.
+e.g.:
+- simple vertical bars (or other cool symbols or patterns) before and after
+- special shading
+- 3d effect
+
 # Example Newspaper
 In the project folder, there is an image called "example-newspaper.png". This is not a source of truth and it is not a goal to emulate, but it is an example of the inspiration behind the app and shows the kind of styling we wan
 
@@ -101,3 +108,8 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Eyecatcher:** text is centred.
 - **Autosave:** the current work-in-progress page is cached in the browser and restored on reload.
 - **Undo/Redo:** app history covers layout changes, style changes, and text edits. While a text box is focused, Ctrl+Z/Ctrl+Y are left to the browser's native text undo. When a text box loses focus, its edit is committed to the app history as a single step. The app must never rewrite a text box's content while it is focused (that would clear the native undo stack).
+- **Newspaper name decoration** (built with the toolbar in stage 5): two independent settings that combine freely.
+  - *Ornaments* before and after the name: none, vertical bars, double bars, stars, diamonds, fleurons (❧ … ☙), extending rules, or custom Unicode symbols entered by the user.
+  - *Text effect*: none, drop shadow, 3D extrude, engraved, outline, hatched.
+  - Ornaments and effects scale with the name and take part of its space. Everything uses the ink colour (no separate colour for now).
+  - To confirm: custom symbols use two fields (before / after), with "after" defaulting to the same as "before".
