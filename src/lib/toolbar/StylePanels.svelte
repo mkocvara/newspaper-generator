@@ -140,6 +140,11 @@
     ['double', 'Double line'],
     ['thick-outer', 'Thick & thin (thick outside)'],
     ['thin-outer', 'Thick & thin (thin outside)'],
+    ['dashed', 'Dashed'],
+    ['dotted', 'Dotted'],
+    ['dash-dot', 'Dash and dot'],
+    ['zigzag', 'Zigzag'],
+    ['wave', 'Wave'],
   ]
 </script>
 
@@ -282,6 +287,7 @@
         step="0.25"
         value={style.border.widthPt}
         onchange={numberSetter(0, 6, (s, v) => (s.border.widthPt = v))}
+        {@attach wheelStep}
       />
     </label>
   </div>

@@ -87,7 +87,16 @@ export interface ImageElement {
 
 // Thick-and-thin bars come in two mirrored variants: the outer line (the one
 // facing away from the header/footer text) is either the thick or the thin one.
-export type FrameStyle = 'single' | 'double' | 'thick-outer' | 'thin-outer'
+export type FrameStyle =
+  | 'single'
+  | 'double'
+  | 'thick-outer'
+  | 'thin-outer'
+  | 'dashed'
+  | 'dotted'
+  | 'dash-dot'
+  | 'zigzag'
+  | 'wave'
 
 export interface Style {
   fonts: Fonts

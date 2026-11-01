@@ -104,7 +104,7 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Moving:** moving a cell pushes the others along (no swapping). Moves that would break other parts of the layout must not be possible.
 - **Text overflow:** text that doesn't fit its cell shrinks to fit.
 - **Fonts:** Caladea is used instead of Cambria (Cambria is not a Google Font; Caladea is metrically compatible).
-- **Header/footer frame styles:** single line, double line, and two thick-and-thin variants: thick line outside or thin line outside. "Outside" is the side facing away from the header/footer text, so the header's top and bottom bars mirror each other.
+- **Header/footer frame styles:** single line, double line, two thick-and-thin variants (thick line outside or thin line outside), dashed, dotted, dash and dot (`── · ── ·`), zigzag and wave. "Outside" is the side facing away from the header/footer text, so the header's top and bottom bars mirror each other.
 - **Placeholders:** empty text boxes show a faint hint in angle brackets (e.g. `<Newspaper Name>`); hints are never exported.
 - **Header text sizing:** date and location grow with the header height up to a cap, so extra height goes to the newspaper name. The name and location may wrap between words, but only when that allows a clearly larger font (≥30%); otherwise they stay on one line and shrink to fit.
 - **Unsaved typing:** when the tab is hidden or closed, the text box being edited is committed and the page is saved immediately.
@@ -137,7 +137,7 @@ Below, you can add notes and additional clarifications regarding the content of 
   - *Styling* is split into five panels:
     - *Fonts:* a role-by-role picker whose menus show each font in its own font. *Manage fonts…* lists the fonts on offer (18 suggested Google Fonts to start): any can be removed (text using it switches to Caladea, undoably), the defaults restored, and more added by name or Google Fonts link. The list is kept per browser; fonts a page uses join it automatically, e.g. on import.
     - *Text sizes:* in points; a focused field also steps with the mouse wheel.
-    - *Frame & borders:* frame style and cell border thickness.
+    - *Frame & borders:* frame style and cell border thickness (which also steps with the mouse wheel).
     - *Newspaper name:* ornaments, custom symbols, effect.
     - *Ink:* see Ink colour below.
   - *Import* replaces the page with a work file as one undoable step. Older work files gain any newer style options at their defaults.
