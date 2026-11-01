@@ -39,8 +39,8 @@ export const en = {
 
   grid: {
     cellLayout: 'Cell layout',
-    insert: { eyecatcher: 'Insert eyecatcher', text: 'Insert text', image: 'Insert image' },
-    changeTo: { eyecatcher: 'Change to eyecatcher', text: 'Change to text', image: 'Change to image' },
+    insert: { eyecatcher: 'Insert eyecatcher', text: 'Insert article', image: 'Insert image' },
+    changeTo: { eyecatcher: 'Change to eyecatcher', text: 'Change to article', image: 'Change to image' },
     clearCell: 'Clear cell',
     splitSideBySide: 'Split side by side',
     splitTopBottom: 'Split top and bottom',
