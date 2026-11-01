@@ -93,8 +93,8 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Header/footer frame styles:** initial options are single line, double line, and thick-and-thin.
 - **Images:** stored (embedded) in the JSON work file so work can be fully restored.
 - **Background:** generated (CSS/SVG) for now; may be revisited.
-- **Header date default:** today's date in the format `DD. m. YYYY` — interpreted as zero-padded day, unpadded month (e.g. `05. 3. 2026`); to confirm.
+- **Header date default:** today's date in the format `d. m. YYYY`, no zero-padding (e.g. `5. 3. 2026`).
 - **Empty cells:** a cell with no element inserted shows nothing.
 - **Eyecatcher:** text is centred.
 - **Autosave:** the current work-in-progress page is cached in the browser and restored on reload.
-- **Undo/Redo scope:** "layout changes" — to confirm whether text edits and style changes are included.
+- **Undo/Redo:** app history covers layout changes, style changes, and text edits. While a text box is focused, Ctrl+Z/Ctrl+Y are left to the browser's native text undo. When a text box loses focus, its edit is committed to the app history as a single step. The app must never rewrite a text box's content while it is focused (that would clear the native undo stack).
