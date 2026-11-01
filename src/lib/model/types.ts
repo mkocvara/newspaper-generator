@@ -90,6 +90,8 @@ export type FrameStyle = 'single' | 'double' | 'thick-outer' | 'thin-outer'
 
 export interface Style {
   fonts: Fonts
+  // Where to load the fonts in use from, for those added by Google Fonts link
+  // (so the page works in other browsers). Kept in step with `fonts`.
   customFonts: CustomFont[]
   sizes: {
     bodyPt: number

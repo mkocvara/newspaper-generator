@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, untrack } from 'svelte'
   import { loadFont } from './lib/fonts'
   import Page from './lib/page/Page.svelte'
   import { loadAutosave, saveAutosave } from './lib/state/autosave'
   import { editor } from './lib/state/editor.svelte'
+  import { fontLibrary } from './lib/state/fontLibrary.svelte'
   import { flushEdits } from './lib/state/flush'
   import { handleHistoryShortcut } from './lib/state/shortcuts'
   import Toolbar from './lib/toolbar/Toolbar.svelte'
@@ -34,7 +35,14 @@
   // Load every font the page uses (including after undo or import).
   $effect(() => {
     const { fonts, customFonts } = editor.page.style
-    for (const family of Object.values(fonts)) loadFont(family, customFonts)
+    for (const family of Object.values(fonts)) loadFont(family, [...customFonts, ...fontLibrary.fonts])
+  })
+
+  // Fonts a page uses join the font list, e.g. after importing a work file
+  // made elsewhere or undoing a font's removal.
+  $effect(() => {
+    const style = $state.snapshot(editor.page.style)
+    untrack(() => fontLibrary.adopt(style))
   })
 
   onMount(async () => {

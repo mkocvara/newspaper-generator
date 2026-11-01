@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { Attachment } from 'svelte/attachments'
-  import { FONT_CHOICES, loadFont, parseFontInput } from '../fonts'
+  import { fontStack, loadFont, parseFontInput } from '../fonts'
   import type { Fonts, FrameStyle, Style } from '../model/types'
   import { EFFECTS, ORNAMENTS } from '../page/nameDecoration'
   import { editor } from '../state/editor.svelte'
+  import { FALLBACK_FONT, fontLibrary } from '../state/fontLibrary.svelte'
   import FontSelect from '../ui/FontSelect.svelte'
   import Panel from '../ui/Panel.svelte'
 
@@ -21,18 +22,46 @@
     ['name', 'Newspaper name'],
   ]
 
+  // The font list, plus any font in use that was removed from it (e.g. after
+  // undoing a removal) so the menus can still show it.
   const fontOptions = $derived(
-    [...new Set([...FONT_CHOICES, ...style.customFonts.map((f) => f.family), ...Object.values(style.fonts)])].sort(
-      (a, b) => a.localeCompare(b),
-    ),
+    [...new Set([...fontLibrary.families, ...Object.values(style.fonts)])].sort((a, b) => a.localeCompare(b)),
   )
+  const libraryFamilies = $derived([...fontLibrary.families].sort((a, b) => a.localeCompare(b)))
+  const fontSources = () => [...style.customFonts, ...fontLibrary.fonts]
+
+  function setFont(role: keyof Fonts, family: string) {
+    loadFont(family, fontSources())
+    set((s) => {
+      s.fonts[role] = family
+      s.customFonts = fontLibrary.sourcesFor(s.fonts)
+    })
+  }
+
+  // Removing a font from the list switches text using it to the fallback, as
+  // one undoable step. The list itself is per browser and not undoable.
+  function removeFont(family: string) {
+    fontLibrary.remove(family)
+    set((s) => {
+      for (const [role] of FONT_ROLES) if (s.fonts[role] === family) s.fonts[role] = FALLBACK_FONT
+      s.customFonts = fontLibrary.sourcesFor(s.fonts)
+    })
+  }
+
+  const usedBy = (family: string) =>
+    FONT_ROLES.filter(([role]) => style.fonts[role] === family).map(([, label]) => label)
+
+  // The Fonts panel shows either the font menus or the font list; it opens on
+  // the menus.
+  let managing = $state(false)
+  const resetViewOnClose: Attachment = () => () => (managing = false)
 
   // The font menus show each name in its own font, so load them all when the
   // Fonts panel opens, glyphs included, so the names don't flash in a fallback
   // font when a menu first opens.
   const loadFontOptions: Attachment = () => {
     for (const family of fontOptions) {
-      loadFont(family, style.customFonts).then((ok) => {
+      loadFont(family, fontSources()).then((ok) => {
         if (ok) document.fonts.load(`16px "${family}"`, family)
       })
     }
@@ -53,9 +82,7 @@
     const results = await Promise.all(fonts.map((f) => loadFont(f.family, fonts)))
     const added = fonts.filter((_, i) => results[i])
     if (added.length) {
-      set((s) => {
-        s.customFonts = [...s.customFonts.filter((f) => !added.some((a) => a.family === f.family)), ...added]
-      })
+      fontLibrary.add(added)
       fontInput = ''
     }
     const failed = fonts.filter((_, i) => !results[i]).map((f) => f.family)
@@ -110,37 +137,70 @@
 </script>
 
 <Panel label="Fonts">
-  <div class="form fonts" {@attach loadFontOptions}>
-    {#each FONT_ROLES as [role, label] (role)}
-      <div class="row">
-        <span>{label}</span>
-        <FontSelect
-          value={style.fonts[role]}
-          options={fontOptions}
-          {label}
-          onchange={(family) => {
-            loadFont(family, style.customFonts)
-            set((s) => (s.fonts[role] = family))
-          }}
-        />
+  <div class="form fonts" {@attach loadFontOptions} {@attach resetViewOnClose}>
+    {#if !managing}
+      {#each FONT_ROLES as [role, label] (role)}
+        <div class="row">
+          <span>{label}</span>
+          <FontSelect
+            value={style.fonts[role]}
+            options={fontOptions}
+            {label}
+            onchange={(family) => setFont(role, family)}
+          />
+        </div>
+      {/each}
+      <button type="button" class="link-button" onclick={() => (managing = true)}>Manage fonts…</button>
+    {:else}
+      <div class="manage-head">
+        <button type="button" class="link-button" onclick={() => (managing = false)}>‹ Back</button>
+        <span>Your fonts</span>
       </div>
-    {/each}
 
-    <div class="add-font">
-      <span class="hint"
-        >Add a <a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer">Google Font</a> by name or link</span
-      >
-      <div class="inline">
-        <input
-          type="text"
-          placeholder="e.g. Crimson Text"
-          bind:value={fontInput}
-          onkeydown={(e) => e.key === 'Enter' && addFont()}
-        />
-        <button type="button" onclick={addFont}>Add</button>
+      <ul class="font-list" aria-label="Your fonts">
+        {#each libraryFamilies as family (family)}
+          {@const uses = usedBy(family)}
+          <li>
+            <span class="font-name" style:font-family={fontStack(family)}>{family}</span>
+            {#if uses.length}<span class="in-use" title="Used for {uses.join(', ')}">in use</span>{/if}
+            <button
+              type="button"
+              class="remove"
+              aria-label="Remove {family}"
+              title={uses.length
+                ? `Remove ${family}. ${uses.join(', ')} will switch to ${FALLBACK_FONT}.`
+                : `Remove ${family}`}
+              onclick={() => removeFont(family)}>×</button
+            >
+          </li>
+        {:else}
+          <li class="empty">No fonts. Add one below or restore the default fonts.</li>
+        {/each}
+      </ul>
+
+      <div class="add-font">
+        <span class="hint"
+          >Add a <a href="https://fonts.google.com/" target="_blank" rel="noopener noreferrer">Google Font</a> by name or link</span
+        >
+        <div class="inline">
+          <input
+            type="text"
+            placeholder="e.g. Crimson Text"
+            bind:value={fontInput}
+            onkeydown={(e) => e.key === 'Enter' && addFont()}
+          />
+          <button type="button" onclick={addFont}>Add</button>
+        </div>
+        {#if fontMessage}<span class="hint" role="status" {@attach clearMessageOnClose}>{fontMessage}</span>{/if}
       </div>
-      {#if fontMessage}<span class="hint" role="status" {@attach clearMessageOnClose}>{fontMessage}</span>{/if}
-    </div>
+
+      {#if fontLibrary.missingDefaults.length}
+        <button type="button" class="link-button" onclick={() => fontLibrary.restoreDefaults()}>
+          Restore default fonts ({fontLibrary.missingDefaults.length} removed)
+        </button>
+      {/if}
+      <span class="hint">This list is kept in this browser and shared by all your pages.</span>
+    {/if}
   </div>
 </Panel>
 
@@ -352,6 +412,90 @@
     display: flex;
     align-items: center;
     gap: 6px;
+  }
+
+  .link-button {
+    justify-self: start;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #2f5ea8;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .link-button:hover {
+    text-decoration: underline;
+  }
+
+  .manage-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .manage-head span {
+    font-weight: 600;
+  }
+
+  .font-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 4px;
+    border: 1px solid rgb(0 0 0 / 0.15);
+    border-radius: 6px;
+    list-style: none;
+  }
+
+  .font-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 4px 2px 8px;
+    border-radius: 4px;
+  }
+
+  .font-list li:hover {
+    background: rgb(70 120 200 / 0.08);
+  }
+
+  .font-name {
+    flex: 1;
+    font-size: 16px;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .in-use {
+    color: #666;
+    font-size: 11px;
+  }
+
+  .remove {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: none;
+    color: #888;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .remove:hover {
+    border-color: rgb(180 40 40 / 0.4);
+    background: rgb(180 40 40 / 0.08);
+    color: #b42828;
+  }
+
+  .font-list .empty {
+    color: #666;
+    font-size: 12px;
   }
 
   .add-font {
