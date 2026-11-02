@@ -4,9 +4,11 @@
 
   // The area the page sits in, with its own zoom and pan, so zooming never
   // affects the toolbar. The page is scaled with a transform: its layout (and
-  // so text fitting and exports) is unchanged. The wheel zooms towards the
-  // pointer, dragging with the middle mouse button pans, and floating bars on
-  // the left and bottom show and drag the visible part. The corner box shows
+  // so text fitting and exports) is unchanged. As in most document apps, the
+  // wheel (or a touchpad's two-finger swipe) moves the page, Shift+wheel moves
+  // it sideways, and Ctrl+wheel (or pinching a touchpad) zooms towards the
+  // pointer. Dragging with the middle mouse button pans too, and floating bars
+  // on the left and bottom show and drag the visible part. The corner box shows
   // the zoom level; clicking it returns to 100%.
   let { top = 0, children }: { top?: number; children: Snippet } = $props()
 
@@ -89,16 +91,32 @@
     return () => observer.disconnect()
   })
 
-  // The wheel zooms (Ctrl+wheel is left to the browser's own zoom). Listened
-  // to directly so the default scroll can be prevented.
+  // Over the page, the wheel moves it and Ctrl+wheel zooms it (in place of
+  // the browser's own zoom; over the toolbar Ctrl+wheel still zooms the
+  // browser). Listened to directly so the default scroll can be prevented.
+  // A touchpad pinch arrives as Ctrl+wheel in small steps (about 1-10) where
+  // a mouse wheel sends about 100, so small steps zoom at a faster rate.
   $effect(() => {
     if (!viewport) return
     const onWheel = (event: WheelEvent) => {
-      if (event.ctrlKey || !event.deltaY) return
+      if (!event.deltaX && !event.deltaY) return
       event.preventDefault()
-      const lines = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : 1
-      const rect = viewport!.getBoundingClientRect()
-      zoomAt(zoom * Math.exp(-event.deltaY * lines * 0.0015), event.clientX - rect.left, event.clientY - rect.top)
+      const unit =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : event.deltaMode === WheelEvent.DOM_DELTA_PAGE ? view.height : 1
+      const dx = event.deltaX * unit
+      const dy = event.deltaY * unit
+      if (event.ctrlKey) {
+        const rate = Math.abs(dy) < 30 ? 0.01 : 0.0015
+        const rect = viewport!.getBoundingClientRect()
+        zoomAt(zoom * Math.exp(-dy * rate), event.clientX - rect.left, event.clientY - rect.top)
+      } else if (event.shiftKey && !dx) {
+        x -= dy
+        clamp()
+      } else {
+        x -= dx
+        y -= dy
+        clamp()
+      }
     }
     viewport.addEventListener('wheel', onWheel, { passive: false })
     return () => viewport!.removeEventListener('wheel', onWheel)
@@ -270,6 +288,7 @@
       class="track vertical"
       role="scrollbar"
       aria-label={i18n.t.view.panVertical}
+      title={i18n.t.view.barTitle}
       aria-orientation="vertical"
       aria-controls="newspaper-page"
       aria-valuenow={Math.round(vertical.offset * 100)}
@@ -283,6 +302,7 @@
       class="track horizontal"
       role="scrollbar"
       aria-label={i18n.t.view.panHorizontal}
+      title={i18n.t.view.barTitle}
       aria-orientation="horizontal"
       aria-controls="newspaper-page"
       aria-valuenow={Math.round(horizontal.offset * 100)}

@@ -223,6 +223,7 @@ export const cs: Strings = {
   view: {
     panVertical: 'Posun nahoru a dolů',
     panHorizontal: 'Posun doleva a doprava',
-    zoomTitle: 'Úroveň přiblížení. Kliknutím obnovíte 100 %.',
+    zoomTitle: 'Úroveň přiblížení. Přibližujte Ctrl+kolečkem nebo roztažením prstů; kliknutím obnovíte 100 %.',
+    barTitle: 'Přetažením posunete stránku. Posouvat ji můžete i kolečkem myši (se Shiftem do stran) nebo tažením prostředním tlačítkem.',
   },
 }
