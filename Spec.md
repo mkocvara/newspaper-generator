@@ -109,7 +109,7 @@ All text in the app can be switched between English and Czech with a toggle in t
 The app should be fully usable on a phone: a compact toolbar with all tools in a menu, tapping a cell to show its controls, and two-finger pan and pinch zoom.
 
 # Example Newspaper
-In the project folder, there is an image called "example-newspaper.png". This is not a source of truth and it is not a goal to emulate, but it is an example of the inspiration behind the app and shows the kind of styling we wan
+In the project's `Untracked` folder (kept out of git), there is an image called "example-newspaper.png". This is not a source of truth and it is not a goal to emulate, but it is an example of the inspiration behind the app and shows the kind of styling we wan
 
 # Claude's Notes
 Below, you can add notes and additional clarifications regarding the content of this spec, which you feel are useful or important. Keep them below the line in this section and keep the hand-written spec intact. If we make a decision to change the spec, you can only SUGGEST changes to me.
@@ -126,7 +126,7 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Placeholders:** empty text boxes show a faint hint in angle brackets (e.g. `<Newspaper Name>`); hints are never exported.
 - **Header text sizing:** date and location grow with the header height up to a cap, so extra height goes to the newspaper name. The name and location may wrap between words, but only when that allows a clearly larger font (≥30%); otherwise they stay on one line and shrink to fit.
 - **Unsaved typing:** when the tab is hidden or closed, the text box being edited is committed and the page is saved immediately.
-- **Images:** stored (embedded) in the JSON work file so work can be fully restored.
+- **Images:** stored (embedded) in the preset (`.newspaper`) and the autosave so work can be fully restored; photos are stored as WebP.
 - **Header date default:** today's date in the format `d. m. YYYY`, no zero-padding (e.g. `5. 3. 2026`).
 - **Empty cells:** a cell with no element inserted shows nothing.
 - **Eyecatcher:** text is centred.
@@ -168,7 +168,7 @@ Below, you can add notes and additional clarifications regarding the content of 
   - The image *Ink* toggle replaces B/W: each pixel becomes ink with an opacity set by how dark it was, so light areas show the paper. It's rendered in a canvas (not a CSS/SVG filter) so exports match the screen, and the rendered copy isn't stored in the work file.
   - The cell border colour option is gone; no older work files used it, so there's no migration.
 - **Zoom and pan:**
-  - The page is scaled with a CSS transform inside its own viewport (below the pinned toolbar), so its layout, text fitting and exports are unaffected; the window itself no longer scrolls.
+  - The page is scaled with a CSS transform inside its own viewport (below the docked toolbar), so its layout, text fitting and exports are unaffected; the window itself no longer scrolls.
   - Over the page, Ctrl+wheel zooms the page instead of the browser (over the toolbar it's still the browser's zoom). A touchpad pinch arrives as Ctrl+wheel in small steps, so small steps zoom at a faster rate than a mouse wheel's. Middle-click doesn't paste or start autoscroll over the page.
   - Panning works at any zoom (also when the whole page is in view) and stops once only a quarter of the window's width or height (or the whole page, if smaller) still shows the page, so its edge never leaves the view. Pressing a bar's track jumps there; with a bar focused, the arrow keys pan. Resetting to 100% keeps the middle of the view in place.
 - **Paper:** a Paper panel in the toolbar picks the page's background, saved with the page and in presets (undoable): *Newsprint* (the default, unchanged), *Old paper* (yellowed, coarser grain, browned edges, big creases folded in half and in thirds), *Old & stained* (the same with coffee rings, water stains and foxing spots, drawn as an irregular, noise-generated PNG layer made by `scripts/make-stains.py`), *Modern, creased* (clean, bright stock with a whisper of grain and two crisp folds) and *Modern plain* (the same without creases). Each also sets the paper tone the ink effects mix with. Backgrounds are CSS gradients plus PNGs (the grain tile and the stain layer); an earlier SVG noise filter rendered black in exports, so no SVG filters are used.
@@ -184,3 +184,4 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Menus:** an open menu (cell, column/row tab, Export) is moved out to the end of the document and placed against the window: below its button, or above if there's more room, always fully on screen and scrolling if taller. Inside the zoomed page it took on the page's zoom, could run off the screen and sat under later cells' controls.
 - **Menu colours:** menus, panels, the font list and the New Paper dialog use a yellowish, paper-like off-white (#c6bb9a) with warm near-black text (#241f16), above WCAG AAA contrast (8.5:1); pop-up menus over the page (cell, tabs, Export) are a little lighter (#cec3a7, 9.4:1). Every colour on it was checked: hint text, fields, links, placeholders and the "exported" message pass 4.5:1; borders and selection marks pass 3:1; highlights are lighter rather than darker. The palette is defined once as `--menu-*` variables in `src/app.css`.
 - **Preset files:** exported as a compact binary `.newspaper` file (see `src/lib/model/presetFile.ts`): an `NWSP` header, the work file as gzipped JSON with each image replaced by a pointer, then each image's raw bytes. Nothing is lost (the work file comes back exactly, images byte for byte); it's about a quarter smaller than the old JSON, whose images were base64 text, and new pages are smaller still as their photos are WebP. Import reads both `.newspaper` and old `.json` presets.
+- **App icon:** a small newspaper in the app's newsprint and ink (`public/favicon.svg`, drawn on a 4-unit grid so it stays crisp at 16px), plus `favicon.ico` (16/32/48) for older browsers. Android gets transparent 192/512px icons from `manifest.webmanifest`; iPhones get an opaque `apple-touch-icon` on a newsprint tone (iOS turns transparency black), added in `main.ts` on iOS only because Firefox on Android would otherwise use it as its tab icon.
