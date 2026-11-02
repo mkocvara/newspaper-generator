@@ -32,6 +32,10 @@ export interface Word {
   // Drawn as visible text (else it's in the image, and drawn invisibly).
   real: boolean
   element: Element
+  // Whether the element's text is justified, and where its lines end (mm),
+  // so lines that the browser stretched to the edge can be stretched too.
+  justify: boolean
+  lineEnd: number
 }
 
 // Characters the built-in fonts can be trusted to have: Latin, Latin
@@ -120,7 +124,17 @@ export function collectWords(page: HTMLElement): Word[] {
     const sizePx = parseFloat(style.fontSize)
     const top = ascent(`${style.fontStyle} ${style.fontWeight} ${sizePx}px ${style.fontFamily}`) * zoom
     const clip = clipRect(element, page)
-    const base = { sizePt: sizePx * PT_PER_PX, family, style: fontStyle(style), color: parseColor(style.color), real, element }
+    const box = element.getBoundingClientRect()
+    const base = {
+      sizePt: sizePx * PT_PER_PX,
+      family,
+      style: fontStyle(style),
+      color: parseColor(style.color),
+      real,
+      element,
+      justify: style.textAlign === 'justify',
+      lineEnd: (box.right - parseFloat(style.paddingRight) * zoom - pageRect.left) * mm,
+    }
 
     // Walk the characters, cutting words at spaces and at line breaks.
     let current: { chars: string; left: number; right: number; top: number } | null = null
@@ -234,30 +248,68 @@ export async function prepareFonts(pdf: JsPDF, words: Word[]) {
 
 const registered = new Set<string>()
 
-// Draw the words over the page image: real text visibly, image text
-// invisibly. Each word's letter spacing is adjusted to the width the browser
-// gave it, so the PDF's lines match the page.
-export function drawWords(pdf: JsPDF, words: Word[]) {
+// A line of text as the browser laid it out: its words, in order.
+interface Line {
+  words: Word[]
+}
+
+const MM_PER_PT = 25.4 / 72
+
+// Consecutive words of the same element on the same baseline form a line.
+// Words come in document order, so each cell's lines stay together.
+function groupLines(words: Word[]): Line[] {
+  const lines: Line[] = []
   for (const word of words) {
-    const family = word.real ? word.family : INVISIBLE_FONT
-    const { style, fakeBold } = word.real ? availableStyle(word.family, word.style) : { style: 'normal' as const, fakeBold: false }
+    const line = lines.at(-1)
+    const last = line?.words.at(-1)
+    const sameLine =
+      last &&
+      last.element === word.element &&
+      Math.abs(last.baseline - word.baseline) < word.sizePt * MM_PER_PT * 0.3 &&
+      !last.text.endsWith('-')
+    if (sameLine) line!.words.push(word)
+    else lines.push({ words: [word] })
+  }
+  return lines
+}
+
+// Draw the text over the page image: real text visibly, image text
+// invisibly. Each line is one text run with real spaces between its words,
+// so PDF readers keep a cell's text together and selecting or copying it
+// follows its lines (rather than stray words across columns and gaps). Lines
+// the browser justified are justified to the same width, spreading the space
+// between words as the browser does; others get a small letter-spacing
+// correction so they end where the browser's did.
+export function drawWords(pdf: JsPDF, words: Word[]) {
+  for (const { words: lineWords } of groupLines(words)) {
+    const first = lineWords[0]
+    const last = lineWords[lineWords.length - 1]
+    const family = first.real ? first.family : INVISIBLE_FONT
+    const { style, fakeBold } = first.real
+      ? availableStyle(first.family, first.style)
+      : { style: 'normal' as const, fakeBold: false }
     // Without its font (the invisible one couldn't be fetched), skip it.
     if (!registered.has(`${family}|${style}`)) continue
     pdf.setFont(family, style)
-    pdf.setFontSize(word.sizePt)
-    pdf.setTextColor(...word.color)
-    const letters = [...word.text].length
-    const natural = pdf.getTextWidth(word.text)
-    const charSpace = letters > 1 ? (word.width - natural) / (letters - 1) : 0
+    pdf.setFontSize(first.sizePt)
+    pdf.setTextColor(...first.color)
     if (fakeBold) {
-      pdf.setDrawColor(...word.color)
-      pdf.setLineWidth(word.sizePt * 0.035 * (25.4 / 72))
+      pdf.setDrawColor(...first.color)
+      pdf.setLineWidth(first.sizePt * 0.035 * MM_PER_PT)
     }
-    pdf.text(word.text, word.x, word.baseline, {
-      baseline: 'alphabetic',
-      charSpace,
-      renderingMode: !word.real ? 'invisible' : fakeBold ? 'fillThenStroke' : 'fill',
-    })
+    const renderingMode = !first.real ? 'invisible' : fakeBold ? 'fillThenStroke' : 'fill'
+    const text = lineWords.map((w) => w.text).join(' ')
+    const width = last.x + last.width - first.x
+    const stretched = first.justify && lineWords.length > 1 && first.lineEnd - (last.x + last.width) < 0.5
+    if (stretched) {
+      // jsPDF only justifies lines followed by another, hence the empty one.
+      pdf.text([text, ''], first.x, first.baseline, { baseline: 'alphabetic', align: 'justify', maxWidth: width, renderingMode })
+    } else {
+      const letters = [...text].length
+      const natural = pdf.getTextWidth(text)
+      const charSpace = letters > 1 ? (width - natural) / (letters - 1) : 0
+      pdf.text(text, first.x, first.baseline, { baseline: 'alphabetic', charSpace, renderingMode })
+    }
   }
 }
 
