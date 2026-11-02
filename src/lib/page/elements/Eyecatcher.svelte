@@ -64,7 +64,7 @@
   /* Sized against the main line (which is fitted to the cell), so the two
      stay in proportion at any size. */
   .sub {
-    margin-top: 0.12em;
+    margin-top: 0.55em;
     font-size: 0.38em;
     font-weight: 400;
     line-height: 1.1;
