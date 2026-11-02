@@ -4,9 +4,9 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link rel="icon" href="./favicon.ico" sizes="16x16 32x32 48x48" />
-    <!-- iPhones use the apple-touch-icon (opaque, as iOS turns transparency
-         black); Android uses the manifest's transparent icons. -->
-    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <!-- Android uses the manifest's transparent icons. iPhones get an opaque
+         apple-touch-icon, added in main.ts on iOS only (other browsers, such as
+         Firefox on Android, would use it too). -->
     <link rel="manifest" href="./manifest.webmanifest" />
     <!-- maximum-scale stops phones zooming the whole app in when a small text
          field is focused; the page has its own pinch zoom. -->
