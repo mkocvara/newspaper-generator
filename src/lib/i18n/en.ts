@@ -223,7 +223,8 @@ export const en = {
   view: {
     panVertical: 'Pan up and down',
     panHorizontal: 'Pan left and right',
-    zoomTitle: 'Zoom level. Click to reset to 100%.',
+    zoomTitle: 'Zoom level. Ctrl+scroll or pinch to zoom; click to reset to 100%.',
+    barTitle: 'Drag to move the page. You can also scroll (Shift+scroll moves sideways) or drag with the middle mouse button.',
   },
 }
 
