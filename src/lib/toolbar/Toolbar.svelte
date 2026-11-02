@@ -2,7 +2,7 @@
   import { i18n, LANGUAGES, type Language } from '../i18n/i18n.svelte'
   import { exportBasename, exportPage, exportWorkFile, type ExportKind } from '../export'
   import { createDefaultPage } from '../model/defaults'
-  import { parseWorkFile } from '../model/workfile'
+  import { decodePreset } from '../model/presetFile'
   import { editor } from '../state/editor.svelte'
   import Menu from '../ui/Menu.svelte'
   import { setContext } from 'svelte'
@@ -61,7 +61,7 @@
     busy = true
     say(i18n.t.status.exporting)
     try {
-      if (kind === 'json') exportWorkFile(editor.toWorkFile(), basename())
+      if (kind === 'json') await exportWorkFile(editor.toWorkFile(), basename())
       else await exportPage(kind, basename())
       say(i18n.t.status.exported)
     } catch (error) {
@@ -75,7 +75,7 @@
   async function runImport(file: File | undefined) {
     if (!file) return
     try {
-      const parsed = parseWorkFile(JSON.parse(await file.text()))
+      const parsed = await decodePreset(file)
       if (!parsed) return say(i18n.t.status.notPreset(file.name))
       editor.importFile(parsed)
       say(i18n.t.status.imported(file.name))
@@ -109,7 +109,7 @@
   <input
     bind:this={importInput}
     type="file"
-    accept=".json,application/json"
+    accept=".newspaper,.json,application/json"
     hidden
     onchange={(e) => {
       runImport(e.currentTarget.files?.[0])

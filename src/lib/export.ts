@@ -1,3 +1,4 @@
+import { encodePreset } from './model/presetFile'
 import type { WorkFile } from './model/types'
 import { refitAll } from './ui/fitText'
 
@@ -101,10 +102,10 @@ export async function exportPage(kind: ExportKind, basename: string) {
   pdf.save(`${basename}.pdf`)
 }
 
-export function exportWorkFile(file: WorkFile, basename: string) {
-  const blob = new Blob([JSON.stringify(file)], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
-  download(url, `${basename}.json`)
+// The preset, in its compact binary form (see model/presetFile.ts).
+export async function exportWorkFile(file: WorkFile, basename: string) {
+  const url = URL.createObjectURL(await encodePreset(file))
+  download(url, `${basename}.newspaper`)
   setTimeout(() => URL.revokeObjectURL(url), 10_000)
 }
 
