@@ -23,5 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-# Local-only reference material
-example-newspaper.png
+# Local-only files: reference material (the example newspaper) and presets
+Untracked/
