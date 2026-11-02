@@ -130,7 +130,7 @@ Below, you can add notes and additional clarifications regarding the content of 
 - **Header date default:** today's date in the format `d. m. YYYY`, no zero-padding (e.g. `5. 3. 2026`).
 - **Empty cells:** a cell with no element inserted shows nothing.
 - **Eyecatcher:** text is centred.
-- **Autosave:** the current work-in-progress page is cached in the browser and restored on reload.
+- **Autosave:** the current work-in-progress page is cached in the browser and restored on reload. With nothing cached (a first visit, or cleared site data), the app opens on an example newspaper (Gondorské listy, `src/assets/default-page.newspaper`, rebuilt from the example image); if that can't load, a blank page. New Paper still starts from a blank page.
 - **Undo/Redo:** app history covers layout changes, style changes, and text edits. While a text box is focused, Ctrl+Z/Ctrl+Y are left to the browser's native text undo. When a text box loses focus, its edit is committed to the app history as a single step. The app must never rewrite a text box's content while it is focused (that would clear the native undo stack).
 - **Newspaper name decoration** (built with the toolbar in stage 5): two independent settings that combine freely.
   - *Ornaments* before and after the name: none, mirrored symbol pairs (fleurons ❧ … ☙, guillemets pointing in » … « or out « … », pointing hands ☛ … ☚, curls ⊰ … ⊱), extending rules, or custom Unicode symbols, typed or picked from a grid of suggestions. Symbol ornaments (presets and custom) have an Ornament size setting (in %, 30–250%, default 100%; the extending rules aren't affected). The former bars, double bars, stars and diamonds presets are now only in the grid; pages saved with them open as the same custom symbols.

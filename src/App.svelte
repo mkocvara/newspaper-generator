@@ -3,6 +3,8 @@
   import { loadFont } from './lib/fonts'
   import { i18n } from './lib/i18n/i18n.svelte'
   import { createDefaultPage } from './lib/model/defaults'
+  import { decodePreset } from './lib/model/presetFile'
+  import defaultPageUrl from './assets/default-page.newspaper?url'
   import { toWorkFile } from './lib/model/workfile'
   import Page from './lib/page/Page.svelte'
   import { loadAutosave, saveAutosave } from './lib/state/autosave'
@@ -53,9 +55,21 @@
     untrack(() => fontLibrary.adopt(style))
   })
 
+  // With nothing saved (a first visit, or cleared site data) the app opens on
+  // an example newspaper, shipped as a preset; failing that, a blank page in
+  // the UI language. New Paper still starts from the blank page.
+  async function examplePage() {
+    try {
+      const response = await fetch(defaultPageUrl)
+      return response.ok ? await decodePreset(await response.blob()) : null
+    } catch (error) {
+      console.warn('Could not load the example page', error)
+      return null
+    }
+  }
+
   onMount(async () => {
-    const saved = await loadAutosave()
-    // A first visit starts on a default page in the UI language.
+    const saved = (await loadAutosave()) ?? (await examplePage())
     editor.load(saved ?? toWorkFile(createDefaultPage(new Date(), i18n.t.page.footerDefault), {}))
     ready = true
   })
