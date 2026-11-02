@@ -14,8 +14,8 @@
   const WRAP_GAIN = 1.3
   // Date and location text grows with the header height up to a cap, so
   // extra height goes to the newspaper name.
-  const SIDE_TEXT_RATIO = 0.16
-  const SIDE_TEXT_MAX_PX = 20
+  const SIDE_TEXT_RATIO = 0.19
+  const SIDE_TEXT_MAX_PX = 24
 
   const header = $derived(editor.page.header)
   const style = $derived(editor.page.style)
